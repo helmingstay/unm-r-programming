@@ -1,0 +1,10 @@
+#summary Summary of Meetings by date
+
+= Spring 2012 =
+
+== 3 Feb 2012 ==
+ * Discussed webpage (here) -- ask questions via Issues
+ * Discussed possible datasets
+ * Decided to use AvianKnowledgeNet ( http://www.avianknowledge.net/content/datasets ) eBird Puerto Rico Dataset ( http://www.avianknowledge.net/content/datasets/projects/ebird_pr )
+
+== 10 Feb 12 == 
