@@ -5,6 +5,6 @@
 == 3 Feb 2012 ==
  * Discussed webpage (here) -- ask questions via Issues
  * Discussed possible datasets
- * Decided to use AvianKnowledgeNet ( http://www.avianknowledge.net/content/datasets ) eBird Puerto Rico Dataset ( http://www.avianknowledge.net/content/datasets/projects/ebird_pr )
+ * Decided to use Avian Knowledge Net ( http://www.avianknowledge.net/content/datasets ) eBird Puerto Rico Dataset ( http://www.avianknowledge.net/content/datasets/projects/ebird_pr )
 
 == 10 Feb 12 == 
