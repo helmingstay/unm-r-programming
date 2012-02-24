@@ -1,5 +1,5 @@
 #summary Inspecting eBird dataset, dealing with factors
-#labels MeetingCode
+#labels Code
 
 {{{
 mydf <- read.delim('eBird_PR_Data.csv',header=T)
