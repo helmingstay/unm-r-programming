@@ -18,3 +18,6 @@
  * Decided to split dataset into effort and non-effort sets
  * First look at samples by year and month.  Start at 2002 or 2005?
  * Code here:  MeetingCode17Feb12
+
+== 24 Feb 12 ==
+ * Code here:  MeetingCode17Feb12
