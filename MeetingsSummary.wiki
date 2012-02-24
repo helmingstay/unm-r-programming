@@ -8,3 +8,13 @@
  * Decided to use Avian Knowledge Net ( http://www.avianknowledge.net/content/datasets ) eBird Puerto Rico Dataset ( http://www.avianknowledge.net/content/datasets/projects/ebird_pr )
 
 == 10 Feb 12 == 
+ * Editing of the Puerto Rico dataset to exclude empty columns
+ * Searching of dataset 
+ * Talked about str, summary(), factor() and level(factor())
+ * Code here:  MeetingCode10Feb12
+
+== 17 Feb 12 ==
+ * Tour of eBird ontology from Matt.  
+ * Decided to split dataset into effort and non-effort sets
+ * First look at samples by year and month.  Start at 2002 or 2005?
+ * Code here:  MeetingCode17Feb12
