@@ -1,5 +1,5 @@
 #summary More inspection of eBird, looking at sample coverage, effort type, etc.
-#labels MeetingCode
+#labels Code
 
 <code language="r">
 PR_data=read.delim("Puerto_Rico_eBird_AVN_Data.csv",header=T)
