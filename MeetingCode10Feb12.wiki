@@ -1,4 +1,4 @@
-#summary One-sentence summary of this page.
+#summary Inspecting eBird dataset, dealing with factors
 
 {{{
 mydf <- read.delim('eBird_PR_Data.csv',header=T)
