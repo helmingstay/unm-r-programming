@@ -15,7 +15,7 @@
 
 == 17 Feb 12 ==
  * Tour of eBird ontology from Matt.  
- * See his excellent tutorial here: [http://code.google.com/p/unm-r-programming/downloads/detail?name=eBird%20R%20group.pdf eBird R group.pdf]
+ * See his excellent tutorial here: [http://unm-r-programming.googlecode.com/files/eBird%20R%20group.pdf eBird R group.pdf]
  * Decided to split dataset into effort and non-effort sets
  * First look at samples by year and month.  Start at 2002 or 2005?
  * Code here:  MeetingCode17Feb12
