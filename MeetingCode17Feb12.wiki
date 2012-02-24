@@ -1,7 +1,7 @@
 #summary More inspection of eBird, looking at sample coverage, effort type, etc.
 #labels MeetingCode
 
-{{{
+<code language="R">
 PR_data=read.delim("Puerto_Rico_eBird_AVN_Data.csv",header=T)
 ## dimensions row,col
 dim(PR_data)
@@ -26,4 +26,4 @@ levels(factor(PR_data$Common.Name))
 levels(factor(PR_data$Scientific.Name))
 levels(factor(PR_data$Genus))
 levels(factor(PR_data$Common.Name))
-}}}
+</code>
