@@ -49,6 +49,7 @@ plot(as.numeric(levels(aa)),bb, type='S')
 plot(as.numeric(levels(aa)),bb, type='h')
 
 ## using lattice rather than standard R graphics
+## note that you need to surround these with plot() if you want them to make figures from source()
 xyplot(bb~as.numeric(levels(aa)))
 xyplot(bb~as.numeric(levels(aa)), type=c('s','p','g'))
 
