@@ -1,6 +1,5 @@
 ## Full Dataset
-##
-##
+## 
 mydf <- read.delim('eBird_PR_Data.csv',header=T)
 
 ## Only Puerto Rico (e.g. remove errors)
@@ -11,6 +10,7 @@ PR$Country <- factor(PR$Country)
 str(PR)
 summary(PR$Year.Collected)
 colnames(PR)
+## these columns record effort
 summary(PR$Protocol.Type)
 summary(PR$Protocol.Code)
 
