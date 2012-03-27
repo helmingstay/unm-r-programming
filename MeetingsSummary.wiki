@@ -22,3 +22,16 @@
 
 == 24 Feb 12 ==
  * Code here:  MeetingCode24Feb12
+
+*Spring Break in here somewhere?*
+*Missing meeting?*
+
+== 16 Mar 12? ==
+  * Talked about possibilities for poster
+  * Matt and Xian looked at weather/GIS data after meeting
+
+== 23 Mar 12 ==
+  * Plotted weather data via xts package
+  * Difficult to identify major weather events here
+  * Stations with short records also have data quality issues
+  * See MeetingCode23Mar12
