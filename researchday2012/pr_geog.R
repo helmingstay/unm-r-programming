@@ -14,7 +14,9 @@ if (F){
   ## get shapefile (3-digit zip) from:
   ## http://www2.census.gov/cgi-bin/shapefiles2009/state-files?state=72
   ## extract into folder "shapefiles" for dns arg below
-  pr.shp = readOGR(dsn="shapefiles", layer="tl_2009_72_zcta3")
+  pr.shp = readOGR(dsn="shapefiles", layer="s_01ja11")
+  ## subset doesn't work for special Spatial object
+  pr.shp = pr.shp[pr.shp$STATE=='PR',]
   pr.shp@data$id = rownames(pr.shp@data)
   pr.points = fortify.SpatialPolygonsDataFrame(pr.shp, region="id")
   pr.df = join(pr.points, pr.shp@data, by="id")
@@ -32,10 +34,16 @@ load('puerto_rico_weather.RData')
 ## map projection
 pr_plot = ggplot() +
   geom_polygon( data=pr.df, aes(long,lat,group=group), 
-                fill='transparent', colour='black') +
-  geom_point( data=pr_weather_summary, aes(lon, lat, colour=ndays), size=5) +
-  coord_map()
+                fill='transparent', colour='black', width=2) +
+  geom_point( data=pr_weather_summary, aes(lon, lat, colour=ndays), size=8, alpha=0.75) +
+  labs(x='', y='', colour = 'Days of\nWeather\nRecords\n2002-2011') +
+  ## see theme_get() for a full list of options
+  opts(plot.margin=unit(c(-1,0,-1,-0.5), 'lines'), 
+    plot.background=theme_rect(fill=NA, colour=NA), 
+    axis.text.x=theme_text(colour='black'), 
+    axis.text.y=theme_text(colour='black')
+  ) + coord_map(project = 'lagrange')
 
-png('FIG-pr_geog.png', width=2500, height=1000, res=250)
+png('FIG-pr_geog.png', width=3000, height=1000, res=250)
   print(pr_plot)
 dev.off()
