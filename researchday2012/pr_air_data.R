@@ -13,7 +13,7 @@ pr_weather = ddply( pr_air, 'V6', function(x) {
   ldply(2002:2011, function(myyear) {
   myair = x$V6
   ## download data, read into dataframe
-  myurl = sprintf('http://www.wunderground.com/history/airport/%s/%s/1/1/CustomHistory.html?dayend=1&monthend=1&yearend=2011&format=0', myair, myyear)
+  myurl = sprintf('http://www.wunderground.com/history/airport/%s/%s/1/1/CustomHistory.html?dayend=31&monthend=12&yearend=%s&format=0', myair, myyear, myyear)
   ret = read.table(url(myurl), sep=',', header=T)
   ## return if no data
   if(!(nrow(ret)>1)) {return()}
