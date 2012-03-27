@@ -34,4 +34,4 @@
   * Plotted weather data via xts package
   * Difficult to identify major weather events here
   * Stations with short records also have data quality issues
-  * See MeetingCode23Mar12
+  * Code from meeting was lost (computer problem)
