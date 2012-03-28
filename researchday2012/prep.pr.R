@@ -13,7 +13,7 @@ myshoreorder = c('Anseriformes', 'Charadriiformes', 'Gruiformes', 'Ciconiiformes
 
 myshorefamily = c('Alcedinidae', 'Anatidae', 'Charadriidae', 'Fregatidae', 'Haematopodidae', 'Laridae', 'Pelecanidae', 'Phaethontidae', 'Phalacrocoracidae', 'Phoenicopteridae', 'Podicipedidae', 'Procellariidae', 'Rallidae', 'Recurvirostridae', 'Scolopacidae', 'Stercorariidae', 'Sulidae', 'Threskiornithidae')
 
-pr.birds$is.shore = pr.birds$Order %in% myshorefamily
+pr.birds$is.shore = factor(pr.birds$Family %in% myshorefamily, labels=c('Not Shorebird Family', 'Shorebird Family'))
 ## from nat: 
 ## Some baseline number of some of these families (Anatidae, Laridae, Podicipedidae, Rallidae) should be in shore regularly, along streams and/or in lakes.  But a large increase in them post hurricane would be interesting.  And other families (Fregatidae, Procellaridae, Stercorariidae, Sulidae) should really never be inland unless a hurricane blew them there.
  
