@@ -1,3 +1,5 @@
+require(plyr)
+require(foreach)
 ## need to load puerto_rico_weather.RData
 ## turn into a list of xts
 pr.weather.xts = dlply(pr_weather, 'V6', function(x) { 
@@ -6,7 +8,7 @@ pr.weather.xts = dlply(pr_weather, 'V6', function(x) {
     numids = laply(x, is.numeric); 
     ## turn into xts: data, timebase
     return( xts(x[,numids], as.Date(x$AST)))
-})
+}, .progress='text')
 
 
 ## 
@@ -22,9 +24,9 @@ aa=llply(pr.weather.xts, function(aa) {
 })
 
 ## easy way to combine xts
-pr.max = foreach(bb=iter(aa), .combine=cbind) %do% {bb}
+pr.max.weather = foreach(bb=iter(aa), .combine=cbind) %do% {bb}
 
-plot(xyplot(pr.max, type=c('p','g', 'h'), screens=1, col=1:6,
+plot(xyplot(pr.max.weather, type=c('p','g', 'h'), screens=1, col=1:6,
     main=sprintf('Days with %s > %s percentile', myvar, myquant)
 ))
 

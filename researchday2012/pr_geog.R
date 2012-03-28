@@ -5,7 +5,7 @@ library(ggplot2);
 
 ## many many libraries need to be installed to do this
 ## you probably don't want to run
-if (T){
+if (F){
   require("rgdal") # requires sp, will use proj.4 if installed
   require("maptools")
   require(gpclib)
