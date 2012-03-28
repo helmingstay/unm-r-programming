@@ -18,7 +18,14 @@ pr.birds$is.shore = factor(pr.birds$Family %in% myshorefamily, labels=c('Not Sho
 ## Some baseline number of some of these families (Anatidae, Laridae, Podicipedidae, Rallidae) should be in shore regularly, along streams and/or in lakes.  But a large increase in them post hurricane would be interesting.  And other families (Fregatidae, Procellaridae, Stercorariidae, Sulidae) should really never be inland unless a hurricane blew them there.
  
 ## number of unique species per day and location
-pr.species = ddply(pr.birds, c('Decimal.Longitude', 'Decimal.Latitude', 'Date', 'season', 'is.shore'), 
+pr.species.season.shore = ddply(pr.birds, c('Decimal.Longitude', 'Decimal.Latitude', 'Date', 'season', 'is.shore'), 
+    function(x) {
+        ret = data.frame(nspecies=length(unique(factor(x$Scientific.Name))))
+        return(ret)
+    }, .progress='text')
+
+
+pr.species.season = ddply(pr.birds, c('Decimal.Longitude', 'Decimal.Latitude', 'Date', 'season'), 
     function(x) {
         ret = data.frame(nspecies=length(unique(factor(x$Scientific.Name))))
         return(ret)

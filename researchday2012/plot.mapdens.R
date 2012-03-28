@@ -5,9 +5,9 @@ if(F){
     load('puerto_rico_shp.RData') 
 }
 
-pr_plot = ggplot(pr.species) +
+pr_plot = ggplot(pr.species.season) +
+#pr_plot = ggplot(pr.species.season.shore) +
 #Year.Collected
-    coord_map() + #project = 'lagrange')
   geom_hex( data=pr.species, aes(Decimal.Longitude, Decimal.Latitude), alpha=0.95, binwidth=c(0.12, 0.1)) +
   labs(x='', y='') + #stat_binhex() + geom_hex() +
   ## see theme_get() for a full list of options
@@ -18,8 +18,11 @@ pr_plot = ggplot(pr.species) +
   ) + 
   geom_polygon( data=pr.df, aes(long,lat,group=group), 
                 fill='transparent', colour='black', width=2) +
-  facet_grid(season ~ is.shore)
+  facet_grid(. ~ season )+
+  #facet_grid(season ~ is.shore)
+  #facet_wrap(~ season, nrow=2, ncol=2, scales='free') +
+    coord_map() #project = 'lagrange')
 
-png('FIG-nspec.season.png', width=3000, height=2000, res=250)
+png('FIG-nspec.season.png', width=5000, height=1500, res=250)
 print(pr_plot)
 dev.off()
