@@ -5,7 +5,7 @@ library(ggplot2);
 
 ## many many libraries need to be installed to do this
 ## you probably don't want to run
-if (F){
+if (T){
   require("rgdal") # requires sp, will use proj.4 if installed
   require("maptools")
   require(gpclib)
@@ -20,7 +20,7 @@ if (F){
   pr.shp@data$id = rownames(pr.shp@data)
   pr.points = fortify.SpatialPolygonsDataFrame(pr.shp, region="id")
   pr.df = join(pr.points, pr.shp@data, by="id")
-  save(pr.shp, file= 'puerto_rico_shp.RData')
+  save(pr.shp, pr.df, file= 'puerto_rico_shp.RData')
 }   else { 
   ## otherwise just load the data file
   load('puerto_rico_shp.RData') 

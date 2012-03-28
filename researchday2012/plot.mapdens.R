@@ -18,8 +18,8 @@ pr_plot = ggplot(pr.species) +
   ) + 
   geom_polygon( data=pr.df, aes(long,lat,group=group), 
                 fill='transparent', colour='black', width=2) +
-  facet_grid(is.shore ~ season)
+  facet_grid(season ~ is.shore)
 
-png('FIG-nspec.season.png', width=5000, height=5000/3, res=250)
+png('FIG-nspec.season.png', width=5000/3, height=5000, res=250)
 print(pr_plot)
 dev.off()
