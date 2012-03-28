@@ -36,12 +36,3 @@ lapply(2002:2011, function(x) {
 })
 }
 
-if(F){
-## no good, tickmarks too close
-    myticks = seq(from = as.Date("2002-1-1"), by='month', as.Date("2011-12-1"))
-    plot(
-        xyplot(pr.rare.weather,
-            type=c('g','p','h'), screens=1, col=1:2, pch=1:2, cex=1:2,
-            scales = list(x = list(at = myticks)))
-    ); 
-}
