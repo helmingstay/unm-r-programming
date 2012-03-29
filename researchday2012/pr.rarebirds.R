@@ -1,3 +1,4 @@
+##depends on pr_weather_figs.R
 ## get the total number of birds observed by name
 pr.species.counts = ddply(pr.birds, 'Scientific.Name', function(x) { 
     data.frame(

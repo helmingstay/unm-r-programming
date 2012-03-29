@@ -25,6 +25,7 @@ aa=llply(pr.weather.xts, function(aa) {
 
 ## easy way to combine xts
 pr.max.weather = foreach(bb=iter(aa), .combine=cbind) %do% {bb}
+pr.max.nsites = xts(aaply(pr.max.weather, 1, function(x) { sum(!is.na(x))}), index(pr.max.weather))
 
 plot(xyplot(pr.max.weather, type=c('p','g', 'h'), screens=1, col=1:6,
     main=sprintf('Days with %s > %s percentile', myvar, myquant)
