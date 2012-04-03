@@ -1,11 +1,18 @@
 #summary Biology Research Day 2012
 #labels ResearchDay
 
+= Final Poster PDF! =
+http://unm-r-programming.googlecode.com/files/posterWorkingCopy.fin.pdf
+
 = Relevant Issues =
  * issue 1
  * issue 2
  * issue 3
  * issue 4
+ * issue 5
+ * issue 6
+ * issue 7
+Issue 7 is the most important one.
 
 = Relevant Downloads/Data Files =
  * [http://unm-r-programming.googlecode.com/files/puerto_rico_weather.RData Daily Weather Data]
