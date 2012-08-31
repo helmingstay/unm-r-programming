@@ -18,3 +18,6 @@
 = Tutorials =
  * A series of in-depth labs on the vegan package, including good coverage of ordination: http://ecology.msu.montana.edu/labdsv/R/
  * A series of 2 minute R video tutorials -- fun and informative: http://www.twotorials.com/
+
+= R Studio = 
+ * A great list of keyboard shortcuts for using R Studio: http://rstudio.org/docs/using/keyboard_shortcuts
