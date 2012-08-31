@@ -1,4 +1,4 @@
-#Summary of Fall 2012 R Group meetings by data
+Summary of Fall 2012 R Group meetings by data
 
 = 31 August 2012 =
 
