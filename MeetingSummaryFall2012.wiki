@@ -1,0 +1,6 @@
+#Summary of Fall 2012 R Group meetings by data
+
+= 31 August 2012 =
+
+Introductions, using R Studio, why use R?, beginning using the package lattice for graphing
+This week's code: http://code.google.com/p/unm-r-programming/downloads/detail?name=R_group_31_Aug_2012.R&can=2&q=#makechanges
