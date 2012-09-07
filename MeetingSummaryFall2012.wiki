@@ -4,3 +4,11 @@ Summary of Fall 2012 R Group meetings by data
 
 Introductions, using R Studio, why use R?, beginning using the package lattice for graphing
 This week's code: http://code.google.com/p/unm-r-programming/downloads/detail?name=R_group_31_Aug_2012.R&can=2&q=#makechanges
+
+= 6 September 2012 = 
+
+  * Loading data from Excel spreadsheets into R.  
+  * More on lattice for graphing.  
+  * Download the Sarkar book on using lattice for multivariate data visualization from UNM Libros (it's free, but you have to download it chapter by chapter).
+  * Download the bird morphology dataset for use in future meetings: http://code.google.com/p/unm-r-programming/downloads/detail?name=bird_morphology.csv&can=2&q=#makechanges
+  * Code for this week can be found here: http://code.google.com/p/unm-r-programming/downloads/detail?name=R_group_7_Sept.R&can=2&q=#makechanges
