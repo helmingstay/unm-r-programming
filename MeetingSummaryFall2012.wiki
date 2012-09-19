@@ -3,9 +3,9 @@ Summary of Fall 2012 R Group meetings by date
 = 31 August 2012 =
 
   * Introductions, using R Studio, why use R?, beginning using the package lattice for graphing 
-  * This week's code: http://code.google.com/p/unm-r-programming/downloads/detail?name=R_group_31_Aug_2012.R&can=2&q=#makechanges
+  * This week's code: http://unm-r-programming.googlecode.com/files/R_group_31_Aug_2012.R
 
-= 6 September 2012 = 
+= 6 September 2012 =
 
   * Loading data from Excel spreadsheets into R.
   * More on lattice for graphing.  
@@ -14,3 +14,12 @@ Summary of Fall 2012 R Group meetings by date
   * Download the bird morphology dataset for use in future meetings: http://unm-r-programming.googlecode.com/files/bird_morphology.csv
 
   * Code for this week can be found here: http://unm-r-programming.googlecode.com/files/R_group_7_Sept.R
+
+= 13 Sep 2012 =
+
+  * Loading in data from bird dataset (see above for link).
+  * Review of formulas in lattice:  xyplot( x ~ y | splitby, data=data)
+  *  Understanding subset and logical operations, and logical vectors.
+  *  Splitting into panels with | versus overplotting with groups.
+  *  Box-and-whisker plots with bwplot(), density plots with densityplot().
+  * Discussed availability of timeseries datasets.
