@@ -1,3 +1,4 @@
+#labels Reference
 Summary of Fall 2012 R Group meetings by date
 
 = 31 August 2012 =
@@ -15,8 +16,9 @@ Summary of Fall 2012 R Group meetings by date
 
   * Code for this week can be found here: http://unm-r-programming.googlecode.com/files/R_group_7_Sept.R
 
-= 13 Sep 2012 =
+= 14 Sep 2012 =
 
+  * Commented script file here: http://unm-r-programming.googlecode.com/files/2012-09-14.R 
   * Loading in data from bird dataset (see above for link).
   * Review of formulas in lattice:  xyplot( x ~ y | splitby, data=data)
   *  Understanding subset and logical operations, and logical vectors.
