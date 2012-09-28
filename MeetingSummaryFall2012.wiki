@@ -26,12 +26,12 @@ Summary of Fall 2012 R Group meetings by date
   *  Box-and-whisker plots with bwplot(), density plots with densityplot().
   * Discussed availability of timeseries datasets.
 
-= 14 Sep 2012 =
-  * How to write functions (script file here:file:///files/21sep2012.R)
+= 21 Sep 2012 =
+  * How to write functions (script file here:http://unm-r-programming.googlecode.com/files/21sep2012.R)
   * Debugging functions with:
     # browse()
     # print()
     # debug()
   * Returning values from functions with return()
-  * How to identify and pick out columns from a dataframe, and then save them to a file (script file here:)
-  *  Timeseries data file for next week:
+  * How to identify and pick out columns from a dataframe, and then save them to a file (script file here:http://unm-r-programming.googlecode.com/files/20120921_tdl_r-script.R)
+  *  Timeseries data file for next week:  http://unm-r-programming.googlecode.com/files/tdl_subset.csv
