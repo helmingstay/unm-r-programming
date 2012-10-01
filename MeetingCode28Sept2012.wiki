@@ -1,0 +1,38 @@
+#labels Code
+#Code from 28 Sept 2012
+
+tdl <- read.csv(file = '/Users/Natalie/Documents/R/tdl_subset.csv', header = T)
+summary(tdl)
+str(tdl)
+
+#learning how print works
+print('a') 
+print(a)
+a <- c(1:10)
+print(a)
+
+#learning how sprintf() works
+aa <- sprintf('letter %s is %s', 1:5, letters[1:5])
+print(aa)
+
+require(xts) #package that's good for time data
+tdl$datetime <- with(tdl, {
+  sprintf('%s %s', date, time)
+})
+tdl$datetime <- sprintf('%s %s', tdl$date, tdl$time) #this is the same as above - see how with() works
+head(tdl) #look at what we did! :-)
+
+timebase <- strptime(tdl$datetime, format = '%Y-%m-%d %H:%M:%S')
+summary(timebase)
+str(timebase)
+tdlx <- xts(subset(tdl, select = c(-time, -date, -datetime)), timebase)
+summary(tdlx)
+str(tdlx)
+tdlx$chamber.Totalgsw
+
+#graphing the data
+require(lattice)
+xyplot(as.zoo(tdlx)) #does not work
+as.zoo(tdlx)
+coredata(tdlx)
+plot(tdlx$chamber.Totalgsw)
