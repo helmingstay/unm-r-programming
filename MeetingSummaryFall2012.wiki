@@ -35,3 +35,8 @@ Summary of Fall 2012 R Group meetings by date
   * Returning values from functions with return()
   * How to identify and pick out columns from a dataframe, and then save them to a file (script file here:http://unm-r-programming.googlecode.com/files/20120921_tdl_r-script.R)
   *  Timeseries data file for next week:  http://unm-r-programming.googlecode.com/files/tdl_subset.csv
+
+= 28 Sept 2012 =
+  * Beginning time series data 
+  * Using the function sprintf()
+  * Using the function with()
