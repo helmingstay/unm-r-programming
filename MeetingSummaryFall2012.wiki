@@ -1,30 +1,14 @@
 #labels Reference
 Summary of Fall 2012 R Group meetings by date
 
-= 31 August 2012 =
+= 05 Oct 2012 =
+  * Script file: http://unm-r-programming.googlecode.com/files/R_group_05_Oct_2012.R
 
-  * Introductions, using R Studio, why use R?, beginning using the package lattice for graphing 
-  * This week's code: http://unm-r-programming.googlecode.com/files/R_group_31_Aug_2012.R
-
-= 6 September 2012 =
-
-  * Loading data from Excel spreadsheets into R.
-  * More on lattice for graphing.  
-  * Download the Sarkar book, title: "Lattice: multivariate data visualization in R" from UNM Libros (it's free, but you have to download it chapter by chapter).
-  * What are factors, and why do we care?
-  * Download the bird morphology dataset for use in future meetings: http://unm-r-programming.googlecode.com/files/bird_morphology.csv
-
-  * Code for this week can be found here: http://unm-r-programming.googlecode.com/files/R_group_7_Sept.R
-
-= 14 Sep 2012 =
-
-  * Commented script file here: http://unm-r-programming.googlecode.com/files/2012-09-14.R 
-  * Loading in data from bird dataset (see above for link).
-  * Review of formulas in lattice:  xyplot( x ~ y | splitby, data=data)
-  *  Understanding subset and logical operations, and logical vectors.
-  *  Splitting into panels with | versus overplotting with groups.
-  *  Box-and-whisker plots with bwplot(), density plots with densityplot().
-  * Discussed availability of timeseries datasets.
+= 28 Sept 2012 =
+  * Script file here (now includes bugfix and comments): http://unm-r-programming.googlecode.com/files/R_group_28_Sept_2012.R
+  * Beginning time series data using the xts package 
+  * Using the function sprintf()
+  * Using the function with()
 
 = 21 Sep 2012 =
   * How to write functions (script file here:http://unm-r-programming.googlecode.com/files/21sep2012.R)
@@ -36,7 +20,33 @@ Summary of Fall 2012 R Group meetings by date
   * How to identify and pick out columns from a dataframe, and then save them to a file (script file here:http://unm-r-programming.googlecode.com/files/20120921_tdl_r-script.R)
   *  Timeseries data file for next week:  http://unm-r-programming.googlecode.com/files/tdl_subset.csv
 
-= 28 Sept 2012 =
-  * Beginning time series data 
-  * Using the function sprintf()
-  * Using the function with()
+= 14 Sep 2012 =
+
+  * Commented script file here: http://unm-r-programming.googlecode.com/files/2012-09-14.R 
+  * Loading in data from bird dataset (see above for link).
+  * Review of formulas in lattice:  xyplot( x ~ y | splitby, data=data)
+  *  Understanding subset and logical operations, and logical vectors.
+  *  Splitting into panels with | versus overplotting with groups.
+  *  Box-and-whisker plots with bwplot(), density plots with densityplot().
+  * Discussed availability of timeseries datasets.
+
+= 6 September 2012 =
+
+  * Loading data from Excel spreadsheets into R.
+  * More on lattice for graphing.  
+  * Download the Sarkar book, title: "Lattice: multivariate data visualization in R" from UNM Libros (it's free, but you have to download it chapter by chapter).
+  * What are factors, and why do we care?
+  * Download the bird morphology dataset for use in future meetings: http://unm-r-programming.googlecode.com/files/bird_morphology.csv
+  * Code for this week can be found here: http://unm-r-programming.googlecode.com/files/R_group_7_Sept.R
+
+
+
+= 31 August 2012 =
+
+  * Introductions, using R Studio, why use R?, beginning using the package lattice for graphing 
+  * This week's code: http://unm-r-programming.googlecode.com/files/R_group_31_Aug_2012.R
+
+
+
+
+
