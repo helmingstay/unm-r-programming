@@ -1,8 +1,8 @@
 #labels Reference
 Summary of Fall 2012 R Group meetings by date
 
-= 05 Oct 2012 =
-  * Script file: http://unm-r-programming.googlecode.com/files/R_group_05_Oct_2012.R
+= [http://unm-r-programming.googlecode.com/files/R_group_05_Oct_2012.R 05 Oct 2012] =
+  * ...
 
 = 28 Sept 2012 =
   * Script file here (now includes bugfix and comments): http://unm-r-programming.googlecode.com/files/R_group_28_Sept_2012.R
@@ -45,8 +45,6 @@ Summary of Fall 2012 R Group meetings by date
 
   * Introductions, using R Studio, why use R?, beginning using the package lattice for graphing 
   * This week's code: http://unm-r-programming.googlecode.com/files/R_group_31_Aug_2012.R
-
-
 
 
 
