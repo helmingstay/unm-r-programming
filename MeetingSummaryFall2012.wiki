@@ -1,6 +1,5 @@
 #labels Reference
-Summary of Fall 2012 R Group meetings by date
-
+Summary of Fall 2012 R Group meetings<br>
 *Click date to download script file*
 
 = [http://unm-r-programming.googlecode.com/files/R_group_05_Oct_2012.R 05 Oct 2012] =
@@ -18,9 +17,8 @@ Summary of Fall 2012 R Group meetings by date
     # print()
     # debug()
   * Returning values from functions with return()
-  * How to identify and pick out columns from a dataframe, and then save them to a file ([http://unm-r-programming.googlecode.com/files/20120921_tdl_r-script.R script file here])
-  *  Timeseries data file for next week [http://unm-r-programming.googlecode.com/files/tdl_subset.csv
-is here].
+  * How to identify and pick out columns from a dataframe, and then save them to a file ( [http://unm-r-programming.googlecode.com/files/20120921_tdl_r-script.R script file here] )
+  *  Timeseries data file for next week ( [http://unm-r-programming.googlecode.com/files/tdl_subset.csv download here] )
 
 = [http://unm-r-programming.googlecode.com/files/2012-09-14.R 14 Sep 2012] =
     * Loading in data from bird dataset (see above for link).
@@ -35,7 +33,7 @@ is here].
   * More on lattice for graphing.  
   * Download the Sarkar book, title: "Lattice: multivariate data visualization in R" from UNM Libros (it's free, but you have to download it chapter by chapter).
   * What are factors, and why do we care?
-  * Download the bird morphology dataset for use in future meetings [here http://unm-r-programming.googlecode.com/files/bird_morphology.csv]
+  * Bird morphology dataset for use in future meetings ( [http://unm-r-programming.googlecode.com/files/bird_morphology.csv download here] ).
 
 = [http://unm-r-programming.googlecode.com/files/R_group_31_Aug_2012.R 31 August 2012] =
   * Introductions
