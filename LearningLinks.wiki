@@ -24,3 +24,4 @@
 
 = Other Languages =
  * Matlab -- the [http://www.math.umaine.edu/~hiebeler/comp/matlabR.html definitive reference] on translating from R to Matlab, and vise versa.
+ * Matlab -- A detailed comparison of differences, available free to UNM patrons: http://www.springerlink.com/content/g0673qq11172u44j/
