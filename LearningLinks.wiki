@@ -21,3 +21,6 @@
 
 = R Studio = 
  * A great list of keyboard shortcuts for using R Studio: http://rstudio.org/docs/using/keyboard_shortcuts
+
+= Other Languages =
+ * Matlab -- the [http://www.math.umaine.edu/~hiebeler/comp/matlabR.html definitive reference] on translating from R to Matlab, and vise versa.
