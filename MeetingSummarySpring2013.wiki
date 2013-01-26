@@ -1,0 +1,23 @@
+#labels Reference
+Summary of Spring 2013 Meetings<br>
+*Click date to download script file*
+
+= [http://unm-r-programming.googlecode.com/files/R_group_25_Jan_2013.R 25 Jan 2013] =
+  * Different plotting systems in R
+    # Base graphics: plot(x,y)
+    # Lattice: xyplot(y~x, data)
+    # ggplot2: ggplot(data, aes(x=x, y=y)) + geom_point()
+    # Both lattice and ggplot are based on the grid package
+  * Intro to ggplot with bird mophology dataset
+  * Tab-based autocompletion in Rstudio
+  * Cool ggplot tricks:  
+    # facet_wrap()
+    # geom_smooth()
+
+= [http://unm-r-programming.googlecode.com/files/R_group_18_Jan_2013.R 18 Jan 2013] =
+  * Introductions.
+  * Mark Holstadt's dataset -- excel vs. R!
+  * Intro to data types in R
+    # Vectors: atomic mode
+    # Lists: arbitrary collection of objects
+    # Data.frames: special lists, each list element has same length
