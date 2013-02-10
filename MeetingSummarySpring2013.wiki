@@ -2,6 +2,12 @@
 Summary of Spring 2013 Meetings<br>
 *Click date to download script file*
 
+= [http://unm-r-programming.googlecode.com/files/R_group_8_Feb_2013.Rnw 8 Feb 2013] =
+  * [http://unm-r-programming.googlecode.com/files/R_group_8_Feb_2013.pdf PDF of Rnw file]
+  * Discussion of color and plotting characters
+  * Introduction to knitr, Rstudio
+  * Reading in weather data, dealing with dates.
+
 = [http://unm-r-programming.googlecode.com/files/R_group_25_Jan_2013.R 25 Jan 2013] =
   * Different plotting systems in R
     # Base graphics: plot(x,y)
