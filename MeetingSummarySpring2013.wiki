@@ -4,6 +4,7 @@ Summary of Spring 2013 Meetings<br>
 
 = [http://unm-r-programming.googlecode.com/files/R_group_8_Feb_2013.Rnw 8 Feb 2013] =
   * A working LaTeX installation is required!  Get it here: http://www.latex-project.org/ftp.html
+  * In Rstudio, go to the menu [Tools -> Options -> Sweave] and set "Weave Rnw files using:" to "knitr".
   * [http://unm-r-programming.googlecode.com/files/R_group_8_Feb_2013.pdf PDF of Rnw file]
   * Discussion of color and plotting characters
   * Introduction to knitr, Rstudio
