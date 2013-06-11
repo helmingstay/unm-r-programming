@@ -25,8 +25,20 @@ pr.species.season.shore = ddply(pr.birds, c('Decimal.Longitude', 'Decimal.Latitu
     }, .progress='text')
 
 
-pr.species.season = ddply(pr.birds, c('Decimal.Longitude', 'Decimal.Latitude', 'Date', 'season'), 
+pr.species.season = ddply(pr.birds, c('Decimal.Longitude', 'Decimal.Latitude', 'season'), 
     function(x) {
         ret = data.frame(nspecies=length(unique(factor(x$Scientific.Name))))
         return(ret)
     }, .progress='text')
+
+pr.obs.season = ddply(pr.birds, c('Decimal.Longitude', 'Decimal.Latitude', 'season'), 
+    function(x) {
+        ret = data.frame(obs_id=unique(factor(x$Sampling.Event.Identifier)),nspec= length(levels(factor(x$Scientific.Name))))
+        return(ret)
+    }, .progress='text')
+
+pr.obs.total = ddply(pr.birds, c('Decimal.Longitude', 'Decimal.Latitude'), 
+    function(x){
+        ret = data.frame(obs_id=unique(factor(x$Sampling.Event.Identifier)),nspec= length(levels(factor(x$Scientific.Name))))
+        return(ret)
+})        
