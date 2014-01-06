@@ -1,6 +1,7 @@
 \documentclass[letterpaper,12pt]{article}
 
-\usepackage[cm]{fullpage}
+%% on ubuntu requires texlive-latex-extra??
+%\usepackage[cm]{fullpage}
 
 % define the title, author, date
 \title{Grease blocks sewers more frequently in cold weather\\
@@ -17,7 +18,7 @@
 # Code to set up knitr settings and libraries used every time
 # set global chunk options
 #opts_chunk$set(fig.align='center', concordance=TRUE, tidy=FALSE, include=T, message=F)
-options(replace.assign=TRUE, width=50)
+options(replace.assign=TRUE, width=50, tidy=F)
 ## Printing options default
 options(digits=3)
 print(pi)
@@ -34,7 +35,7 @@ print(pi)
 
 \section{Monthly low temperature preducts sewage temperature}
 
-<<libraries, include=FALSE>>=
+<<libraries, include=F>>=
 require(lattice)
 require(plyr)
 require(reshape2)
@@ -57,16 +58,21 @@ sewer$day <- as.Date(sewer$date)
 str(sewer)
 @
 
-<<size='footnotesize', echo=FALSE>>=
+%% I've changed the next 2 blocks to eval=F
+%% Pending new data
+<<sewer_temp, size='footnotesize', echo=FALSE, eval=F>>=
 # read in sewer temperature data
+## !!Need this file 
+## Will be changed anyway using updated data...
 sewtempmeas <- read.table("~/Documents/Spring 2013/R Group/sewtempmeas.csv", header=T, quote="\"", sep='*')
 names(sewtempmeas) <- c('month', 'hi', 'lo', 'temp')
 sewtempmeas[,2:4] <- fahrenheit.to.celsius(sewtempmeas[,2:4])
 @
 
+%% R2 should be programmatic, e.g. \Sexpr{} from the regression object.??
 Monthly low temperature predicts sewage temperature. The intercept is non-zero and scaling is sublinear. Model $R^2 = 0.93$.
 
-<<size='footnotesize', tidy=FALSE, results='asis', echo=FALSE, fig.height=4, fig.cap='Air temperature and sewage temperature', fig.pos='h'>>=
+<<size='footnotesize', tidy=FALSE, results='asis', echo=FALSE, fig.height=4, fig.cap='Air temperature and sewage temperature', fig.pos='h', eval=F>>=
 # regression model
 lm.sewtemp.lo <- lm(temp ~ lo, data=sewtempmeas)
 # sewer is warmer than min air temp w/ sublinear scaling
@@ -179,7 +185,7 @@ pr2 <- with(sewer.glm.qpois, (null.deviance-deviance)/null.deviance)
 paste('Pseudo $R^2$ = ', pr2)
 @
 
-<<a, include=FALSE>>=
+<<lm_diag, include=FALSE>>=
 ## lm Diagnostic plots all in one figure
 #layout(matrix(1:4, nrow=2))
 ## Diagnostic plots
@@ -318,7 +324,7 @@ This difference was significantly different (Wilcoxon rank sum test: $W = 118061
 
 \section{No difference in the diameter of pipes blocked by grease versus other blockages}
 
-<<include=FALSE>>=
+<<pipe_diam, include=FALSE>>=
 w.diameter <- wilcox.test(sewer.weather$PIPE_DIAMETER ~ sewer.weather$grease)
 w.diameter
 
@@ -331,6 +337,8 @@ median(sewer.weather$PIPE_DIAMETER[sewer.weather$grease==F], na.rm=T)
 # print(pp)
 @
 
+%% How did you compute the following?
+%% !!Do this programmatically - compute in a chunk and then place in text w/ \Sexpr{}
 Both samples had a median of 8 (units?) and did not significantly differ (Wilcoxon rank sum test: $W = 84874.5$, $p = 0.44)$.
 
 \end{document}
