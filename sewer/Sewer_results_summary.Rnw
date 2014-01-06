@@ -1,0 +1,337 @@
+\documentclass[letterpaper,12pt]{article}
+
+\usepackage[cm]{fullpage}
+
+% define the title, author, date
+\title{Grease blocks sewers more frequently in cold weather\\
+\large UNM~R~Programming~Group: Albuquerque~Sewer~Data~Project}
+\author{Josh Nightingale, Christian Gunning, \ldots}
+\date{\today}
+
+%% Latex packages
+\usepackage{hyperref}
+
+\begin{document}
+
+<<setup, include=FALSE, cache=FALSE>>=
+# Code to set up knitr settings and libraries used every time
+# set global chunk options
+#opts_chunk$set(fig.align='center', concordance=TRUE, tidy=FALSE, include=T, message=F)
+options(replace.assign=TRUE, width=50)
+## Printing options default
+options(digits=3)
+print(pi)
+#set.seed(76543); # recompile will have same random numbers
+@
+
+% generates the title
+\maketitle
+
+% insert the table of contents
+\tableofcontents
+
+\clearpage
+
+\section{Monthly low temperature preducts sewage temperature}
+
+<<libraries, include=FALSE>>=
+require(lattice)
+require(plyr)
+require(reshape2)
+require(xts)
+require(xtable) # for tables
+require(weathermetrics) # for converting to SI units
+require(ggplot2)
+@
+
+<<read_data, size='footnotesize', include=FALSE>>=
+## 10-40 near miss
+## 10-42 any spill
+## 10-48 property damage 
+
+sewer <- read.csv('http://unm-r-programming.googlecode.com/files/new-ABQ-sewer.csv')
+## Convert reporting date column into time-based object
+sewer$date <- as.POSIXct( sewer$REPORTDATE, format='%m/%d/%Y %H:%M')
+sewer$day <- as.Date(sewer$date)
+## Inspect
+str(sewer)
+@
+
+<<size='footnotesize', echo=FALSE>>=
+# read in sewer temperature data
+sewtempmeas <- read.table("~/Documents/Spring 2013/R Group/sewtempmeas.csv", header=T, quote="\"", sep='*')
+names(sewtempmeas) <- c('month', 'hi', 'lo', 'temp')
+sewtempmeas[,2:4] <- fahrenheit.to.celsius(sewtempmeas[,2:4])
+@
+
+Monthly low temperature predicts sewage temperature. The intercept is non-zero and scaling is sublinear. Model $R^2 = 0.93$.
+
+<<size='footnotesize', tidy=FALSE, results='asis', echo=FALSE, fig.height=4, fig.cap='Air temperature and sewage temperature', fig.pos='h'>>=
+# regression model
+lm.sewtemp.lo <- lm(temp ~ lo, data=sewtempmeas)
+# sewer is warmer than min air temp w/ sublinear scaling
+xtable(coef(summary(lm.sewtemp.lo)), digits=7) 
+# intercept is pretty tight; CIs of slope estimate exclude 1
+xtable(confint(lm.sewtemp.lo)) 
+
+### regress sewer temp on monthly low temperature
+p <- ggplot(sewtempmeas, aes(x=lo, y=temp)) + geom_point(shape=21) + 
+  geom_smooth(method=lm) + xlab('Monthly average low temperature (°C)') + 
+  ylab('Sewer temperature (°C)') + theme_bw() + 
+  theme(panel.grid.major=element_blank(),panel.grid.minor=element_blank())
+print(p) # looks good
+@
+
+This demonstrates that we can safely use air temperature as a proxy for sewer temperature.
+
+\clearpage
+
+\section{Weekly mean temperature predicts total number of sewer blockages that week}
+
+<<temp_data, size='footnotesize', include=FALSE>>=
+weather <- read.csv('http://unm-r-programming.googlecode.com/files/kabq-2009-2013.csv')
+## NOTE -- PrecipIn column has been edited, T changed to -1!
+## Let's change it to a really small value to make it plot nice
+## But still be identifiable
+weather <- within(weather, PrecipIn[PrecipIn == -1 ] <- 1e-6)
+## Turn factor into date    
+weather$day <- as.Date(weather$MST)
+## Convert Fahrenheit into Celsius
+weather[,2:5] <- fahrenheit.to.celsius(weather[,2:5])
+## Inspect
+str(weather)
+## Melt data
+weather.melt <- melt( weather, id.vars=c('day', 'MST'))
+## Inspect
+#str(weather.melt)
+@
+
+<<sewer_weather, include=FALSE>>=
+## combine weather and sewer data in one dataset
+intersect(colnames(weather), colnames(sewer))
+sewer.weather <- join(sewer, weather, type='left')
+#head(sewer.weather, 3)
+@
+
+<<xts, fig.cap='Weather data as a timeseries object', size='footnotesize', include=FALSE>>=
+# xts(data, timebase), timebase is a vector that can be turned into a POSIXct
+timebase <- as.POSIXct( weather$day) + 7*60*60 # correct time zone (add 7 hours in seconds)
+
+weather.xts <- xts(subset(weather, select=-c(MST, day)), timebase) # remove non-numeric columns (MST and the date)
+#head(weather.xts, 3)
+@ 
+
+<<sewer_fail_roll, size='footnotesize', include=FALSE>>=
+## Add day year, week, and year from the POSIXct date
+sewer$doy <- as.numeric(strftime(sewer$date, format='%j'))
+sewer$week <- sewer$doy %/% 7
+sewer$year <- as.numeric(strftime(sewer$date, format='%Y'))
+#head(sewer, 3)
+
+## Number of problems for each week
+sewer.fail.week = ddply( sewer, c('year', 'week'),
+    function(x) { 
+      data.frame(N=nrow(x))  } 
+    ## show progress
+    #.progress='text'
+)
+#head(sewer.fail.week)
+
+## Get weekly mean temp
+temp.week <- weather.xts$TempMeanF
+temp.week <- apply.weekly(temp.week, FUN=mean)
+
+## week and year from xts .index functions
+## see ?.index for details
+temp.week$week <- .indexyday(temp.week) %/% 7
+temp.week$year <- .indexyear(temp.week) + 1900
+
+## Turn into data.frame and join with sewer data
+temp.week.df <- data.frame(temp.week)
+#head(temp.week.df, 3)
+## Full or "outer" join -- keep weather data for weeks without problems
+sewer.join <- join(sewer.fail.week, temp.week.df, type='full')
+#head(sewer.join, 3)
+
+## Weeks with no problems 
+sewer.join$N[is.na(sewer.join$N)] <- 0
+## Why are there remaining NAs in TempMeanF?
+sewer.join <- na.omit(sewer.join)
+@
+
+<<weeklm, fig.cap='Linear model diagnostic plots.', size='footnotesize', message=FALSE>>=
+## Just look at 10-40 (most of the data)
+## Count data, assume y is poisson distributed
+sewer.glm.pois <- glm(N ~ TempMeanF, data=sewer.join, family=poisson)
+
+## Test for overdispersion
+require(AER)
+dispersiontest(sewer.glm.pois)
+@
+
+The Poisson GLM is significantly overdispersed, so use quasipoisson family:
+
+<<week.lm, fig.cap='Linear model diagnostic plots.', size='footnotesize', message=FALSE, results='asis', echo=FALSE>>=
+sewer.glm.qpois <- glm(N ~ TempMeanF, data=sewer.join, family=quasipoisson)
+xtable(summary(sewer.glm.qpois), digits=6)
+## Quasi-R2 for glm
+pr2 <- with(sewer.glm.qpois, (null.deviance-deviance)/null.deviance)
+paste('Pseudo $R^2$ = ', pr2)
+@
+
+<<a, include=FALSE>>=
+## lm Diagnostic plots all in one figure
+#layout(matrix(1:4, nrow=2))
+## Diagnostic plots
+#plot(sewer.glm.qpois)
+## Reset layout
+#layout(1)
+@
+
+<<plotglm, size='footnotesize', echo=FALSE, fig.pos='h', fig.cap='Air temperature and total sewer blockages', fig.height=4>>=
+## plotting glm
+p <- ggplot(sewer.join)
+p <- p + geom_point(aes(x=TempMeanF, y=N), shape=21)
+p <- p + stat_smooth(method='glm', family='quasipoisson', aes(x=TempMeanF, y=N)) + 
+  xlab('Mean weekly temperature (°C)') + ylab('Number of incidents per week')
+p <- p + theme_bw() + 
+  theme(panel.grid.major=element_blank(),panel.grid.minor=element_blank())
+print(p)
+@
+
+\clearpage
+
+\section{Temperature predicts only those blockages caused by grease}
+
+If we make a GLM of only those blockages caused by grease, and another for all other (i.e., non-grease) blockages, temperature is only a significant predictor of grease blockages.
+
+<<greasey, size='footnotesize', include=FALSE, message=FALSE>>=
+## Number of problems for each code and week
+.grease <- subset(sewer, grepl('GR', CAUSE))
+head(.grease)
+sewer.fail.grease = ddply( .grease, c('year', 'week'),
+    function(x) { 
+      data.frame(N=nrow(x))  } 
+    ## show progress
+    #.progress='text'
+)
+head(sewer.fail.grease)
+
+sewer.join1 <- join(sewer.fail.grease, temp.week.df, type='full')
+head(sewer.join1, 3)
+
+## Weeks with no problems 
+sewer.join1$N[is.na(sewer.join1$N)] <- 0
+## Why are there remaining NAs in TempMeanF?
+sewer.join1 <- na.omit(sewer.join1)
+
+grease.glm.qpois <- glm(N ~ TempMeanF, data=sewer.join1, family=quasipoisson)
+summary(grease.glm.qpois)
+
+# pseudo R^2
+pr2 <- with(grease.glm.qpois, (null.deviance-deviance)/null.deviance) 
+@
+
+<<echo=FALSE, results='asis'>>=
+xtable(summary(grease.glm.qpois), caption='Quasipoisson GLM predicting blockages caused by grease', digits=8)
+paste('Pseudo $R^2$ = ', pr2)
+@
+
+<<greaseplot, include=FALSE>>=
+## make plot
+q <- ggplot(sewer.join1)
+q <- q + geom_point(aes(x=TempMeanF, y=N), shape=21)
+q <- q + stat_smooth(method='glm', family='quasipoisson', aes(x=TempMeanF, y=N)) + 
+  xlab('Mean weekly temperature (°C)') + ylab('Number of grease-caused incidents per week')
+q <- q + theme_bw() + 
+  theme(panel.grid.major=element_blank(),panel.grid.minor=element_blank())
+q <- q + annotate("text", x=-5.5, y=14, label = 'A')
+@
+
+<<notgreasey, size='footnotesize', echo=FALSE, message=FALSE>>=
+## Number of problems for each code and week
+sewer$grease <- grepl('GR', sewer$CAUSE)
+#head(sewer$grease)
+
+notgrease <- subset(sewer, grease==F)
+sewer.fail.notgrease = ddply(notgrease, c('year', 'week'),
+    function(x) { 
+      data.frame(N=nrow(x))  } 
+    ## show progress
+    #.progress='text'
+)
+#head(sewer.fail.grease)
+
+sewer.join2 <- join(sewer.fail.notgrease, temp.week.df, type='full')
+#head(sewer.join2, 3)
+
+## Weeks with no problems 
+sewer.join2$N[is.na(sewer.join2$N)] <- 0
+## Why are there remaining NAs in TempMeanF?
+sewer.join2 <- na.omit(sewer.join2)
+
+notgrease.glm.qpois <- glm(N ~ TempMeanF, data=sewer.join2, family=quasipoisson)
+#summary(notgrease.glm.qpois)
+## Temperature does not significantly predict non-grease blockages!!
+
+## plot
+
+r <- ggplot(sewer.join2)
+r <- r + geom_point(aes(x=TempMeanF, y=N), shape=21)
+r <- r + stat_smooth(method='glm', family='quasipoisson', aes(x=TempMeanF, y=N)) + 
+  xlab('Mean weekly temperature (°C)') + ylab('Number of incidents not caused by grease')
+r <- r + theme_bw() + 
+  theme(panel.grid.major=element_blank(),panel.grid.minor=element_blank())
+r <- r + annotate("text", x=-5.5, y=9.2, label = 'B')
+#print(r)
+@
+
+<<echo=FALSE, results='asis'>>=
+xtable(summary(notgrease.glm.qpois), caption='Quasipoisson GLM predicting blockages not caused by grease', digits=2)
+
+pr2<-with(notgrease.glm.qpois, (null.deviance-deviance)/null.deviance) 
+paste('Pseudo $R^2$ = ', pr2)
+@
+
+<<gridd, echo=FALSE, fig.pos='h', fig.width=10, fig.height=5, fig.cap='Temperature predicts blockages caused by grease (A) but not other blockages (B)', message=FALSE>>=
+require(gridExtra)
+grid.arrange(q, r, nrow=1)
+@
+
+\clearpage
+
+\section{Days with grease blockages are colder than those with other blockages}
+
+<<include=FALSE>>=
+sewer.weather$grease <- factor(grepl('GR', sewer.weather$CAUSE))
+summary(sewer.weather$grease)
+w.cause <- wilcox.test(sewer.weather$TempMeanF ~ sewer.weather$grease)
+w.cause # significantly different daily temperature on grease-blockage days:
+
+median(sewer.weather$TempMeanF[sewer.weather$grease==T])
+median(sewer.weather$TempMeanF[sewer.weather$grease==F])
+@
+
+The median temperature during days with grease blockages was $10\,^{\circ}\mathrm{C}$ whereas other blockages had an average of $13.9\,^{\circ}\mathrm{C}$.
+
+This difference was significantly different (Wilcoxon rank sum test: $W = 118061$, $p < 0.0003)$.
+
+\section{No difference in the diameter of pipes blocked by grease versus other blockages}
+
+<<include=FALSE>>=
+w.diameter <- wilcox.test(sewer.weather$PIPE_DIAMETER ~ sewer.weather$grease)
+w.diameter
+
+median(sewer.weather$PIPE_DIAMETER[sewer.weather$grease==T], na.rm=T)
+median(sewer.weather$PIPE_DIAMETER[sewer.weather$grease==F], na.rm=T)
+## plot
+# pp <- ggplot(sewer.weather)
+# pp <- pp + geom_point(aes(x=grease, y=PIPE_DIAMETER), position=position_jitter(h=0), shape=21, alpha=0.5)
+# pp <- pp + geom_boxplot(aes(x=grease, y=TempMeanF), alpha=0.5)
+# print(pp)
+@
+
+Both samples had a median of 8 (units?) and did not significantly differ (Wilcoxon rank sum test: $W = 84874.5$, $p = 0.44)$.
+
+\end{document}
+@
