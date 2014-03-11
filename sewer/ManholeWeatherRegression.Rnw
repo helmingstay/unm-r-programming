@@ -1,10 +1,9 @@
 \documentclass[letterpaper,12pt]{article}
-
 \usepackage{amsmath}  % for \eqref, and others
-\usepackage[cm]{fullpage}
-\usepackage{fontspec,xunicode}
-\setmainfont{EB Garamond}
-\setmonofont{Andale Mono}
+%\usepackage[cm]{fullpage}
+%\usepackage{fontspec,xunicode}
+%\setmainfont{EB Garamond}
+%\setmonofont{Andale Mono}
 \renewcommand\thesection{\arabic{section}}
 \renewcommand\thesubsection{\thesection.\alph{subsection}}
 
@@ -20,83 +19,121 @@ Sewer and Surface Temperature Regression}
 # Code to set up knitr settings and libraries used every time
 set.seed(76543); # recompile will have same random numbers
 # set global chunk options
-opts_chunk$set(fig.align='center', fig.show='hold', concordance=TRUE)
+opts_chunk$set(fig.align='center', fig.show='hold', concordance=TRUE, tidy=T)
 options(replace.assign=TRUE, width=70)
 library(xtable)
+library(plyr)
+library(HH) # for fancy ancova plot
+library(lme4) # for glmer - mixed effects (nested interceptors / manholes)
 @
 
 % generates the title
 \maketitle
 % A percent sign preceeds LaTeX comments.
-<<readin, echo=TRUE, size='footnotesize', fig=TRUE, include=TRUE>>=
-sewtemp <- read.csv("~/Documents/R Scripts/R Club/Seweranalysesforpaper/Markrawsewertempgrabs/allgrabdata_datefix.csv")
+<<readin, echo=TRUE, size='footnotesize', include=TRUE>>=
+## Define column classes to read data 
+## there are text comments in line with data
+## force measurement cols to read as numeric
+# Interceptor,Manhole,Date,Time,Temp,ph,Tot. Sulfide,Dis. Sulfide,Tot. Iron,Ferrous Fe,,
+.colClasses <- c(Interceptor='factor', Manhole='factor', Date='character', Time='character', Temp='numeric' ,ph='NULL', Tot.Sulfide='NULL', Dis.Sulfide='NULL', Tot.Iron='NULL', Ferrous.Fe='NULL')
+## read grab-data
+## path relative to current dir
+#sewtemp <- read.csv("allgrabdata_datefix.csv")
+## !!xian - zip archive (email from josh 3mar14)
+## doesn't contain the above file
+## 
+## 
+sewtemp <- read.table("allgrabdata_datefix.csv", sep=',', header=T, comment.char='#', colClasses=.colClasses)
+## xian - posixct gives a full date spec, 
+## can't use it *just* for time
+## we're not really using this though
+## do this *before* date col 
+sewtemp$DateTime <- with(sewtemp, 
+   as.POSIXct( paste(Date, Time),
+        format='%d-%m-%y %H:%M'
+))
 sewtemp$Date <- as.POSIXct(sewtemp$Date, format='%d-%m-%y') # fix dates
-sewtemp$Time <- as.POSIXct(sewtemp$Time, format='%H:%M')    # fix times
-require(weathermetrics) # fix units of Temp
+library(weathermetrics) # fix units of Temp
 # some Temperatures have been entered as Celsius; most are Fahrenheit
 sewtemp$Temp[which(sewtemp$Temp > 40)] <- fahrenheit.to.celsius(sewtemp$Temp[which(sewtemp$Temp > 40)])
 sewtemp <- unique(sewtemp) # remove duplicate entries
-sewtemp$ph[sewtemp$ph > 14] <- NA # remove erroneous entries
+#sewtemp$ph[sewtemp$ph > 14] <- NA # remove erroneous entries
 str(sewtemp) # inspect
 @
 
-<<jointoweather, echo=TRUE, size='footnotesize', fig=TRUE, include=TRUE>>=
+<<jointoweather, echo=TRUE, size='footnotesize', include=TRUE>>=
 ## read weather
 weather <- read.csv('http://unm-r-programming.googlecode.com/files/kabq-2009-2013.csv')
 # Turn factor into date    
 weather$Date <- as.POSIXct(weather$MST, format='%Y-%m-%d')
 # Convert Fahrenheit into Celsius
 #require(weathermetrics)
-weather[,2:5] <- fahrenheit.to.celsius(weather[,2:5])
+.wcols <- c('TempMaxF', 'TempMeanF', 'TempMinF', 'DewMeanF')
+weather[,.wcols] <- fahrenheit.to.celsius(weather[,.wcols])
+#weather <- rename(weather, c(MST = 
 # Inspect
 str(weather)
 
 ## join to sewer temperatures
-intersect(colnames(weather), colnames(sewtemp)) # both contain 'Date
-require(plyr)
-sewer.weather <- join(sewtemp, weather, type='inner')
+#intersect(colnames(weather), colnames(sewtemp)) # both contain 'Date
+sewer.weather <- join(sewtemp, weather)
+summary(sewer.weather)
+## inspect, explicitly remove NAs
+sewer.weather <- na.omit(sewer.weather)
+## rename sewer temp col
+sewer.weather <- rename(sewer.weather, c(Temp='SewTempF'))
+
+## xian - changed to merge, added suffixes
 # head(sewer.weather)
 @
 
-<<sewweatherreg, echo=TRUE, size='footnotesize', fig=TRUE, include=TRUE, fig.height=4, fig.width=6>>=
-lm.sew.temp <- lm(Temp ~ TempMeanF, data=sewer.weather)
-nobs(lm.sew.temp) # n=1259
-summary(lm.sew.temp) # all v sig, high R^2
-plot(sewer.weather$TempMeanF, sewer.weather$Temp)
-abline(lm.sew.temp)# add trendline
-rug(sewer.weather$TempMeanF); rug(sewer.weather$Temp, side=2)
-@
-
-<<sewweathggplot2, echo=TRUE, size='footnotesize', fig=TRUE, include=TRUE, fig.height=4, fig.width=6>>=
+<<sewweathggplot2, echo=TRUE, size='footnotesize', include=TRUE, fig.height=4, fig.width=6>>=
 # plot with ggplot
 require(ggplot2)
 p <- ggplot(sewer.weather)
-p <- p + geom_point(aes(x=TempMeanF, y=Temp, colour=Interceptor), shape=21)
-p <- p + geom_smooth(aes(x=TempMeanF, y=Temp), method='lm')
+p <- p + geom_point(aes(x=TempMeanF, y=SewTempF, colour=Interceptor), shape=21)
+p <- p + geom_smooth(aes(x=TempMeanF, y=SewTempF, colour=Interceptor), method='lm')
 p <- p + theme_bw()
 print(p)
 @
 
-<<interceps, echo=TRUE, size='footnotesize', fig=TRUE, include=TRUE, fig.height=4, fig.width=6>>=
+<<interceps, echo=TRUE, size='footnotesize', include=TRUE, fig.height=4, fig.width=6>>=
 # check for difs between interceptros and manholes
 require(lattice)
-xyplot(sewer.weather$Temp ~ sewer.weather$TempMeanF | sewer.weather$Interceptor,
-       type=c('p','r')) # plot hist
-lm.temp.ic <- lm(Temp ~ TempMeanF * Interceptor, data=sewer.weather) # test
-summary(lm.temp.ic) # Valley is colder
+xyplot(SewTempF ~ TempMeanF| Interceptor, 
+    data=sewer.weather, type=c('p','r')
+) 
+## xian - different slopes and intercepts
+## not needed
+lm.temp.ic <- lm(SewTempF ~ TempMeanF * Interceptor, data=sewer.weather) # test
+## xian - shared intercept, different slopes
+## best model??
+lm.temp.ic1 <- lm(SewTempF ~ TempMeanF / Interceptor, data=sewer.weather) # test
+## xian - shared slope, different intercepts
+lm.temp.ic2<- lm(SewTempF ~ TempMeanF + Interceptor, data=sewer.weather) # test
+summary(lm.temp.ic) # Valley is colder ## xian - neat!
+## alternate model specifications
+summary(lm.temp.ic1) 
+summary(lm.temp.ic2) 
 @
 
-<<ancova, echo=TRUE, size='footnotesize', fig=TRUE, include=TRUE, fig.height=4.5, fig.width=8>>=
-require(HH) # for fancy ancova plot
-ancova(Temp ~ TempMeanF * Interceptor, data=sewer.weather)
+<<ancova, echo=TRUE, size='footnotesize', include=TRUE, fig.height=4.5, fig.width=8>>=
+ancova(SewTempF ~ TempMeanF * Interceptor, data=sewer.weather)
 @
 
-<<manholes, echo=TRUE, size='footnotesize', fig=TRUE, include=TRUE, fig.height=4, fig.width=6>>=
-
-xyplot(sewer.weather$Temp ~ sewer.weather$TempMeanF | sewer.weather$Manhole, 
-                 type=c('p','r'))
-lm.temp.mc <- lm(Temp ~ TempMeanF + Manhole, data=sewer.weather)
+<<manholes, echo=TRUE, size='footnotesize', include=TRUE, fig.height=4, fig.width=6>>=
+xyplot(SewTempF ~ TempMeanF | Manhole, sewer.weather,
+                 type=c('p','r')
+)
+lm.temp.mc0 <- lm(SewTempF ~ TempMeanF, data=sewer.weather)
+lm.temp.mc <- lm(SewTempF ~ TempMeanF / Interceptor, data=sewer.weather)
+lm.temp.mc1 <- lm(SewTempF ~ TempMeanF / Manhole, data=sewer.weather)
+lm.temp.mc2 <- lmer(SewTempF ~ TempMeanF + (1|Interceptor/ Manhole), data=sewer.weather)
+lm.temp.mc2a <- lmer(SewTempF ~ TempMeanF + (1|Interceptor), data=sewer.weather)
+lm.temp.mc2b <- lmer(SewTempF ~ TempMeanF + (1|Manhole), data=sewer.weather)
+lm.temp.mc3 <- lmer(SewTempF ~ TempMeanF / Interceptor  + (1|Manhole), data=sewer.weather)
 summary(lm.temp.mc)
+summary(lm.temp.mc1)
 @
 
 \end{document}
