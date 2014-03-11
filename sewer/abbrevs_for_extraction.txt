@@ -1,0 +1,32 @@
+Interceptors:
+Valley (142A)
+Westside (2024)
+Edith
+
+Manholes:
+florken = Floretta & Kensington ( MH # E 14 - 931) / Kensington & Florretta
+12motel = 12th. & Motel ( MH # G 14 - 802) (NB not a real location!) - changed to csfour4
+12stove = 12th. & Stover ( MH # K 13 - 572)
+seconds = 2nd. St  MH # L 14 - 623) / 2nd st. & Southern
+yuccesp = Yucca & Esperonza  / Yucca & Esperanza ( 57th & Avalon starting 3-21-12 )
+oldcoor = Old Coors (North of Gonzales) ( MH # K11-576) / Old Coors South of Churchill (North of Gonzales as of 21-Mar-07)
+blakeco = Blake & Coors ( MH # N10-581) / Coors & Blake
+ltwenty = Lift station 20 ( MH # P12 - 845) - 
+plantin = Plant Influent ( MH # PPH III Distribution Box) / TP2.3X  (Plant Influent)
+willloc = Willow & Locust ( MH # E 16 - 811)
+edicord = Edith & Cordero ( MH # J15 - 205)
+broadwa = Broadway ( MH # N14 - 364)
+csfour4 = CS # 4 = 12motel!!
+tp21val = TP2.1 Valley
+oldcoso = Old Coors before LS # 1
+tijeras = TP2.1 ( Tijeras )
+
+Measures
+Date
+Time
+Temp (F)
+pH
+Tot.sulphide (mg/L)
+Dis.sulphide (mg/L)
+Tot. iron (mg/L)
+Ferrous iron (mg/L)

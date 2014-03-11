@@ -1,0 +1,102 @@
+\documentclass[letterpaper,12pt]{article}
+
+\usepackage{amsmath}  % for \eqref, and others
+\usepackage[cm]{fullpage}
+\usepackage{fontspec,xunicode}
+\setmainfont{EB Garamond}
+\setmonofont{Andale Mono}
+\renewcommand\thesection{\arabic{section}}
+\renewcommand\thesubsection{\thesection.\alph{subsection}}
+
+% define the title, author, date
+\title{R Club Sewer Project\\
+Sewer and Surface Temperature Regression}
+\author{Josh Nightingale, Christian Gunninng and Mark Holstad}
+\date{\today}
+
+\begin{document}
+
+<<setup, include=FALSE, cache=FALSE>>=
+# Code to set up knitr settings and libraries used every time
+set.seed(76543); # recompile will have same random numbers
+# set global chunk options
+opts_chunk$set(fig.align='center', fig.show='hold', concordance=TRUE)
+options(replace.assign=TRUE, width=70)
+library(xtable)
+@
+
+% generates the title
+\maketitle
+% A percent sign preceeds LaTeX comments.
+<<readin, echo=TRUE, size='footnotesize', fig=TRUE, include=TRUE>>=
+sewtemp <- read.csv("~/Documents/R Scripts/R Club/Seweranalysesforpaper/Markrawsewertempgrabs/allgrabdata_datefix.csv")
+sewtemp$Date <- as.POSIXct(sewtemp$Date, format='%d-%m-%y') # fix dates
+sewtemp$Time <- as.POSIXct(sewtemp$Time, format='%H:%M')    # fix times
+require(weathermetrics) # fix units of Temp
+# some Temperatures have been entered as Celsius; most are Fahrenheit
+sewtemp$Temp[which(sewtemp$Temp > 40)] <- fahrenheit.to.celsius(sewtemp$Temp[which(sewtemp$Temp > 40)])
+sewtemp <- unique(sewtemp) # remove duplicate entries
+sewtemp$ph[sewtemp$ph > 14] <- NA # remove erroneous entries
+str(sewtemp) # inspect
+@
+
+<<jointoweather, echo=TRUE, size='footnotesize', fig=TRUE, include=TRUE>>=
+## read weather
+weather <- read.csv('http://unm-r-programming.googlecode.com/files/kabq-2009-2013.csv')
+# Turn factor into date    
+weather$Date <- as.POSIXct(weather$MST, format='%Y-%m-%d')
+# Convert Fahrenheit into Celsius
+#require(weathermetrics)
+weather[,2:5] <- fahrenheit.to.celsius(weather[,2:5])
+# Inspect
+str(weather)
+
+## join to sewer temperatures
+intersect(colnames(weather), colnames(sewtemp)) # both contain 'Date
+require(plyr)
+sewer.weather <- join(sewtemp, weather, type='inner')
+# head(sewer.weather)
+@
+
+<<sewweatherreg, echo=TRUE, size='footnotesize', fig=TRUE, include=TRUE, fig.height=4, fig.width=6>>=
+lm.sew.temp <- lm(Temp ~ TempMeanF, data=sewer.weather)
+nobs(lm.sew.temp) # n=1259
+summary(lm.sew.temp) # all v sig, high R^2
+plot(sewer.weather$TempMeanF, sewer.weather$Temp)
+abline(lm.sew.temp)# add trendline
+rug(sewer.weather$TempMeanF); rug(sewer.weather$Temp, side=2)
+@
+
+<<sewweathggplot2, echo=TRUE, size='footnotesize', fig=TRUE, include=TRUE, fig.height=4, fig.width=6>>=
+# plot with ggplot
+require(ggplot2)
+p <- ggplot(sewer.weather)
+p <- p + geom_point(aes(x=TempMeanF, y=Temp, colour=Interceptor), shape=21)
+p <- p + geom_smooth(aes(x=TempMeanF, y=Temp), method='lm')
+p <- p + theme_bw()
+print(p)
+@
+
+<<interceps, echo=TRUE, size='footnotesize', fig=TRUE, include=TRUE, fig.height=4, fig.width=6>>=
+# check for difs between interceptros and manholes
+require(lattice)
+xyplot(sewer.weather$Temp ~ sewer.weather$TempMeanF | sewer.weather$Interceptor,
+       type=c('p','r')) # plot hist
+lm.temp.ic <- lm(Temp ~ TempMeanF * Interceptor, data=sewer.weather) # test
+summary(lm.temp.ic) # Valley is colder
+@
+
+<<ancova, echo=TRUE, size='footnotesize', fig=TRUE, include=TRUE, fig.height=4.5, fig.width=8>>=
+require(HH) # for fancy ancova plot
+ancova(Temp ~ TempMeanF * Interceptor, data=sewer.weather)
+@
+
+<<manholes, echo=TRUE, size='footnotesize', fig=TRUE, include=TRUE, fig.height=4, fig.width=6>>=
+
+xyplot(sewer.weather$Temp ~ sewer.weather$TempMeanF | sewer.weather$Manhole, 
+                 type=c('p','r'))
+lm.temp.mc <- lm(Temp ~ TempMeanF + Manhole, data=sewer.weather)
+summary(lm.temp.mc)
+@
+
+\end{document}
