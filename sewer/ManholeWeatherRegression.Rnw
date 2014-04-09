@@ -38,10 +38,6 @@ library(lme4) # for glmer - mixed effects (nested interceptors / manholes)
 .colClasses <- c(Interceptor='factor', Manhole='factor', Date='character', Time='character', Temp='numeric' ,ph='NULL', Tot.Sulfide='NULL', Dis.Sulfide='NULL', Tot.Iron='NULL', Ferrous.Fe='NULL')
 ## read grab-data
 ## path relative to current dir
-#sewtemp <- read.csv("allgrabdata_datefix.csv")
-## !!xian - zip archive (email from josh 3mar14)
-## doesn't contain the above file
-## 
 ## 
 sewtemp <- read.table("allgrabdata_datefix.csv", sep=',', header=T, comment.char='#', colClasses=.colClasses)
 ## xian - posixct gives a full date spec, 
