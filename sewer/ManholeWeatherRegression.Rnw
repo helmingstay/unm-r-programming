@@ -21,8 +21,12 @@ set.seed(76543); # recompile will have same random numbers
 # set global chunk options
 opts_chunk$set(fig.align='center', fig.show='hold', concordance=TRUE, tidy=T)
 options(replace.assign=TRUE, width=70)
-library(xtable)
+library(lattice)
+library(ggplot2)
+library(reshape2)
 library(plyr)
+library(xtable)
+library(weathermetrics) ## F to C
 library(HH) # for fancy ancova plot
 library(lme4) # for glmer - mixed effects (nested interceptors / manholes)
 @
@@ -51,7 +55,8 @@ sewtemp$DateTime <- with(sewtemp,
 sewtemp$Date <- as.POSIXct(sewtemp$Date, format='%d-%m-%y') # fix dates
 library(weathermetrics) # fix units of Temp
 # some Temperatures have been entered as Celsius; most are Fahrenheit
-sewtemp$Temp[which(sewtemp$Temp > 40)] <- fahrenheit.to.celsius(sewtemp$Temp[which(sewtemp$Temp > 40)])
+.F.rows <- which(sewtemp$Temp > 40)
+sewtemp$Temp[.F.rows] <- fahrenheit.to.celsius(sewtemp$Temp[.F.rows])
 sewtemp <- unique(sewtemp) # remove duplicate entries
 #sewtemp$ph[sewtemp$ph > 14] <- NA # remove erroneous entries
 str(sewtemp) # inspect
@@ -59,13 +64,19 @@ str(sewtemp) # inspect
 
 <<jointoweather, echo=TRUE, size='footnotesize', include=TRUE>>=
 ## read weather
-weather <- read.csv('http://unm-r-programming.googlecode.com/files/kabq-2009-2013.csv')
+weather <- read.csv('http://unm-r-programming.googlecode.com/git/sewer/abq-temps-2005-2014.csv')
+## shorten colnames for convenience
+colnames(weather) <- gsub('.Temperature', 'Temp', colnames(weather))
+
+#weather <- read.csv('http://unm-r-programming.googlecode.com/files/kabq-2009-2013.csv')
 # Turn factor into date    
 weather$Date <- as.POSIXct(weather$MST, format='%Y-%m-%d')
 # Convert Fahrenheit into Celsius
-#require(weathermetrics)
-.wcols <- c('TempMaxF', 'TempMeanF', 'TempMinF', 'DewMeanF')
+## find cols containing temp
+.wcols <- grep('TempF', colnames(weather))
 weather[,.wcols] <- fahrenheit.to.celsius(weather[,.wcols])
+## update colnames to reflect C
+colnames(weather) <- gsub('TempF', 'TempC', colnames(weather))
 #weather <- rename(weather, c(MST = 
 # Inspect
 str(weather)
@@ -77,7 +88,7 @@ summary(sewer.weather)
 ## inspect, explicitly remove NAs
 sewer.weather <- na.omit(sewer.weather)
 ## rename sewer temp col
-sewer.weather <- rename(sewer.weather, c(Temp='SewTempF'))
+sewer.weather <- rename(sewer.weather, c(Temp='SewTempC'))
 
 ## xian - changed to merge, added suffixes
 # head(sewer.weather)
@@ -85,51 +96,109 @@ sewer.weather <- rename(sewer.weather, c(Temp='SewTempF'))
 
 <<sewweathggplot2, echo=TRUE, size='footnotesize', include=TRUE, fig.height=4, fig.width=6>>=
 # plot with ggplot
-require(ggplot2)
 p <- ggplot(sewer.weather)
-p <- p + geom_point(aes(x=TempMeanF, y=SewTempF, colour=Interceptor), shape=21)
-p <- p + geom_smooth(aes(x=TempMeanF, y=SewTempF, colour=Interceptor), method='lm')
+p <- p + geom_point(aes(x=MeanTempC, y=SewTempC, colour=Interceptor), shape=21)
+p <- p + geom_smooth(aes(x=MeanTempC, y=SewTempC, colour=Interceptor), method='lm')
 p <- p + theme_bw()
 print(p)
 @
 
-<<interceps, echo=TRUE, size='footnotesize', include=TRUE, fig.height=4, fig.width=6>>=
-# check for difs between interceptros and manholes
-require(lattice)
-xyplot(SewTempF ~ TempMeanF| Interceptor, 
-    data=sewer.weather, type=c('p','r')
-) 
-## xian - different slopes and intercepts
-## not needed
-lm.temp.ic <- lm(SewTempF ~ TempMeanF * Interceptor, data=sewer.weather) # test
-## xian - shared intercept, different slopes
-## best model??
-lm.temp.ic1 <- lm(SewTempF ~ TempMeanF / Interceptor, data=sewer.weather) # test
-## xian - shared slope, different intercepts
-lm.temp.ic2<- lm(SewTempF ~ TempMeanF + Interceptor, data=sewer.weather) # test
-summary(lm.temp.ic) # Valley is colder ## xian - neat!
-## alternate model specifications
-summary(lm.temp.ic1) 
-summary(lm.temp.ic2) 
-@
-
-<<ancova, echo=TRUE, size='footnotesize', include=TRUE, fig.height=4.5, fig.width=8>>=
-ancova(SewTempF ~ TempMeanF * Interceptor, data=sewer.weather)
-@
 
 <<manholes, echo=TRUE, size='footnotesize', include=TRUE, fig.height=4, fig.width=6>>=
-xyplot(SewTempF ~ TempMeanF | Manhole, sewer.weather,
+xyplot(SewTempC ~ MeanTempC | Manhole, sewer.weather,
                  type=c('p','r')
 )
-lm.temp.mc0 <- lm(SewTempF ~ TempMeanF, data=sewer.weather)
-lm.temp.mc <- lm(SewTempF ~ TempMeanF / Interceptor, data=sewer.weather)
-lm.temp.mc1 <- lm(SewTempF ~ TempMeanF / Manhole, data=sewer.weather)
-lm.temp.mc2 <- lmer(SewTempF ~ TempMeanF + (1|Interceptor/ Manhole), data=sewer.weather)
-lm.temp.mc2a <- lmer(SewTempF ~ TempMeanF + (1|Interceptor), data=sewer.weather)
-lm.temp.mc2b <- lmer(SewTempF ~ TempMeanF + (1|Manhole), data=sewer.weather)
-lm.temp.mc3 <- lmer(SewTempF ~ TempMeanF / Interceptor  + (1|Manhole), data=sewer.weather)
-summary(lm.temp.mc)
-summary(lm.temp.mc1)
+@
+
+
+<<ancova, echo=TRUE, size='footnotesize', include=TRUE, fig.height=4.5, fig.width=8>>=
+## First, basic anova shows effect of Interceptor but not Manhole
+anova(lm(SewTempC ~ Manhole, sewer.weather))
+##
+anova(lm(SewTempC ~ Interceptor, sewer.weather))
+
+ancova(SewTempC ~ MeanTempC * Interceptor, data=sewer.weather)
+@
+
+<<model_sew_temp, echo=TRUE, size='footnotesize', include=TRUE>>=
+## build all possible models in named list
+## y = mx + b
+temp.lin.models <- list(
+    null=lm(SewTempC ~ MeanTempC, data=sewer.weather),
+    b.by.interceptor=lm(SewTempC ~ MeanTempC + Interceptor, data=sewer.weather),
+    b.by.manhole=lm(SewTempC ~ MeanTempC + Manhole, data=sewer.weather),
+    m.by.interceptor=lm(SewTempC ~ MeanTempC : Interceptor, data=sewer.weather),
+    m.by.manhole=lm(SewTempC ~ MeanTempC : Manhole, data=sewer.weather),
+    mb.by.interceptor=lm(SewTempC ~ MeanTempC * Interceptor, data=sewer.weather),
+    mb.by.manhole=lm(SewTempC ~ MeanTempC * Manhole, data=sewer.weather)
+)
+## xian - shared intercept, different slopes
+## best model??
+## use maximum likelihood (REML=F) so results are comparable w/anova
+temp.mix.models <- list(
+    rand_both=lmer(SewTempC ~ MeanTempC + (1|Interceptor:Manhole), data=sewer.weather, REML=F),
+    rand_both_1=lmer(SewTempC ~ MeanTempC + (1|Interceptor/Manhole), data=sewer.weather, REML=F),
+    rand_interceptor=lmer(SewTempC ~ MeanTempC + (1|Interceptor), data=sewer.weather, REML=F),
+    rand_manhole=lmer(SewTempC ~ MeanTempC + (1|Manhole), data=sewer.weather, REML=F),
+    fixed_b_by_interceptor.rand_manhole=lmer(SewTempC ~ MeanTempC+Interceptor  + (1|Manhole), data=sewer.weather, REML=F),
+    fixed_m_by_interceptor.rand_manhole=lmer(SewTempC ~ MeanTempC:Interceptor  + (1|Manhole), data=sewer.weather, REML=F),
+    fixed_mb_by_interceptor.rand_manhole=lmer(SewTempC ~ MeanTempC*Interceptor  + (1|Manhole), data=sewer.weather, REML=F)
+)
+
+## compare linear models
+## 
+## convenience function
+## function returns the list elements with the n best scores
+.best.n <- function(.list, .scores, n=2) {
+    ## order list 
+   .list <- .list[ order(unlist(.scores)) ]
+    ## only return the first n elements
+    ret <- .list[ 1:n ]
+    ret
+} 
+## show BIC of each model
+## smaller is better
+.lin.bic <- llply(temp.lin.models, function(x) BIC(x))
+.lin.bic
+## pull out best 2
+.lin.best <- .best.n(temp.lin.models, .lin.bic)
+## compare with anova
+anova(.lin.best[[2]], .lin.best[[1]])
+## same for mix models
+## show BIC of each model
+.mix.bic <- llply(temp.mix.models, function(x) BIC(x))
+.mix.bic
+## best 2
+.mix.best <- .best.n(temp.mix.models, .mix.bic)
+## compare with anova
+anova(.mix.best[[2]], .mix.best[[1]])
+
+## From Bolker's lmm page:
+## http://glmm.wikidot.com/faq
+.pseudo.r.sq1 <- function(m) {
+    1-var(residuals(m))/(var(model.response(model.frame(m))))
+}
+.pseudo.r.sq2 <- function(m) {
+   lmfit <-  lm(model.response(model.frame(m)) ~ fitted(m))
+   summary(lmfit)$r.squared
+}
+## xian - I'm *not* sure the BIC numbers above are directly comparable 
+## between linear models and mixed models 
+## I *think* they are??
+## In any case, the simple mb.by.interceptor model is good
+## the best mixed model might satisfy model assumptions a little better... 
+## 
+## note that the model also fails badly in the lower tail - 
+## e.g. nonlinear at low temps
+
+## pseudo-r-sq of both are approx equivalent to each other
+## and to r-sq of best linear model
+.pseudo.r.sq1(.mix.best[[1]])
+.pseudo.r.sq2(.mix.best[[1]])
+
+## show summary of best linear and mixed mode;
+summary(.lin.best[[1]])
+summary(.mix.best[[1]])
 @
 
 \end{document}
