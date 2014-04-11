@@ -55,7 +55,8 @@ sewtemp$DateTime <- with(sewtemp,
 sewtemp$Date <- as.POSIXct(sewtemp$Date, format='%d-%m-%y') # fix dates
 library(weathermetrics) # fix units of Temp
 # some Temperatures have been entered as Celsius; most are Fahrenheit
-.F.rows <- which(sewtemp$Temp > 40)
+## above freezing
+.F.rows <- which(sewtemp$Temp > 32)
 sewtemp$Temp[.F.rows] <- fahrenheit.to.celsius(sewtemp$Temp[.F.rows])
 sewtemp <- unique(sewtemp) # remove duplicate entries
 #sewtemp$ph[sewtemp$ph > 14] <- NA # remove erroneous entries
@@ -125,6 +126,8 @@ ancova(SewTempC ~ MeanTempC * Interceptor, data=sewer.weather)
 ## y = mx + b
 temp.lin.models <- list(
     null=lm(SewTempC ~ MeanTempC, data=sewer.weather),
+    ## including min & max temp - signif but doesn't help much
+    #all.temp=lm(SewTempC ~ MeanTempC + Max, data=sewer.weather),
     b.by.interceptor=lm(SewTempC ~ MeanTempC + Interceptor, data=sewer.weather),
     b.by.manhole=lm(SewTempC ~ MeanTempC + Manhole, data=sewer.weather),
     m.by.interceptor=lm(SewTempC ~ MeanTempC : Interceptor, data=sewer.weather),
