@@ -90,8 +90,14 @@ sewtemp.glm.pois <- glm(N ~ Temp, data=sewtemp.join, family=poisson)
 
 ## Test for overdispersion
 require(AER)
-dispersiontest(sewtemp.glm.pois) # v overdispersed, so use quasiopoisson
+quasipois.disp <- dispersiontest(sewtemp.glm.pois) # v overdispersed, so use quasiopoisson
+## 
 sewtemp.glm.qpois <- glm(N ~ Temp, data=sewtemp.join, family=quasipoisson)
+## No AIC for quasi
+## QAIC in MuMIn
+require(MuMIn)
+## why is this NA?
+QAIC(sewtemp.glm.qpois, chat= unlist(quasipois.disp$estimate))
 
 summary(sewtemp.glm.qpois) # highly sig
 with(sewtemp.glm.pois, (null.deviance-deviance)/null.deviance) # pseudoR^2 = 0.086
@@ -121,7 +127,7 @@ require(pscl)
 z.st <- zeroinfl(N ~ Temp, data=sewtemp.w.join, dist='poisson')
 summary(z.st)
 AIC(z.st)
-with(z.st, (null.deviance-deviance)/null.deviance) # pseudoR^2 = 0.13
+#with(z.st, (null.deviance-deviance)/null.deviance) # pseudoR^2 = 0.13
 z.temp.glm.pois <- glm(N ~ Temp, data=sewtemp.w.join, family=poisson)
 AIC(z.temp.glm.pois)
 
