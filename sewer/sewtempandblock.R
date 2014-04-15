@@ -1,12 +1,17 @@
 #### Using sewer temperature data to predict number of blockages:
 
+
 #### Load packages
-require(plyr)    # for summarising blockages by week
-require(xts)     # for manipulating temperature timeseries
-require(AER)     # for testing overdispersion
-require(ggplot2) # for plotting
-require(pscl)    # for fitting zero-inflated models
-#require(MuMIn)   # for finding QAIC of models
+require(weathermetrics) # to fix units of Temp
+require(plyr)           # for summarising blockages by week
+require(xts)            # for manipulating temperature timeseries
+require(AER)            # for testing overdispersion
+require(ggplot2)        # for plotting
+require(MASS)           # for fitting negative binomial models
+require(pscl)           # for Vuong's closeness test
+require(lmtest)         # for likelihood ratio test
+
+
 #### read in data
 
 ### sewer blockage data
@@ -48,7 +53,6 @@ sewtemp$DateTime <- with(sewtemp,
                                      format='%d-%m-%y %H:%M'
                          ))
 sewtemp$Date <- as.POSIXct(sewtemp$Date, format='%d-%m-%y') # fix dates
-library(weathermetrics) # fix units of Temp
 # some Temperatures have been entered as Celsius; most are Fahrenheit
 .F.rows <- which(sewtemp$Temp > 32)
 sewtemp$Temp[.F.rows] <- fahrenheit.to.celsius(sewtemp$Temp[.F.rows])
@@ -85,45 +89,49 @@ sewtemp.join$N[is.na(sewtemp.join$N)] <- 0
 ## Remove all rows missing either temperature or blockage data
 sewtemp.join <- na.omit(sewtemp.join) # n=153
 
+### make another data frame to include weather data
+## joining sewer data to the temp.weekdf from Sewer_results_summary.Rnw
+sewtemp.w.join <- join(sewtemp.join, temp.week.df, by=c('week', 'year'), type='left')
+## remove missing rows
+sewtemp.w.join <- na.omit(sewtemp.w.join) # n=95
+
 #plot(sewtemp.join$Temp, sewtemp.join$N) # apparent negative trend?
 
 
 #### Fit models
-## note - negative binomial GLMs would be better than either quasipoisson or ZIP
-## will sort this out next
+hist(sewtemp.join$N) # histogram of data
+# overdispersed count data with a lot of zeros, 
+# but no additional zero-generating process - 
+# therefore negative binomial GLM is best
+
 
 #### Predict number of blockages using sewer temperature data
 
-### Count data, assume y is ~poisson distributed
-hist(sewtemp.join$N) # but also appears zero-inflated..
+## negative binomial model
+nb.block <- glm.nb(N ~ Temp, data=sewtemp.join)
+summary(nb.block) # highly significant; AIC = 638.37
 
-###  Try Poisson GLM
-sewtemp.glm.pois <- glm(N ~ Temp, data=sewtemp.join, family=poisson)
+## check assumptions by comparing to Poisson model
+# fit Poisson model
+pois.block <- glm(N ~ Temp, data=sewtemp.join, family='poisson')
+pois.block$aic # AIC=811.46 - are these comparable?
+# can compare with likelihood ratio test as Poisson model is nested in negbin
+lrtest(nb.block, pois.block) # negbin is a very significant improvement
 
-## Test for overdispersion
-quasipois.disp <- dispersiontest(sewtemp.glm.pois) 
-quasipois.disp
-## v overdispersed (dispersion parameter > 3, p << 0.001)
+## plotting - no native ggplot2 method for plotting negbin models
+# calculate predicted values and confidence intervals
+sewtemp.join <- cbind(sewtemp.join, predict(nb.block, type='link', se.fit=T))
+sewtemp.join <- within(sewtemp.join, {
+  phat <- exp(fit)
+  LL <- exp(fit - (1.96 * se.fit))
+  UL <- exp(fit + (1.96 * se.fit))
+})
 
-### So use quasipoisson GLM to account for overdispersion
-sewtemp.glm.qpois <- glm(N ~ Temp, data=sewtemp.join, family=quasipoisson)
-summary(sewtemp.glm.qpois) # highly sig
-with(sewtemp.glm.qpois, (null.deviance-deviance)/null.deviance) # pseudoR^2 = 0.086
-
-## No AIC for quasi-likelihood models - try QAIC?
-## QAIC() in {MuMIn}
-## why is this NA?
-#QAIC(sewtemp.glm.qpois, chat= unlist(quasipois.disp$estimate))
-# QAIC takes as input a loglikelihood and a dispersion parameter
-# so function should be used on poisson, not quasipoisson, model
-# as it brings its own quasi-ness to the party
-# should be possible to calculate manually
-
-### plot
-
-p <- ggplot(sewtemp.join)
-p <- p + geom_point(aes(x=Temp, y=N), shape=21)
-p <- p + stat_smooth(method='glm', family='poisson', aes(x=Temp, y=N)) + 
+# plot
+p <- ggplot(sewtemp.join, aes(x=Temp))
+p <- p + geom_point(aes(y=N), shape=21)
+p <- p + geom_ribbon(aes(ymin=LL, ymax=UL), alpha=0.5)# confidence bounds
+p <- p + geom_line(aes(y=phat)) + # fitted points
   xlab('Mean weekly temperature (°C)') + ylab('Number of incidents per week')
 p <- p + theme_classic() + 
   theme(panel.grid.major=element_blank(),panel.grid.minor=element_blank())
@@ -132,46 +140,82 @@ print(p)
 
 
 #### Compare the use of weather versus sewer temperature for predicting blockages
-### make new data frame
-## joining sewer data to the temp.weekdf from Sewer_results_summary.Rnw
-sewtemp.w.join <- join(sewtemp.join, temp.week.df, by=c('week', 'year'), type='left')
-## remove missing rows
-sewtemp.w.join <- na.omit(sewtemp.w.join) # n=95
+
 hist(sewtemp.w.join$N) # also seems zero-inflated, but less so
 
 ### fit models
-## Poisson / Quasi-Poisson GLMs: st=sewer temperature; wt=weather temperature
 
-## sewer temperature
-# try Poisson
-b.st.pm <- glm(N ~ Temp, data=sewtemp.w.join, family='poisson')
-AIC(b.st.pm) # 450.9
-with(b.st.pm, (null.deviance-deviance)/null.deviance) # pseudoR^2 = 0.16
-## other pseudoR^2s are available in pR2() from {pscl} - investigate?
-dispersiontest(b.st.pm) # overdispersed p=0.01; dispersion = 1.5
-# so use quasi-Poisson
-b.st.qpm <- glm(N ~ Temp, data=sewtemp.w.join, family='quasipoisson') 
-summary(b.st.qpm) # highly significant
+## sewer temp
+nb.st <- glm.nb(N ~ Temp, data=sewtemp.w.join)
+summary(nb.st) # highly sig; AIC = 440.26
+
+## check assumptions by comparing to Poisson model
+# fit Poisson model
+pois.st <- glm(N ~ Temp, data=sewtemp.w.join, family='poisson')
+pois.st$aic # AIC = 450.93
+# can compare with likelihood ratio test as Poisson model is nested in negbin
+lrtest(nb.st, pois.st) # negbin is a very significant improvement; 
+
 
 ## weather temperature
-# try Poisson:
-b.wt.pm <- glm(N ~ TempMeanF, data=sewtemp.w.join, family='poisson')
-AIC(b.wt.pm) # 456.1 - less than sewer temperature, but not disastrously so
-with(b.wt.pm, (null.deviance-deviance)/null.deviance) # pseudoR^2 = 0.13 # similar
-dispersiontest(b.wt.pm) # overdispersed p=0.01; dispersion = 1.6
-# so use quasi-Poisson
-b.wt.qpm <- glm(N ~ TempMeanF, data=sewtemp.w.join, family='quasipoisson')
-summary(b.wt.qpm) # highly significant
+nb.wt <- glm.nb(N ~ TempMeanF, data=sewtemp.w.join)
+summary(nb.wt) # highly sig; AIC = 443.73
 
-## Zero-inflated models
+## check assumptions by comparing to Poisson model
+# fit Poisson model
+pois.wt <- glm(N ~ TempMeanF, data=sewtemp.w.join, family='poisson')
+pois.wt$aic # AIC = 456.10
+# can compare with likelihood ratio test as Poisson model is nested in negbin
+lrtest(nb.wt, pois.wt) # negbin is a very significant improvement; 
 
-# sewer temperature
-z.st <- zeroinfl(N ~ Temp, data=sewtemp.w.join, dist='poisson')
-summary(z.st) # zero-inflation model not significant
-AIC(z.st) # 439.7 - better than standard Poisson
-# null.deviance not available - other pseudoR^2 method needed
 
-# weather temperature
-z.wt <- zeroinfl(N ~ TempMeanF, data=sewtemp.w.join, dist='poisson')
-summary(z.wt) # zero inflation model is significant
-AIC(z.wt) # 445.5 - still better than both Poisson models
+## compare models using sewer and air temperature directly
+# Vuong's closeness test for non-nested models - is there a better test?
+vuong(nb.st, nb.wt) # using sewer temp is not a significant improvement (p > 0.1)
+
+
+# negbin is a big improvement over standard Poisson
+# using actual sewer temperature is at most a modest improvement over air temperature
+
+
+### plot - no native ggplot2 method for plotting negbin models
+
+## sewer temp
+
+# calculate predicted values and confidence intervals
+sewtemp.w.joins <- cbind(sewtemp.w.join, predict(nb.st, type='link', se.fit=T))
+sewtemp.w.joins <- within(sewtemp.w.joins, {
+  phat <- exp(fit)
+  LL <- exp(fit - (1.96 * se.fit))
+  UL <- exp(fit + (1.96 * se.fit))
+})
+
+# plot
+p <- ggplot(sewtemp.w.joins, aes(x=Temp))
+p <- p + geom_point(aes(y=N), shape=21)
+p <- p + geom_ribbon(aes(ymin=LL, ymax=UL), alpha=0.5)# confidence bounds
+p <- p + geom_line(aes(y=phat)) + # fitted points
+  xlab('Mean weekly sewer temperature (°C)') + ylab('Number of incidents per week')
+p <- p + theme_classic() + 
+  theme(panel.grid.major=element_blank(),panel.grid.minor=element_blank())
+print(p)
+
+## weather temp
+
+# calculate predicted values and confidence intervals
+sewtemp.w.joinw <- cbind(sewtemp.w.join, predict(nb.wt, type='link', se.fit=T))
+sewtemp.w.joinw <- within(sewtemp.w.joinw, {
+  phat <- exp(fit)
+  LL <- exp(fit - (1.96 * se.fit))
+  UL <- exp(fit + (1.96 * se.fit))
+})
+
+# plot
+p <- ggplot(sewtemp.w.joinw, aes(x=TempMeanF))
+p <- p + geom_point(aes(y=N), shape=21)
+p <- p + geom_ribbon(aes(ymin=LL, ymax=UL), alpha=0.5)# confidence bounds
+p <- p + geom_line(aes(y=phat)) + # fitted points
+  xlab('Mean weekly air temperature (°C)') + ylab('Number of incidents per week')
+p <- p + theme_classic() + 
+  theme(panel.grid.major=element_blank(),panel.grid.minor=element_blank())
+print(p)
