@@ -130,8 +130,8 @@ sewtemp.join <- within(sewtemp.join, {
 # plot
 p <- ggplot(sewtemp.join, aes(x=Temp))
 p <- p + geom_point(aes(y=N), shape=21)
-p <- p + geom_ribbon(aes(ymin=LL, ymax=UL), alpha=0.5)# confidence bounds
-p <- p + geom_line(aes(y=phat)) + # fitted points
+p <- p + geom_ribbon(aes(ymin=LL, ymax=UL), alpha=0.25)# confidence bounds
+p <- p + geom_line(aes(y=phat), colour='blue') + # fitted points
   xlab('Mean weekly temperature (°C)') + ylab('Number of incidents per week')
 p <- p + theme_classic() + 
   theme(panel.grid.major=element_blank(),panel.grid.minor=element_blank())
@@ -193,8 +193,8 @@ sewtemp.w.joins <- within(sewtemp.w.joins, {
 # plot
 p <- ggplot(sewtemp.w.joins, aes(x=Temp))
 p <- p + geom_point(aes(y=N), shape=21)
-p <- p + geom_ribbon(aes(ymin=LL, ymax=UL), alpha=0.5)# confidence bounds
-p <- p + geom_line(aes(y=phat)) + # fitted points
+p <- p + geom_ribbon(aes(ymin=LL, ymax=UL), alpha=0.25)# confidence bounds
+p <- p + geom_line(aes(y=phat), colour='blue') + # fitted points
   xlab('Mean weekly sewer temperature (°C)') + ylab('Number of incidents per week')
 p <- p + theme_classic() + 
   theme(panel.grid.major=element_blank(),panel.grid.minor=element_blank())
@@ -213,8 +213,8 @@ sewtemp.w.joinw <- within(sewtemp.w.joinw, {
 # plot
 p <- ggplot(sewtemp.w.joinw, aes(x=TempMeanF))
 p <- p + geom_point(aes(y=N), shape=21)
-p <- p + geom_ribbon(aes(ymin=LL, ymax=UL), alpha=0.5)# confidence bounds
-p <- p + geom_line(aes(y=phat)) + # fitted points
+p <- p + geom_ribbon(aes(ymin=LL, ymax=UL), alpha=0.25)# confidence bounds
+p <- p + geom_line(aes(y=phat), colour='blue') + # fitted points
   xlab('Mean weekly air temperature (°C)') + ylab('Number of incidents per week')
 p <- p + theme_classic() + 
   theme(panel.grid.major=element_blank(),panel.grid.minor=element_blank())
