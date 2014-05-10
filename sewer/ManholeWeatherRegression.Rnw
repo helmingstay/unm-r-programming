@@ -19,7 +19,8 @@ Sewer and Surface Temperature Regression}
 # Code to set up knitr settings and libraries used every time
 set.seed(76543); # recompile will have same random numbers
 # set global chunk options
-opts_chunk$set(fig.align='center', fig.show='hold', concordance=TRUE, tidy=T)
+## josh: this line never works on my machine and causes compiling to fail...
+#opts_chunk$set(fig.align='center', fig.show='hold', concordance=TRUE, tidy=T)
 options(replace.assign=TRUE, width=70)
 library(lattice)
 library(ggplot2)
@@ -55,7 +56,7 @@ sewtemp$DateTime <- with(sewtemp,
         format='%d-%m-%y %H:%M'
 ))
 sewtemp$Date <- as.POSIXct(sewtemp$Date, format='%d-%m-%y') # fix dates
-library(weathermetrics) # fix units of Temp
+
 # some Temperatures have been entered as Celsius; most are Fahrenheit
 ## above freezing
 .F.rows <- which(sewtemp$Temp > 32)
@@ -100,9 +101,13 @@ sewer.weather <- rename(sewer.weather, c(Temp='SewTempC'))
 <<sewweathggplot2, echo=TRUE, size='footnotesize', include=TRUE, fig.height=4, fig.width=6>>=
 # plot with ggplot
 p <- ggplot(sewer.weather)
-p <- p + geom_point(aes(x=MeanTempC, y=SewTempC, colour=Interceptor), shape=21)
-p <- p + geom_smooth(aes(x=MeanTempC, y=SewTempC, colour=Interceptor), method='lm')
-p <- p + theme_bw()
+p <- p + geom_point(aes(x=MeanTempC, y=SewTempC, 
+                        colour=Interceptor, shape=Interceptor)) 
+p <- p + scale_shape_manual(values=c(21, 23, 24))
+p <- p + geom_smooth(aes(x=MeanTempC, y=SewTempC, 
+                         colour=Interceptor, linetype=Interceptor), method='lm')
+p <- p + theme_classic()
+p <- p + xlab('Mean air temperature (°C)') + ylab('Sewer temperature (°C)')
 print(p)
 @
 
@@ -201,7 +206,7 @@ anova(.mix.best[[2]], .mix.best[[1]])
 .pseudo.r.sq1(.mix.best[[1]])
 .pseudo.r.sq2(.mix.best[[1]])
 
-## show summary of best linear and mixed mode;
+## show summary of best linear and mixed model;
 summary(.lin.best[[1]])
 summary(.mix.best[[1]])
 @
