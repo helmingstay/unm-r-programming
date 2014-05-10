@@ -1,0 +1,120 @@
+\documentclass[english, letterpaper, 12pt]{article}
+\usepackage{graphicx}
+%% margins, can specify top, left, etc.
+\usepackage[margin=1in]{geometry}
+\usepackage[latin1]{inputenc}
+%\usepackage[numbers]{natbib}
+\usepackage{url}
+\linespread{1.2}
+
+\begin{document}
+
+\begin{center}
+\Large{R Crash Course}
+~\\
+\large{Summer 2014}
+\large{Christian Gunning}
+~\\
+%\textbf{Name: \underline{\hspace{6cm}} }
+\end{center}
+ 
+\section*{What is it, and who's it for?}
+The R Crash Course is an intensive workshop that focuses on data management and
+visualization in R.   It is designed primarily for scientists, and is appropriate
+for beginning and intermediate R users.   Using hands-on activities and your own
+data, you will learn basic programming, gain experience in common data manipulation
+tasks, and create your own publication-quality figures.
+
+\section*{Background}
+R is a statistical 
+ analysis framework and programming language that is heavily used by
+researchers in a wide range of fields.
+Effective use of software tools like R can greatly enhance
+research productivity and enable communication of results
+through high-quality data visualization. New users often find R
+challenging, intimidating, or downright confusing. 
+The R Crash Course aims to accelerate the steep learning curve 
+that many new R users encounter.  
+
+\section*{Requirements}
+The most important requirement of this workshop is time and a willingness to
+work.  Partipants are expected to attend all sessions and spend 1-2 hours/day
+individually on assignments.
+
+Prior experience with R or a spreadsheet program like Excel is helpful but not
+required.  Participants should be comfortable with basic
+computer use, and must have their own computer.  Prior to the workshop, participants
+must install R and Rstudio and select a dataset for workshop use.  Students are
+encouraged to work in small groups on a shared dataset.
+
+\clearpage
+\section*{Schedule}
+\subsection*{D1S1}
+\begin{itemize}
+    \item  Initial Evaluations
+    \item  Syllabus
+    \item  Introductions, datasets, research goals
+    \item  Introduction to Rstudio - working with scripts
+    \item  Reading in data
+    \item  Project - read in your own data
+\end{itemize}
+\subsection*{D1S2}
+\begin{itemize}
+    \item  Quiz, Questions, Review
+    \item  What is a data.frame?
+    \item  Indexing
+    \item  Subsetting
+    \item  Objects, class, and mode.
+    \item  Introduction to functions - summarizing data
+    \item  Help pages
+\end{itemize}
+
+\subsection*{D2S1}
+\begin{itemize}
+    \item Quiz, Questions, Review
+    \item Review assignment
+    \item Functions
+    \item Flow control
+    \item Project - write your own function that uses a for loop to compute the
+marginal mean/sd/nsamples for each group.
+\end{itemize}
+\subsection*{D2S2}
+\begin{itemize}
+    \item Quiz, Questions, Review
+    \item Functions in functions - ddply
+    \item Scoping and namespaces
+    \item Debugging
+    \item How to find help
+\end{itemize}
+
+\subsection*{D3S1}
+\begin{itemize}
+    \item Quiz, Questions, Review
+    \item Plotting with ggplot - aesthetics and layers
+    \item Project - plot data
+\end{itemize}
+\begin{itemize}
+    \item Quiz, Questions, Review
+    \item Advanced plotting -- facets, fine-tuning graphics
+    \item Presentations - 10 min, 3 figures / group
+    \item Final Review: where to go from here?
+\end{itemize}
+
+\section*{Assignments}
+\subsection*{A1}
+\begin{itemize}
+    \item Using help pages
+    \item Read in data
+    \item Subset, summarize
+    \item Install plyr and reshape2
+\end{itemize}
+
+\subsection*{A2}
+\begin{itemize}
+    \item Use Google to find a solution
+    \item Debug a script - ddply function
+    \item Write your own function for use in ddply, run analysis, explain
+results
+\end{itemize}
+
+\end{document}
