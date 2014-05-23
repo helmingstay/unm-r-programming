@@ -66,15 +66,11 @@ See results in ManholeWeatherRegression.Rnw
 \section{Weekly mean air temperature predicts total number of sewer blockages that week}
 
 <<temp_data, size='footnotesize', include=FALSE>>=
-weather <- read.csv('http://unm-r-programming.googlecode.com/files/kabq-2009-2013.csv')
-## NOTE -- PrecipIn column has been edited, T changed to -1!
-## Let's change it to a really small value to make it plot nice
-## But still be identifiable
-weather <- within(weather, PrecipIn[PrecipIn == -1 ] <- 1e-6)
+weather <- read.csv('abq-temps-2005-2014.csv')
 ## Turn factor into date    
 weather$day <- as.Date(weather$MST)
 ## Convert Fahrenheit into Celsius
-weather[,2:5] <- fahrenheit.to.celsius(weather[,2:5])
+weather[,2:5] <- fahrenheit.to.celsius(weather[,2:4])
 ## Inspect
 str(weather)
 ## Melt data
@@ -115,7 +111,7 @@ sewer.fail.week = ddply( sewer, c('year', 'week'),
 #head(sewer.fail.week)
 
 ## Get weekly mean temp
-temp.week <- weather.xts$TempMeanF
+temp.week <- weather.xts$Mean.TemperatureF
 temp.week <- apply.weekly(temp.week, FUN=mean)
 
 ## week and year from xts .index functions
@@ -132,19 +128,19 @@ sewer.join <- join(sewer.fail.week, temp.week.df, type='full')
 
 ## Weeks with no problems 
 sewer.join$N[is.na(sewer.join$N)] <- 0
-## Why are there remaining NAs in TempMeanF?
+## Why are there remaining NAs in Mean.TemperatureF?
 sewer.join <- na.omit(sewer.join)
 @
 
 <<weeklm, fig.cap='Linear model diagnostic plots.', size='footnotesize', message=FALSE, warning=FALSE, error=FALSE, echo=FALSE, include=FALSE>>=
 ## Just look at 10-40 (most of the data)
 ## Overdispersed count data, use negative binomial
-sewer.nb <- glm.nb(N ~ TempMeanF, data=sewer.join)
+sewer.nb <- glm.nb(N ~ Mean.TemperatureF, data=sewer.join)
 summary(sewer.nb) # very signiificant model
 
 ## check assumptions by comparing to Poisson model
 # fit Poisson model
-sewer.ps <- glm(N ~ TempMeanF, data=sewer.join, family='poisson')
+sewer.ps <- glm(N ~ Mean.TemperatureF, data=sewer.join, family='poisson')
 summary(sewer.ps)
 # can compare with likelihood ratio test as Poisson model is nested in negbin
 lrtest(sewer.nb, sewer.ps) # negbin is a very significant improvement; 
@@ -170,7 +166,7 @@ sewblock <- within(sewblock, {
 })
 
 # plot
-p <- ggplot(sewblock, aes(x=TempMeanF))
+p <- ggplot(sewblock, aes(x=Mean.TemperatureF))
 p <- p + geom_point(aes(y=N), shape=21)
 p <- p + geom_ribbon(aes(ymin=LL, ymax=UL), alpha=0.25)# confidence bounds
 p <- p + geom_line(aes(y=phat), colour='blue') + # fitted points
@@ -203,18 +199,18 @@ head(sewer.join1, 3)
 
 ## Weeks with no problems 
 sewer.join1$N[is.na(sewer.join1$N)] <- 0
-## Why are there remaining NAs in TempMeanF?
+## Why are there remaining NAs in Mean.TemperatureF?
 sewer.join1 <- na.omit(sewer.join1)
 
-grease.nb <- glm.nb(N ~ TempMeanF, data=sewer.join1)
+grease.nb <- glm.nb(N ~ Mean.TemperatureF, data=sewer.join1)
 summary(grease.nb)
 
 # pseudo R^2
 pr2 <- with(grease.nb, (null.deviance-deviance)/null.deviance) 
-
+paste('Pseudo $R^2$ = ', signif(pr2, 2))
 ## check assumptions by comparing to Poisson model
 # fit Poisson model
-grease.ps <- glm(N ~ TempMeanF, data=sewer.join1)
+grease.ps <- glm(N ~ Mean.TemperatureF, data=sewer.join1)
 summary(grease.ps)
 # can compare with likelihood ratio test as Poisson model is nested in negbin
 lrtest(grease.nb, grease.ps) # negbin is a very significant improvement; 
@@ -235,7 +231,7 @@ greaseblock <- within(greaseblock, {
 })
 
 # plot
-p <- ggplot(greaseblock, aes(x=TempMeanF))
+p <- ggplot(greaseblock, aes(x=Mean.TemperatureF))
 p <- p + geom_point(aes(y=N), shape=21)
 p <- p + geom_ribbon(aes(ymin=LL, ymax=UL), alpha=0.25)# confidence bounds
 p <- p + geom_line(aes(y=phat), colour='blue') + # fitted points
@@ -266,16 +262,16 @@ sewer.join2 <- join(sewer.fail.notgrease, temp.week.df, type='full')
 
 ## Weeks with no problems 
 sewer.join2$N[is.na(sewer.join2$N)] <- 0
-## Why are there remaining NAs in TempMeanF?
+## Why are there remaining NAs in Mean.TemperatureF?
 sewer.join2 <- na.omit(sewer.join2)
 
-notgrease.nb <- glm.nb(N ~ TempMeanF, data=sewer.join2)
+notgrease.nb <- glm.nb(N ~ Mean.TemperatureF, data=sewer.join2)
 summary(notgrease.nb) # non-significant
 ## Temperature does not significantly predict non-grease blockages!
 
 ## check assumptions by comparing to Poisson model
 # fit Poisson model
-notgrease.ps <- glm(N ~ TempMeanF, data=sewer.join2, family='poisson')
+notgrease.ps <- glm(N ~ Mean.TemperatureF, data=sewer.join2, family='poisson')
 summary(notgrease.ps) # significant
 # can compare with likelihood ratio test as Poisson model is nested in negbin
 lrtest(notgrease.nb, notgrease.ps) # negbin is still a very significant improvement;
@@ -294,7 +290,7 @@ notgreaseblock <- within(notgreaseblock, {
 })
 
 # make plot
-r <- ggplot(notgreaseblock, aes(x=TempMeanF))
+r <- ggplot(notgreaseblock, aes(x=Mean.TemperatureF))
 r <- r + geom_point(aes(y=N), shape=21)
 r <- r + geom_ribbon(aes(ymin=LL, ymax=UL), alpha=0.25)# confidence bounds
 r <- r + geom_line(aes(y=phat), colour='blue') + # fitted points
@@ -324,24 +320,24 @@ grid.arrange(p, r, nrow=1)
 <<include=FALSE>>=
 sewer.weather$grease <- factor(grepl('GR', sewer.weather$CAUSE))
 summary(sewer.weather$grease)
-w.cause <- wilcox.test(sewer.weather$TempMeanF ~ sewer.weather$grease)
+w.cause <- wilcox.test(sewer.weather$Mean.TemperatureF ~ sewer.weather$grease)
 w.cause # significantly different daily temperature on grease-blockage days:
 
-median(sewer.weather$TempMeanF[sewer.weather$grease==T])
-median(sewer.weather$TempMeanF[sewer.weather$grease==F])
+median(sewer.weather$Mean.TemperatureF[sewer.weather$grease==T])
+median(sewer.weather$Mean.TemperatureF[sewer.weather$grease==F])
 
-wilcox.test(sewer.weather$TempMeanF[sewer.weather$grease==T],
-            sewer.weather$TempMeanF[sewer.weather$grease==F])
+wilcox.test(sewer.weather$Mean.TemperatureF[sewer.weather$grease==T],
+            sewer.weather$Mean.TemperatureF[sewer.weather$grease==F])
 @
 
 The median temperature during days with grease blockages was $10\,^{\circ}\mathrm{C}$ whereas other blockages had an average of $13.9\,^{\circ}\mathrm{C}$.
 
 This difference was significantly different (Wilcoxon rank sum test: $W = \Sexpr{
-wilcox.test(sewer.weather$TempMeanF[sewer.weather$grease==T],
-            sewer.weather$TempMeanF[sewer.weather$grease==F])$statistic
+wilcox.test(sewer.weather$Mean.TemperatureF[sewer.weather$grease==T],
+            sewer.weather$Mean.TemperatureF[sewer.weather$grease==F])$statistic
             }$, $p = \Sexpr{
-            wilcox.test(sewer.weather$TempMeanF[sewer.weather$grease==T],
-            sewer.weather$TempMeanF[sewer.weather$grease==F])$p.value
+            wilcox.test(sewer.weather$Mean.TemperatureF[sewer.weather$grease==T],
+            sewer.weather$Mean.TemperatureF[sewer.weather$grease==F])$p.value
             })$.
 
 \section{No difference in the diameter of pipes blocked by grease versus other blockages}
@@ -355,7 +351,7 @@ median(sewer.weather$PIPE_DIAMETER[sewer.weather$grease==F], na.rm=T)
 ## plot
 # pp <- ggplot(sewer.weather)
 # pp <- pp + geom_point(aes(x=grease, y=PIPE_DIAMETER), position=position_jitter(h=0), shape=21, alpha=0.5)
-# pp <- pp + geom_boxplot(aes(x=grease, y=TempMeanF), alpha=0.5)
+# pp <- pp + geom_boxplot(aes(x=grease, y=Mean.TemperatureF), alpha=0.5)
 # print(pp)
 
 wilcox.test(sewer.weather$PIPE_DIAMETER[sewer.weather$grease==T],
