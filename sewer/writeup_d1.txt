@@ -79,6 +79,22 @@ The relationship between air and sewage temperature is likely to be mediated by 
 With continuing population rise and urbanisation, efficient operation of urban waste-water infrastructure is an increasingly important issue for global public health. Sato et al. (2013) recently highlighted the importance of more research into efficacy of waste-water treatment techniques, particularly in the developing world. The data in this study were not collected specially for research purposes. Rather, this study used data already collected by industry as part of standard operations, married with publicly accessible weather data available online. This demonstrates the potential usefulness of historic industry datasets for addressing future challenges. 
 
 
+References
+
+Desilva, D., Marlow, D., Beale, D., Marney, D., 2011. Sewer Blockage Management: Australian Perspective. J. Pipeline Syst. Eng. Pract. 2, 139–145. doi:10 .1061/(ASCE)PS.1949-1204.0000084
+
+He, X., Iasmin, M., Dean, L.O., Lappi, S.E., Ducoste, J.J., de los Reyes, F.L., 2011. Evidence for fat, oil, and grease (FOG) deposit formation mechanisms in sewer lines. Environ. Sci. Technol. 45, 4385–91. doi:10.1021/es2001997
+
+Keener, K.M., Ducoste, J.J., Holt, L.M., 2008. Properties Influencing Fat, Oil, and Grease Deposit Formation. Water Environ. Res. 80, 2241–2246. doi:10.2175/193864708X267441
+
+Marlow, D.R., Boulaire, F., Beale, D.J., Grundy, C., Moglia, M., 2011. Sewer Performance Reporting: Factors That Influence Blockages. J. Infrastruct. Syst. 17, 42–51. doi:10.1061/(ASCE)IS.1943-555X.0000041.
+
+R Core Team (2014). R: A language and environment for statistical computing. R Foundation for Statistical Computing, Vienna, Austria. URL http://www.R-project.org/.
+
+Sato, T., Qadir, M., Yamamoto, S., Endo, T., Zahoor, A., 2013. Global, regional, and country level need for data on wastewater generation, treatment, and use. Agric. Water Manag. 130, 1–13. doi:10.1016/j.agwat.2013.08.007
+
+Venables, W. N. & Ripley, B. D. (2002) Modern Applied Statistics with S. Fourth Edition. Springer, New York. ISBN 0-387-95457-0
+
 --- List of Tables ---
 1. Details of blockages ~ sewer temperature model
 2. BIC ranking of candidate linear models
