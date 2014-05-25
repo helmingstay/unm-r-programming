@@ -330,6 +330,68 @@ grid.arrange(p, r, nrow=1)
 
 \clearpage
 
+\section{Thanksgiving and Christmas}
+
+Can this pattern be explained by increased consumption of meat during Thanksgiving and Christmas?
+
+Christmas is always in week 52; during the study period, Thanksgiving was in week 48 in 2009, and week 47 in 2010-13.
+
+<<xmas, echo=FALSE, fig.pos='h', fig.width=10, fig.height=5, fig.cap='Temperature predicts blockages caused by grease (A) but not other blockages (B)', message=FALSE>>=
+# row numbers
+holiday.blocks <- c(sewer.fail.grease$N[
+  which(sewer.fail.grease$week == 51 | # xmas. no blockages in xmas 2012
+          sewer.fail.grease$week == 48 & sewer.fail.grease$year == 2009 | # thanksgiving 09
+          sewer.fail.grease$week == 47 & sewer.fail.grease$year >= 2010  ) # thanksgivings
+  ]
+  , 0 # because no problems in xmas 2012
+)
+
+# dataset without the holidays for independence
+not.on.holiday <- sewer.fail.grease$N[-
+  which(sewer.fail.grease$week == 51 | # xmas. no blockages in xmas 2012
+          sewer.fail.grease$week == 48 & sewer.fail.grease$year == 2009 | # thanksgiving 09
+          sewer.fail.grease$week == 47 & sewer.fail.grease$year >= 2010  ) # thanksgivings
+  ]
+
+t.test(holiday.blocks, not.on.holiday) # nonsig
+
+## permutation test
+
+# define function
+bootstrap <- function(x, N = 1e4) {
+  n <- length(x)
+  bs.samp <- matrix(sample(x, size = N * n, replace = TRUE), ncol = N)
+  return(bs.samp)
+}
+
+# do bootstrapping
+bs.hols <- bootstrap(holiday.blocks)
+
+# combine for plotting; sort for fitting confidence intervals
+bs.hols.df <- data.frame(sort(bs.hols))
+names(bs.hols.df) <- 'blocks'
+
+# plot!
+p <- ggplot(bs.hols.df, aes(x=blocks))
+p <- p + geom_histogram(aes(y=..density..)
+                        , binwidth=1
+                        , colour="black", fill="gray58")
+#p <- p + geom_density(fill='gray85', alpha=0.4) # needs wider kernel than default
+# add mean of non-holiday weeks in red
+p <- p + geom_vline(aes(xintercept=mean(not.on.holiday)), colour="#BB0000", linetype="dashed")
+# add 95% CIs of holiday weeks in green
+p <- p + geom_vline(aes(xintercept=bs.hols.df$blocks[0.025*nrow(bs.hols.df)]), colour="#00AA00", linetype="longdash")
+p <- p + geom_vline(aes(xintercept=bs.hols.df$blocks[0.975*nrow(bs.hols.df)]), colour="#00AA00", linetype="longdash")
+p <- p + theme_classic() + theme(legend.position="none") + 
+  theme(panel.grid.major=element_blank(),panel.grid.minor=element_blank())
+p <- p + xlab('Number of blocks') + ylab('Density')
+print(p)
+@
+
+Even without accounting for temperature, the weeks of Thanksgiving and Christmas do not have an exceptionally high number of blockages.
+
+\clearpage
+
 \section{Days with grease blockages are colder than those with other blockages}
 
 <<include=FALSE>>=
