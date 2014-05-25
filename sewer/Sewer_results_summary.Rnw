@@ -154,8 +154,10 @@ The negative binomial GLM is highly significant (table \ref{tab:sewnb}):
 <<sewnb, results='asis', echo=FALSE>>=
 xtable(summary(sewer.nb), caption='Weekly mean air temperature predicts the number of blocked sewers that week', label='tab:sewnb')
 
+#proportion of deviance explained
 pr2 <- with(sewer.nb, (null.deviance-deviance)/null.deviance) 
-paste('Pseudo $R^2$ = ', signif(pr2, 2))  # 0.093
+paste('Pseudo $R^2$ = ', signif(pr2, 2))  # 0.093 
+pR2(sewer.nb) # McFadden's pseudo R2 ~ variance explained
 @
 
 
@@ -209,8 +211,8 @@ grease.nb <- glm.nb(N ~ Mean.TemperatureF, data=sewer.join1)
 summary(grease.nb)
 
 # pseudo R^2
-pr2 <- with(grease.nb, (null.deviance-deviance)/null.deviance) 
-paste('Pseudo $R^2$ = ', signif(pr2, 2))
+pr2.grease <- with(grease.nb, (null.deviance-deviance)/null.deviance) 
+paste('Pseudo $R^2$ = ', signif(pr2.grease, 2))
 ## check assumptions by comparing to Poisson model
 # fit Poisson model
 grease.ps <- glm(N ~ Mean.TemperatureF, data=sewer.join1)
@@ -309,8 +311,8 @@ r <- r + annotate("text", x=-5.5, y=max(greaseblock$N)+1, label = 'B')
 <<echo=FALSE, results='asis'>>=
 xtable(summary(notgrease.nb), caption='Negative binomial GLM predicting blockages not caused by grease')
 
-pr2<-with(notgrease.nb, (null.deviance-deviance)/null.deviance) 
-paste('Pseudo $R^2$ = ', signif(pr2,2))
+pr2.notgrease<-with(notgrease.nb, (null.deviance-deviance)/null.deviance) 
+paste('Pseudo $R^2$ = ', signif(pr2.notgrease,2))
 @
 
 <<gridd, echo=FALSE, fig.pos='h', fig.width=10, fig.height=5, fig.cap='Temperature predicts blockages caused by grease (A) but not other blockages (B)', message=FALSE>>=
