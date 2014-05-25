@@ -156,8 +156,12 @@ xtable(summary(sewer.nb), caption='Weekly mean air temperature predicts the numb
 
 #proportion of deviance explained
 pr2 <- with(sewer.nb, (null.deviance-deviance)/null.deviance) 
+<<<<<<< HEAD
 paste('Pseudo $R^2$ = ', signif(pr2, 2))  # 0.093 
 pR2(sewer.nb) # McFadden's pseudo R2 ~ variance explained
+=======
+paste('Pseudo $R^2$ = ', signif(pr2, 2))  # 0.093
+>>>>>>> 0eb2183c941ba7f57a07e8a8ce8c5d878570560d
 @
 
 
@@ -211,8 +215,13 @@ grease.nb <- glm.nb(N ~ Mean.TemperatureF, data=sewer.join1)
 summary(grease.nb)
 
 # pseudo R^2
+<<<<<<< HEAD
 pr2.grease <- with(grease.nb, (null.deviance-deviance)/null.deviance) 
 paste('Pseudo $R^2$ = ', signif(pr2.grease, 2))
+=======
+pr2 <- with(grease.nb, (null.deviance-deviance)/null.deviance) 
+paste('Pseudo $R^2$ = ', signif(pr2, 2))
+>>>>>>> 0eb2183c941ba7f57a07e8a8ce8c5d878570560d
 ## check assumptions by comparing to Poisson model
 # fit Poisson model
 grease.ps <- glm(N ~ Mean.TemperatureF, data=sewer.join1)
