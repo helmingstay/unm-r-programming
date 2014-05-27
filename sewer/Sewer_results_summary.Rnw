@@ -46,6 +46,7 @@ require(AER) # test for overdispersion
 require(ggplot2)
 require(gridExtra) # multifigure plots
 require(MASS) # for negbin models
+require(pscl) # for pR2 function
 @
 
 <<read_data, size='footnotesize', include=FALSE>>=
@@ -156,12 +157,8 @@ xtable(summary(sewer.nb), caption='Weekly mean air temperature predicts the numb
 
 #proportion of deviance explained
 pr2 <- with(sewer.nb, (null.deviance-deviance)/null.deviance) 
-<<<<<<< HEAD
 paste('Pseudo $R^2$ = ', signif(pr2, 2))  # 0.093 
 pR2(sewer.nb) # McFadden's pseudo R2 ~ variance explained
-=======
-paste('Pseudo $R^2$ = ', signif(pr2, 2))  # 0.093
->>>>>>> 0eb2183c941ba7f57a07e8a8ce8c5d878570560d
 @
 
 
@@ -215,13 +212,9 @@ grease.nb <- glm.nb(N ~ Mean.TemperatureF, data=sewer.join1)
 summary(grease.nb)
 
 # pseudo R^2
-<<<<<<< HEAD
 pr2.grease <- with(grease.nb, (null.deviance-deviance)/null.deviance) 
 paste('Pseudo $R^2$ = ', signif(pr2.grease, 2))
-=======
-pr2 <- with(grease.nb, (null.deviance-deviance)/null.deviance) 
-paste('Pseudo $R^2$ = ', signif(pr2, 2))
->>>>>>> 0eb2183c941ba7f57a07e8a8ce8c5d878570560d
+
 ## check assumptions by comparing to Poisson model
 # fit Poisson model
 grease.ps <- glm(N ~ Mean.TemperatureF, data=sewer.join1)
@@ -347,13 +340,17 @@ holiday.blocks <- c(sewer.fail.grease$N[
 )
 
 # dataset without the holidays for independence
-not.on.holiday <- sewer.fail.grease$N[-
-  which(sewer.fail.grease$week == 51 | # xmas. no blockages in xmas 2012
-          sewer.fail.grease$week == 48 & sewer.fail.grease$year == 2009 | # thanksgiving 09
-          sewer.fail.grease$week == 47 & sewer.fail.grease$year >= 2010  ) # thanksgivings
-  ]
+not.on.holiday <- subset(
+  sewer.fail.grease,
+  week >= 44 # includes the other weeks from Nov and Dec only
+)$N[- # remove xmas and Tgiving weeks
+      which(sewer.fail.grease$week == 51 |
+              sewer.fail.grease$week == 48 & sewer.fail.grease$year == 2009 |
+              sewer.fail.grease$week == 47 & sewer.fail.grease$year >= 2010  )
+    ]
 
-t.test(holiday.blocks, not.on.holiday) # nonsig
+
+wilcox.test(holiday.blocks, not.on.holiday) # nonsig
 
 ## permutation test
 
@@ -365,30 +362,33 @@ bootstrap <- function(x, N = 1e4) {
 }
 
 # do bootstrapping
-bs.hols <- bootstrap(holiday.blocks)
+bs.hols <- apply(bootstrap(holiday.blocks), 2, median)
+bs.nhol <- apply(bootstrap(not.on.holiday), 2, median)
 
 # combine for plotting; sort for fitting confidence intervals
-bs.hols.df <- data.frame(sort(bs.hols))
-names(bs.hols.df) <- 'blocks'
+bs.hols.df <- data.frame(sort(bs.hols - bs.nhol))
+names(bs.hols.df) <- 'diffs'
 
 # plot!
-p <- ggplot(bs.hols.df, aes(x=blocks))
+p <- ggplot(bs.hols.df, aes(x=diffs))
 p <- p + geom_histogram(aes(y=..density..)
-                        , binwidth=1
+                        , binwidth=1/2
                         , colour="black", fill="gray58")
 #p <- p + geom_density(fill='gray85', alpha=0.4) # needs wider kernel than default
 # add mean of non-holiday weeks in red
-p <- p + geom_vline(aes(xintercept=mean(not.on.holiday)), colour="#BB0000", linetype="dashed")
+p <- p + geom_vline(aes(xintercept=0), colour="#BB0000", linetype="dashed")
 # add 95% CIs of holiday weeks in green
-p <- p + geom_vline(aes(xintercept=bs.hols.df$blocks[0.025*nrow(bs.hols.df)]), colour="#00AA00", linetype="longdash")
-p <- p + geom_vline(aes(xintercept=bs.hols.df$blocks[0.975*nrow(bs.hols.df)]), colour="#00AA00", linetype="longdash")
+p <- p + geom_vline(aes(xintercept=bs.hols.df$diffs[0.025*nrow(bs.hols.df)]), colour="#00AA00", linetype="longdash")
+p <- p + geom_vline(aes(xintercept=bs.hols.df$diffs[0.975*nrow(bs.hols.df)]), colour="#00AA00", linetype="longdash")
 p <- p + theme_classic() + theme(legend.position="none") + 
   theme(panel.grid.major=element_blank(),panel.grid.minor=element_blank())
 p <- p + xlab('Number of blocks') + ylab('Density')
 print(p)
 @
 
-Even without accounting for temperature, the weeks of Thanksgiving and Christmas do not have an exceptionally high number of blockages.
+Without accounting for temperature, the weeks of Thanksgiving and Christmas did appear to have an exceptionally high number of blockages (lower CI $= 0$). 
+
+However, when including only November and December in the analysis, there appears to be no difference.
 
 \clearpage
 
