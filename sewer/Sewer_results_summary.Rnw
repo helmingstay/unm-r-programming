@@ -362,11 +362,11 @@ bootstrap <- function(x, N = 1e4) {
 }
 
 # do bootstrapping
-bs.hols <- apply(bootstrap(holiday.blocks), 2, median)
+bs.hols <- apply(bootstrap(holiday.blocks), 2, median) # median of each bs sample
 bs.nhol <- apply(bootstrap(not.on.holiday), 2, median)
 
 # combine for plotting; sort for fitting confidence intervals
-bs.hols.df <- data.frame(sort(bs.hols - bs.nhol))
+bs.hols.df <- data.frame(sort(bs.hols - bs.nhol)) # difference between bs samples
 names(bs.hols.df) <- 'diffs'
 
 # plot!
@@ -388,7 +388,7 @@ print(p)
 
 Without accounting for temperature, the weeks of Thanksgiving and Christmas did appear to have an exceptionally high number of blockages (lower CI $= 0$). 
 
-However, when including only November and December in the analysis, there appears to be no difference.
+However, when including only November and December in the analysis, there appears to be no difference between holiday weeks and other weeks.
 
 \clearpage
 
