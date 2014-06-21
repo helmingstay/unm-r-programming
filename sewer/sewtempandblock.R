@@ -4,6 +4,7 @@
 #### Load packages
 require(weathermetrics) # to fix units of Temp
 require(plyr)           # for summarising blockages by week
+require(reshape2)           
 require(xts)            # for manipulating temperature timeseries
 require(AER)            # for testing overdispersion
 require(ggplot2)        # for plotting
@@ -11,8 +12,8 @@ require(MASS)           # for fitting negative binomial models
 require(pscl)           # for Vuong's closeness test
 require(lmtest)         # for likelihood ratio test
 
-
-#### read in data
+#### first load weather data (and old sewer data??)
+source('run.weather.R')
 
 ### sewer blockage data
 sewblock <- read.csv('http://unm-r-programming.googlecode.com/files/new-ABQ-sewer.csv')
@@ -118,6 +119,7 @@ pois.block$aic # AIC=811.46 - are these comparable?
 # can compare with likelihood ratio test as Poisson model is nested in negbin
 lrtest(nb.block, pois.block) # negbin is a very significant improvement
 
+## get plots out of .R files!!
 ## plotting - no native ggplot2 method for plotting negbin models
 # calculate predicted values and confidence intervals
 sewtemp.join <- cbind(sewtemp.join, predict(nb.block, type='link', se.fit=T))
@@ -138,9 +140,7 @@ p <- p + theme_classic() +
 print(p)
 
 
-
 #### Compare the use of weather versus sewer temperature for predicting blockages
-
 hist(sewtemp.w.join$N) # also seems zero-inflated, but less so
 
 ### fit models
@@ -156,14 +156,13 @@ pois.st$aic # AIC = 450.93
 # can compare with likelihood ratio test as Poisson model is nested in negbin
 lrtest(nb.st, pois.st) # negbin is a very significant improvement; 
 
-
 ## weather temperature
-nb.wt <- glm.nb(N ~ TempMeanF, data=sewtemp.w.join)
+nb.wt <- glm.nb(N ~ Mean.TemperatureF, data=sewtemp.w.join)
 summary(nb.wt) # highly sig; AIC = 443.73
 
 ## check assumptions by comparing to Poisson model
 # fit Poisson model
-pois.wt <- glm(N ~ TempMeanF, data=sewtemp.w.join, family='poisson')
+pois.wt <- glm(N ~ Mean.TemperatureF, data=sewtemp.w.join, family='poisson')
 pois.wt$aic # AIC = 456.10
 # can compare with likelihood ratio test as Poisson model is nested in negbin
 lrtest(nb.wt, pois.wt) # negbin is a very significant improvement; 
@@ -211,7 +210,7 @@ sewtemp.w.joinw <- within(sewtemp.w.joinw, {
 })
 
 # plot
-p <- ggplot(sewtemp.w.joinw, aes(x=TempMeanF))
+p <- ggplot(sewtemp.w.joinw, aes(x=Mean.TemperatureF))
 p <- p + geom_point(aes(y=N), shape=21)
 p <- p + geom_ribbon(aes(ymin=LL, ymax=UL), alpha=0.25)# confidence bounds
 p <- p + geom_line(aes(y=phat), colour='blue') + # fitted points

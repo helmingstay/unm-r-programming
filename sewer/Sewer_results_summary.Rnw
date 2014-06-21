@@ -50,91 +50,12 @@ require(pscl) # for pR2 function
 @
 
 <<read_data, size='footnotesize', include=FALSE>>=
-## 10-40 near miss
-## 10-42 any spill
-## 10-48 property damage 
-
-sewer <- read.csv('http://unm-r-programming.googlecode.com/files/new-ABQ-sewer.csv')
-## Convert reporting date column into time-based object
-sewer$date <- as.POSIXct( sewer$REPORTDATE, format='%m/%d/%Y %H:%M')
-sewer$day <- as.Date(sewer$date)
-## Inspect
-str(sewer)
+source('run.weather.R')
 @
 
 See results in ManholeWeatherRegression.Rnw
 
 \section{Weekly mean air temperature predicts total number of sewer blockages that week}
-
-<<temp_data, size='footnotesize', include=FALSE>>=
-weather <- read.csv('abq-temps-2005-2014.csv')
-## Turn factor into date    
-weather$day <- as.Date(weather$MST)
-## Convert Fahrenheit into Celsius
-weather[,2:4] <- fahrenheit.to.celsius(weather[,2:4])
-## Inspect
-str(weather)
-## Melt data
-weather.melt <- melt( weather, id.vars=c('day', 'MST'))
-## Inspect
-#str(weather.melt)
-@
-
-<<sewer_weather, include=FALSE>>=
-## combine weather and sewer data in one dataset
-intersect(colnames(weather), colnames(sewer))
-sewer.weather <- join(sewer, weather, type='left')
-#head(sewer.weather, 3)
-@
-
-<<xts, fig.cap='Weather data as a timeseries object', size='footnotesize', include=FALSE>>=
-# xts(data, timebase), timebase is a vector that can be turned into a POSIXct
-timebase <- as.POSIXct( weather$day) + 7*60*60 # correct time zone (add 7 hours in seconds)
-
-weather.xts <- xts(subset(weather, select=-c(MST, day)), timebase) # remove non-numeric columns (MST and the date)
-# only include weather data within range of sewer blockage data
-weather.xts <- weather.xts["2009-01-06/2013-01-31"]
-#head(weather.xts, 3)
-@ 
-
-<<sewer_fail_roll, size='footnotesize', include=FALSE>>=
-## Add day year, week, and year from the POSIXct date
-sewer$doy <- as.numeric(strftime(sewer$date, format='%j'))
-sewer$week <- sewer$doy %/% 7
-sewer$year <- as.numeric(strftime(sewer$date, format='%Y'))
-#head(sewer, 3)
-
-## Number of problems for each week
-sewer.fail.week = ddply( sewer, c('year', 'week'),
-    function(x) { 
-      data.frame(N=nrow(x))  } 
-    ## show progress
-    #.progress='text'
-)
-#head(sewer.fail.week)
-
-## Get weekly mean temp
-temp.week <- weather.xts$Mean.TemperatureF
-temp.week <- apply.weekly(temp.week, FUN=mean)
-
-## week and year from xts .index functions
-## see ?.index for details
-temp.week$week <- .indexyday(temp.week) %/% 7
-temp.week$year <- .indexyear(temp.week) + 1900
-
-## Turn into data.frame and join with sewer data
-temp.week.df <- data.frame(temp.week)
-#head(temp.week.df, 3)
-## Full or "outer" join -- keep weather data for weeks without problems
-# left join excludes weather data for weeks with no blockage data
-sewer.join <- join(sewer.fail.week, temp.week.df, type='full')
-#head(sewer.join, 3)
-
-## Weeks with no problems 
-sewer.join$N[is.na(sewer.join$N)] <- 0
-## Why are there remaining NAs in Mean.TemperatureF?
-sewer.join <- na.omit(sewer.join)
-@
 
 <<weeklm, fig.cap='Linear model diagnostic plots.', size='footnotesize', message=FALSE, warning=FALSE, error=FALSE, echo=FALSE, include=FALSE>>=
 ## Just look at 10-40 (most of the data)
@@ -160,7 +81,6 @@ pr2 <- with(sewer.nb, (null.deviance-deviance)/null.deviance)
 paste('Pseudo $R^2$ = ', signif(pr2, 2))  # 0.093 
 pR2(sewer.nb) # McFadden's pseudo R2 ~ variance explained
 @
-
 
 <<plotglm, size='footnotesize', echo=FALSE, fig.pos='h', fig.cap='Air temperature and total sewer blockages', fig.height=4>>=
 # calculate predicted values and confidence intervals
