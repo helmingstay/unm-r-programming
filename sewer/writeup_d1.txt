@@ -20,7 +20,7 @@ FOG effluent solidifies at lower temperatures, causing overt blockages.
 
 In this study we examine five years of sewer blockage data from the City of Albuquerque municipal sewer system.  
 We explore the relationship between air temperature, sewage temperature, and the frequency of sewer temperature blockages.We find that air temperature is a useful proxy of sewage temparature, and that both air and sewage temperature predict sewage blockage. These relationships shed light on mechanisms of sewer blockage, and can potentially help municipalities
-anticipate blockage rates using readily available atmospheric temperature measurements.
+anticipate time periods of elevated sewer blockages using readily available atmospheric data.
 
 2. Methods
 
