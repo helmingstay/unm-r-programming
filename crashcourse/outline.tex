@@ -10,54 +10,67 @@
 \begin{document}
 
 \begin{center}
-\Large{R Crash Course}
+\Large{R Boot Camp}
 ~\\
-\large{Summer 2014}
+\large{Fall 2014}
+~\\
 \large{Christian Gunning}
+
+www.x14n.org
 ~\\
 %\textbf{Name: \underline{\hspace{6cm}} }
 \end{center}
  
 \section*{What is it, and who's it for?}
-The R Crash Course is an intensive workshop that focuses on data management and
-visualization in R.   It is designed primarily for scientists, and is appropriate
-for beginning and intermediate R users.   Using hands-on activities and your own
-data, you will learn basic programming, gain experience in common data manipulation
-tasks, and create your own publication-quality figures.
+The R Boot Camp is an intensive workshop that focuses on data management and
+visualization in R.   It is designed primarily for graduate students who
+frequently work with data, and is appropriate
+for beginning and intermediate R users.   Participants will 
+learn basic programming, gain experience in common data manipulation
+tasks, and create publication-quality figures using hands-on activities and 
+real-world datasets.
 
 \section*{Background}
-R is a statistical 
- analysis framework and programming language that is heavily used by
-researchers in a wide range of fields.
-Effective use of software tools like R can greatly enhance
-research productivity and enable communication of results
-through high-quality data visualization. New users often find R
-challenging, intimidating, or downright confusing. 
-The R Crash Course aims to accelerate the steep learning curve 
-that many new R users encounter.  
+R has been called the {\em lingua franca} of statistics. R is a
+programming language 
+and statistical analysis framework that is used by
+researchers in a wide range of scientific fields.
+
+New users often find R
+challenging and downright intimidating. 
+The R Boot Camp aims to accelerate the steep learning curve 
+that many new R users encounter, and will introduce 
+skills for effectively using R in a research environment.
+Effective use of R can greatly enhance
+research productivity and facilitate successful communication of results
+through high-quality data visualization. 
 
 \section*{Requirements}
 The most important requirement of this workshop is time and a willingness to
-work.  Partipants are expected to attend all sessions and spend 1-2 hours/day
-individually on assignments.
+work.  Participants are expected to attend all sessions and spend at least 1 hour/day
+on individual assignments.
 
 Prior experience with R or a spreadsheet program like Excel is helpful but not
 required.  Participants should be comfortable with basic
 computer use, and must have their own computer.  Prior to the workshop, participants
-must install R and Rstudio and select a dataset for workshop use.  Students are
-encouraged to work in small groups on a shared dataset.
+must install R and Rstudio and obtain a dataset for workshop use.
+Students are encouraged to work in small groups on a shared dataset.
 
 \clearpage
+
 \section*{Schedule}
+D=Day, S=Session.  Sessions and labs are 1.5 hours.
+\vspace{-5mm}
 \subsection*{D1S1}
 \begin{itemize}
     \item  Initial Evaluations
-    \item  Syllabus
+    \item  Syllabus, expectations
+    \item  Review assignment, intro to packages and help
     \item  Introductions, datasets, research goals
-    \item  Introduction to Rstudio - working with scripts
+    \item  Introduction to Rstudio - working with scripts, panes, shortcuts
     \item  Reading in data
-    \item  Project - read in your own data
 \end{itemize}
+\subsection*{Break: 30 minutes}
 \subsection*{D1S2}
 \begin{itemize}
     \item  Quiz, Questions, Review
@@ -65,59 +78,96 @@ encouraged to work in small groups on a shared dataset.
     \item  Indexing: Columns and Rows
     \item  Columns are vectors: mode 
     \item  Subsetting
-    \item  (Advanced data - Joins)
-    \item  Introduction to functions - summarizing data
-    \item  Help pages
+    \item  Lab assignment: discuss datasets, identify 3 possible groups
+\end{itemize}
+\subsection*{Lunch}
+\subsection*{Lab}
+\subsection*{D1S3}
+\begin{itemize}
+    \item Choose groups
+    \item Intro to factors
+    \item Advanced data - Joins
+    \item Intro to knitr
 \end{itemize}
 
+\clearpage
 \subsection*{D2S1}
 \begin{itemize}
     \item Quiz, Questions, Review
-    \item Review assignment
     \item Functions
-    \item Flow control
-    \item Project - write your own function that uses a for loop to compute the
-marginal mean/sd/nsamples for each group.
+    \item Vectorization
 \end{itemize}
+\subsection*{Break}
 \subsection*{D2S2}
 \begin{itemize}
     \item Quiz, Questions, Review
-    \item Vectorization
-    \item Functions in functions - ddply
-    \item Scoping and namespaces
-    \item Debugging
-    \item How to find help
+    \item Subsetting
+    \item Marginal and conditional
+    \item ddply: Functions in functions 
+    \item Lab assignment: identify 3 questions that your data can be used to answer.
+Sketch 1 graph for each question, including axis labels.
+\end{itemize}
+\subsection*{Lunch}
+\subsection*{Lab}
+\subsection*{D2S3}
+\begin{itemize}
+    \item Plotting with ggplot: aesthetics and layers
+    \item Advanced data management: reshape2
 \end{itemize}
 
+\clearpage
 \subsection*{D3S1}
 \begin{itemize}
     \item Quiz, Questions, Review
-    \item Plotting with ggplot - aesthetics and layers
-    \item (Advanced data management -- reshape?)
-    \item Project - plot data
+    \item Scoping and namespaces
+    \item Flow control
+    \item Debugging and finding help
 \end{itemize}
+
+\subsection*{D3S2}
 \begin{itemize}
     \item Quiz, Questions, Review
-    \item Advanced plotting -- facets, fine-tuning graphics
-    \item Presentations - 10 min, 3 figures / group
+    \item Advanced plotting: facets, fine-tuning graphics
+    \item Lab assignment: work on polishing figures 
+\end{itemize}
+
+\subsection*{Lunch}
+\subsection*{Lab}
+\subsection*{D3S3}
+\begin{itemize}
+    \item CRAN, packages, statistics
+    \item Presentations: 10 min, 3 figures / group
     \item Final Review: where to go from here?
 \end{itemize}
 
-\section*{Assignments}
-\subsection*{A1}
+\clearpage
+\section*{Assignments: Due at beginning of marked day}
+\subsection*{Day 1}
 \begin{itemize}
-    \item Using help pages
-    \item Read in data
-    \item Subset, summarize
     \item Install plyr and reshape2
+    \item Intro to help pages
+    \item Identify the arguments of \texttt{rnorm}
+    \item Identify the arguments of \texttt{sample}. Run the first example of
+\texttt{sample}, and explain the results.
 \end{itemize}
 
-\subsection*{A2}
+\subsection*{Day 2}
+Use the provided knitr template to do the following:
 \begin{itemize}
-    \item Use Google to find a solution
-    \item Debug a script - ddply function
-    \item Write your own function for use in ddply, run analysis, explain
-results
+    \item Read in data
+    \item Subset, summarize
+    \item Choose at least 2 grouping variables in your data.set.  Use
+\texttt{ddply} to compute marginal summaries over each of these variables
+separately, and both together. 
+    \item Describe your results in words.
+\end{itemize}
+
+\subsection*{Day 3}
+\begin{itemize}
+    \item Use knitr and ggplot to create 3 figures, including correct axis
+labels, legends, and an informative caption.  One figure should
+use facets, and one figure should include at least 3 aesthetics.  
+    \item In your knitr document, explain your choice of aesthetics.
 \end{itemize}
 
 \end{document}
