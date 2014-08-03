@@ -9,6 +9,11 @@
  * [http://cran.r-project.org/faqs.html FAQs], including OSX and Windows -- check these if you have problems with installation, etc.
  * [http://cran.r-project.org/manuals.html The core manuals] -- these are the sacred texts and ultimate authority of R.   They can answer obscure questions.  The data import/export manual is short and sweet.
 
+= Graphing =
+ * [http://science.nature.nps.gov/im/datamgmt/statistics/r/advanced/latticegraphics.cfm Overview of Lattice]
+ * [http://docs.ggplot2.org/current/ ggplot2 docs] 
+ * [http://rgraphgallery.blogspot.com/ R Graph Gallery]
+ * [http://rgm3.lab.nig.ac.jp/RGM/R_image_list?navi_idx=0 R Graphical Manual]
 
 = R News =
  * David at Revolutions Analytics does a great job of collecting R news here: http://blog.revolutionanalytics.com/
