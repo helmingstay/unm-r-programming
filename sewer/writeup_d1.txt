@@ -46,6 +46,9 @@ The dependence of number of blockages per week on mean weekly sewer temperature 
 Weekly sewage temperature was calculated by simply taking the mean value of all measurements for all days and interceptors that week. (?? enough samples per week??)
 
 3. Results
+
+
+
 3.1 Air temperature and sewer temperature
 Candidate models were ranked using BIC (delta = 10; Table 2). The best model included air temperature, interceptor identity and an interaction between the two. This indicates that there was small but significant variation between interceptors’ and manholes’ responses to temperature. This model explained the majority of variation in sewage temperature (R2 = 0.78).
 
