@@ -134,10 +134,11 @@ p <- ggplot(sewtemp.join, aes(x=Temp))
 p <- p + geom_point(aes(y=N), shape=21)
 p <- p + geom_ribbon(aes(ymin=LL, ymax=UL), alpha=0.25)# confidence bounds
 p <- p + geom_line(aes(y=phat), colour='blue') + # fitted points
-  xlab('Mean weekly temperature (°C)') + ylab('Number of incidents per week')
+  xlab('Mean weekly sewage temperature (°C)') + ylab('Number of incidents per week')
 p <- p + theme_classic() + 
   theme(panel.grid.major=element_blank(),panel.grid.minor=element_blank())
 print(p)
+pblock <- p
 
 
 #### Compare the use of weather versus sewer temperature for predicting blockages
