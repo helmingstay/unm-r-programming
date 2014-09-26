@@ -25,56 +25,48 @@
 #ifndef RCPPARMADILLO__EXTENSIONS__MULTINOM_H
 #define RCPPARMADILLO__EXTENSIONS__MULTINOM_H
 
-#include <RcppArmadilloExtensions/fixprob.h>
-
+#include <RcppArmadillo.h>
 namespace Rcpp{
     namespace RcppArmadillo{
 
-        IntegerMatrix rmultinom(const int n, const int size,  NumericVector prob_  ) {
+        IntegerVector rmultinom(int size,  NumericVector prob) {
             // meaning of n, size, prob as in ?rmultinom
             // opposite of sample() - n=number of draws
-            
             double pp;            
-            int ii, jj, kk;
-            int probsize = prob_.size();
-            // Create return object 
-            IntegerMatrix ret(probsize, n);
-            IntegerMatrix::iterator retIt;
-            
-            if ( n < 0 || NA_INTEGER(n))  throw std::range_error( "Invalid n" ) ;
-            if ( size < 0 || NA_INTEGER(size))  throw std::range_error( "Invalid size" ) ;
-            // copy probs once, pass-by-ref hereafter
-            NumericVector fixprob = clone(prob_);
-            // normalize, error-check probability vector
-            // fixprob will be modified in-place
-            // replace=true, we don't care about size
-            FixProb(fixprob, 1, true);
-            // should be 1?
-            double p_tot = sum(fixprob);
-            // for each column
-            for(ii= 0; ii < n; ii++) {
-                // column counter
-                tmpn = n;
-                retIt = ret.begin() + ii * probsize;
-                //rmultinom(size, REAL(prob), k, &INTEGER(ans)[ik]);
-                // for each row in this column
-                for(kk = 0; kk < probsize; kk++) { /* (p_tot, n) are for "remaining binomial" */
-                    if(fixprob[kk] >0) {
-                        pp = fixprob[kk] / p_tot;
-                        *(retIt+kk) = ((pp < 1.) ? (int) Rf_rbinom((double) tmpn,  pp):
-                             /*>= 1; > 1 happens because of rounding */
-                             tmpn);
-                        tmpn -= *(retIt+kk);
-                    }; // else { *(retIt+kk) = 0; }
-                    if(tmpn <= 0) /* we have all*/ continue;
-                    p_tot -= fixprob[k]; /* i.e. = sum(prob[(k+1):K]) */
-                }
-                // the rest go here
-                *(retIt + probsize-1) = tmpn;
+            int ii;
+            int probsize = prob.size();
+            // Return object
+            IntegerVector draws(probsize);
+            if ( size < 0 || size == NA_INTEGER)  throw std::range_error( "Invalid size" );
+            long double p_tot = 0;
+            for (ii = 0; ii < probsize; ii++) {
+                 p_tot += prob[ii];
             }
-            return ret;
+            // do as rbinom
+            if (size == 0 || (probsize == 1 && p_tot == 0.)) {
+                 return draws;
+            }
+            //rmultinom(size, REAL(prob), k, &INTEGER(ans)[ik]);
+            // for each slot
+            for(ii = 0; ii < probsize-1; ii++) { /* (p_tot, n) are for "remaining binomial" */
+                if(prob[ii]) {
+                    pp = prob[ii] / p_tot;
+                    // >= 1; > 1 happens because of rounding 
+                    draws[ii] = ((pp < 1.) ? 
+                        (int) Rf_rbinom((double) size,  pp) :
+                         size
+                    );
+                    size -= draws[ii];
+                }; // else { ret[ii] = 0; }
+                // all done
+                if(size <= 0)  return draws;
+                // i.e. p_tot = sum(prob[(k+1):K]) 
+                p_tot -= prob[ii]; 
+            }
+            // the rest go here
+            draws[probsize-1] = size;
+            return draws;
         }
-
     }
 }
 
