@@ -1,5 +1,6 @@
 require(knitr)
 knit('Sewer_results_summary.Rnw')
 knit('ManholeWeatherRegression.Rnw')
+knit('writeup.Rnw')
 system('pdflatex Sewer_results_summary')
-system('pdflatex ManholeWeatherRegression')
+system('pdflatex writeup')

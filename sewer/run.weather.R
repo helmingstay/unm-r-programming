@@ -1,12 +1,3 @@
-## load sewer data (old data, superceded??)
-## key:
-## 10-40 near miss
-## 10-42 any spill
-## 10-48 property damage 
-sewer <- read.csv('http://unm-r-programming.googlecode.com/files/new-ABQ-sewer.csv')
-## Convert reporting date column into time-based object
-sewer$date <- as.POSIXct( sewer$REPORTDATE, format='%m/%d/%Y %H:%M')
-sewer$day <- as.Date(sewer$date)
 
 ## next, load in weather data,
 ## used by sewtempandblock.R
