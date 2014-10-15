@@ -13,7 +13,7 @@ require(pscl)           # for Vuong's closeness test
 require(lmtest)         # for likelihood ratio test
 
 #### first load weather data (and old sewer data??)
-source('run.weather.R')
+#source('run.weather.R')
 
 ### sewer blockage data
 sewblock <- read.csv('http://unm-r-programming.googlecode.com/files/new-ABQ-sewer.csv')

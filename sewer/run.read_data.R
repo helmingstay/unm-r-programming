@@ -53,6 +53,21 @@ sewtemp <- unique(sewtemp) # remove duplicate entries
 ## rename sewer temp col
 #sewtemp$ph[sewtemp$ph > 14] <- NA # remove erroneous entries
 sewtemp <- rename(sewtemp, c(Temp='SewTempC'))
+## remove rows with no sewer temperature readings
+sewtempn <- na.omit(subset(sewtemp, select=c(Date, SewTempC, Interceptor, Manhole)))
+timebase <- as.POSIXct( sewtempn$Date) + 7*60*60 # correct time zone (add 7 hours in seconds)
+sewtemp.xts <- xts(sewtempn, timebase) # 
+#### Get weekly mean sewer temperature
+### at the moment this averages across all interceptors, manholes and days
+### is there a better way??
+sewtemp.week <- apply.weekly(sewtemp.xts$SewTempC, FUN=mean)
+#plot(sewtemp.week) # appears to work ok
+## week and year from xts .index functions
+## see ?.index for details
+sewtemp.week$week <- .indexyday(sewtemp.week) %/% 7
+sewtemp.week$year <- .indexyear(sewtemp.week) + 1900
+## Turn into data.frame and join with sewer data
+sewtemp.week.df <- data.frame(sewtemp.week)
 
 ########################################
 ### Air temperature / weather data
@@ -103,3 +118,16 @@ sewer.join <- join(sewer.fail.week, temp.week.df, type='full')
 sewer.join$N[is.na(sewer.join$N)] <- 0
 ## Why are there remaining NAs in Mean.TemperatureF?
 sewer.join <- na.omit(sewer.join)
+
+
+## Full or "outer" join -- keep weather data for weeks without problems
+sewtemp.join <- join(sewer.fail.week, sewtemp.week.df, type='full')
+## Weeks with no problems 
+sewtemp.join$N[is.na(sewtemp.join$N)] <- 0
+## Remove all rows missing either temperature or blockage data
+sewtemp.join <- na.omit(sewtemp.join) # n=153
+### make another data frame to include weather data
+## joining sewer data to the temp.weekdf from Sewer_results_summary.Rnw
+sewtemp.w.join <- join(sewtemp.join, temp.week.df, by=c('week', 'year'), type='left')
+## remove missing rows
+sewtemp.w.join <- na.omit(sewtemp.w.join) # n=95
