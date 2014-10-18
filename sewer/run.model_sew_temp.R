@@ -28,5 +28,5 @@ summary(.lin.best[[1]])
 
 ## adj.r.sq as percent
 ## chose b.by.intercept - parsimonious
-.best.rsq <- sprintf('%0.3f', ss(temp.lin.models$mb.by.interceptor)$adj.r.sq)
+.best.rsq <- sprintf('%0.3f', summary(temp.lin.models$mb.by.interceptor)$adj.r.sq)
 

@@ -5,6 +5,8 @@
 }
 
 require(knitr)
+require(markdown) # needed to require these packages at startup
+require(stargazer)# otherwise I get error messages
 ## prep html writer options
 .htmlOptions <- markdownHTMLOptions(defaults=TRUE)
 ## remove inline images from options vector
