@@ -232,7 +232,12 @@ my.startable( notgrease.nb,
 ??josh - add delta bic col, include note in caption about what constitutes interesting delta bic? wikipedia says 10=strong...
 ```{r bictab, echo=FALSE, size='footnotesize', results='asis'}
 names(.lin.bic) <- c('Model', 'BIC')
-my.xtable(.lin.bic, label='tab:bictab', caption='Candidate models for predicting sewage temperature using mean air temperature, ranked using Bayes Information Criterion')
+# calculate Delta BIC
+.lin.bic$Delta <- c('-', # first element of vector is blank
+                    round( digits=1,   # for table
+                           x = cumsum( # cumulative difference from top model
+                             diff(.lin.bic$BIC) ) ) ) # calcs differences
+my.xtable(.lin.bic, label='tab:bictab', caption='Candidate models for predicting sewage temperature using mean air temperature, ranked using Bayes Information Criterion. Delta BIC, the difference between each model and its highest-ranked competitor, is a measure of empirical support for that model. A value over $> 10$ is considered strong evidence against that model (Kass and Raftery, 1995)')
 ```
 
 ```{r bestlin, echo=FALSE, size='footnotesize', results='asis'}
