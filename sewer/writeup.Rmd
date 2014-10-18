@@ -75,17 +75,15 @@ source('run.grease_plots.R')
 # Methods
 
 ### Data
-Albuquerque Bernalillo County Water Utility Authority (ABCWUA) responds to SSB events after discovery by maintenance workers or reports of blockages from the public. This study used an anonymised dataset of SSB dates, along with engineers' estimates of blockage cause. SSB reports from the period January 2009 - January 2013 (inclusive) were used in this study.
+Albuquerque Bernalillo County Water Utility Authority (ABCWUA) responds to SSB events after discovery by maintenance workers or reports of blockages from the public. This study used an anonymised dataset of SSB dates, along with engineers' estimates of blockage cause. In total, `r nrow(sewer)` SSB reports from the period `r format(range(sewer$day, na.rm=T)[1], '%B %d, %Y')` - `r format(range(sewer$day, na.rm=T)[2], '%B %d, %Y') ` (inclusive) were used in this study.
 The frequency of sanitary sewer blockages is the primary focus of this work.
 
 Sewer grab sample temperature (SGST) measurements were collected by ABCWUA personnel during routine maintenance, 
 using XXX probes XXXX etc. (??mark)
-SGST measurements were available from 15 manholes, leading to 3 interceptors within Albuquerque.
-??(How many total samples)
-??(Mark - explain interceptors / structure of this data)
-SGST from the period December 2005 - December 2010 (inclusive) were used in this study.
+SGST measurements were available from 15 manholes, leading to 3 interceptors within Albuquerque.??(Mark - explain interceptors / structure of this data)
+In total, `r nrow(sewtemp)` measurements from the period `r format(range(sewtemp$Date, na.rm=T)[1], '%B %d, %Y')` - `r format(range(sewtemp$Date, na.rm=T)[2], '%B %d, %Y') ` (inclusive) were used in this study.
 
-Mean daily air temperature (MDAT) was obtained from the Albuquerque International airport's (KABQ) automated METAR data collection system (available from \url{http://www.wunderground.com/history/airport/KABQ}) for the period of record for which either SSB and SGST or measurements were available (December 2005 - January 2013, inclusive).
+Mean daily air temperature (MDAT) was obtained from the Albuquerque International airport's (KABQ) automated METAR data collection system (available from \url{http://www.wunderground.com/history/airport/KABQ}) spanning the years during which either SSB and SGST or measurements were available (`r format(range(weather$Date, na.rm=T)[1], '%B %d, %Y')` - `r format(range(weather$Date, na.rm=T)[2], '%B %d, %Y') `, inclusive).
 
 Since most days had no SSB events, the total number of SSB 
 events per week (W-SSB) was computed and used in subsequent 
@@ -153,9 +151,8 @@ variation in observed sewer blockage frequency.
 
 ### Air temperature (MW-MDAT) and sewer blockage frequency (W-SSB)
 We found that sewer blockages were more frequent when air temperature was low. MW-MDAT was a highly significant predictor of W-SSB (Table \ref{tab:sewnb}; Figure \ref{fig:multiblockplot}B).  However, this model explains very little variation in blockage frequency (D = `r .dev.block.airtemp`).
-??is this correct?  Text said .04, I'm getting .017.  
 
-This dataset includes 491 (??code) blockages where grease was the estimated blockage cause, representing 54\% of incidents during the study period.
+This dataset includes `r nrow(.grease)` blockages where grease was the estimated blockage cause, representing `r round((nrow(.grease) / (nrow(.grease) + nrow(notgrease))) * 100, 1)`\% of incidents during the study period.
 When these grease-caused SSB events were modeled separately, a statistically significant relationship between W-SSB and MW-MDAT was also observed (Table \ref{tab:greasetab}).
 ??Fig3 -- see greaseplot and nongreaseplot
 ??Model to test by cause
@@ -229,7 +226,6 @@ my.startable( notgrease.nb,
 \clearpage
 
 # Supplemental Information
-??josh - add delta bic col, include note in caption about what constitutes interesting delta bic? wikipedia says 10=strong...
 ```{r bictab, echo=FALSE, size='footnotesize', results='asis'}
 names(.lin.bic) <- c('Model', 'BIC')
 # calculate Delta BIC
