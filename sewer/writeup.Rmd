@@ -94,17 +94,17 @@ yielding mean weekly SGST (MW-SGST).
 In all analyses that included MW-SGST, weeks without SGST measurements were excluded.
 
 ### Linear models
-All analysis was conducted with the R statistical programming environment \parencite{cran}.
-For final selection of linear model specifications, both Bayes'information criterion (BIC) and parsimony considerations 
-were employed. 
 
 First, we used ordinary linear models to estimate the response of MW-SGST to MW-MDAT, 
-interceptor identity, and manhole identity. 
+interceptor identity, and manhole identity. For final selection of linear model specifications, both Bayes'information criterion (BIC) and parsimony considerations 
+were employed. 
 In favor of parsimony, and due to the small effect sizes and/or statistical non-significance, 
-interceptor and manhole identity were excluded from subsequent models.  
+interceptor and manhole identity were excluded from subsequent models. 
+
 Next, we used generalized linear models (GLM) to estimate the response of W-SSB to either MW-SGST or MW-MDAT.  
-We also used a GLM to estimate the response of W-SSB to both MW-MDAT and blockage cause.  Due to low sample numbers, 
-the response of W-SSB to both MW-SGST and blockage cause was not estimated.
+We also used a GLM to estimate the response of W-SSB to both MW-MDAT and blockage cause.  Due to low sample numbers, the response of W-SSB to both MW-SGST and blockage cause was not estimated.
+
+All analysis was conducted with the R statistical programming environment \parencite{cran}.
 
 # Results
 
@@ -181,9 +181,9 @@ sewer temp is better
 
 Temperature data, which are widely and freely available, have modest utility in predicting sewer blockages over weekly timescales. These results suggest that areas experiencing increasing average temperatures may find that this trend alleviates the pressure placed on sewage systems by FOG deposits. Similarly, weather forecasts and real-time weather observations may prove useful for predicting and responding rapidly to blockages, reducing the threat to property and public health.
 
-Data from sewer measurements are a slightly more accurate predictor of blocking frequency. Where these data are regularly collected and rapidly analysed, they could be used in place of air temperature to anticipate problems in sanitation infrastructure. 
+Data from sewer measurements are a slightly more accurate predictor of blocking frequency. Where these data are regularly collected and rapidly analysed, they could be used in place of air temperature to anticipate problems in sanitation infrastructure and plan system maintenance. 
 
-The relationship between air and sewage temperature is likely to be mediated by ground temperature, and therefore by groundwater levels. The difference in predictive ability between sewage and air temperature may reflect the variable groundwater levels during the seasonal cycle in Albuquerque. Similarly, differences between interceptors and manholes may reflect elevation and land use, via their effects on groundwater temperature. Models including precipitation patterns and/or local physical characteristics (e.g. water table height, land use, soil type, geology) could test this hypothesis. 
+The relationship between air and sewage temperature is likely to be mediated by ground temperature, and therefore by groundwater levels. The difference in predictive ability between sewage and air temperature may reflect the variable groundwater levels during the seasonal cycle in Albuquerque. Similarly, differences between interceptors and manholes may reflect elevation and land use, via their effects on groundwater temperature. Models including precipitation patterns and/or local physical characteristics (e.g. water table height, land use, sewer configuration, soil type, geology) could test this hypothesis. 
 
 With continuing population rise and urbanisation, efficient operation of urban waste-water infrastructure is an increasingly important issue for global public health. \cite{Sato2013} recently highlighted the importance of more research into efficacy of waste-water treatment techniques, particularly in the developing world. The data in this study were not collected specially for research purposes. Rather, this study used data already collected by industry as part of standard operations, married with publicly accessible weather data available online. This demonstrates the potential usefulness of historic industry datasets for addressing future challenges. 
 
