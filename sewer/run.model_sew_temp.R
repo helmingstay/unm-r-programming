@@ -22,6 +22,12 @@ temp.lin.models <- list(
 ## pull out best 2
 .lin.best <- temp.lin.models[.lin.bic$.id[1:2]]
 
+## get adjusted r squared for each model
+# .lin.arsed <- ldply(temp.lin.models, function(x) return(summary(x)$adj.r.squared))
+# .lin.arsed[,2] <- round(.lin.arsed[,2], 2)
+# .lin.arsed
+## not very informative = all either 0.77 or 0.78....
+
 ## compare with anova
 anova(.lin.best[[2]], .lin.best[[1]])
 summary(.lin.best[[1]])
