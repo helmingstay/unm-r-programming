@@ -1,0 +1,43 @@
+Notes on final version of allgrabdata_datefix.csv, by columns:
+Data was extracted and compiled from various excel ABCWUA spreadsheets, with various formatting.
+
+1) Interceptor 
+Names of three interceptors:
+Valley (142A)
+Westside (2024)
+Edith
+
+2) Manhole 
+Abbreviated names of the locations of manholes where each grab sample was collected.
+The name(s) on the right side of the = sign are those used by ABCWUA. Some manholes were referred to by various names, in which case these have been standardised:
+12motel = 12th. & Motel ( MH # G 14 - 802) (NB not a real location!) = csfour4 (all 12motel records changed to csfour4)
+12stove = 12th. & Stover ( MH # K 13 - 572)
+blakeco = Blake & Coors ( MH # N10-581) / Coors & Blake
+broadwa = Broadway ( MH # N14 - 364)
+csfour4 = CS # 4 = 12motel
+edicord = Edith & Cordero ( MH # J15 - 205)
+florken = Floretta & Kensington ( MH # E 14 - 931) / Kensington & Florretta
+ltwenty = Lift station 20 ( MH # P12 - 845) - 
+oldcoor = Old Coors (North of Gonzales) ( MH # K11-576) / Old Coors South of Churchill (North of Gonzales as of 21-Mar-07)
+oldcoso = Old Coors before LS # 1
+plantin = Plant Influent ( MH # PPH III Distribution Box) / TP2.3X  (Plant Influent)
+seconds = 2nd. St  MH # L 14 - 623) / 2nd st. & Southern
+tijeras = TP2.1 ( Tijeras )
+tp21val = TP2.1 Valley
+willloc = Willow & Locust ( MH # E 16 - 811)
+yuccesp = Yucca & Esperonza  / Yucca & Esperanza ( 57th & Avalon starting 3-21-12 )
+
+3) Date
+Converted from various formats used by ABCWUA personnel into standardised dd-mm-yy format, mainly using cell formatting functions in LibreOffice Calc, but some recalcitrant problems were fixed manually.
+
+4) Temp
+Sewer temperature of grab samples, as recorded by ABCWUA personnel. Almost all are in Fahrenheit, but a few were recorded in Celsius (those below 32F). All measurements >32 were converted to Celsius prior to analysis.
+
+5 - 9) Other measures from sewer grab samples which were not analysed
+pH - sewer pH
+Tot.Sulphide - total sulphide (mg/l)
+Dis.Sulphide - dissolved sulphide (mg/l)
+Tot.Iron     - total iron (mg/l)
+FerrousFe    - ferrous iron (mg/l)
+
+Josh Nightingale 04/November/2014
