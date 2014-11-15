@@ -8,7 +8,7 @@ output: html_document
 
 ```{r setup, include=FALSE, cache=FALSE}
 # Code to set up knitr settings and libraries used every time
-
+library(knitr)
 ## 
 opts_chunk$set(dev=c('png', 'tiff'),
     dpi=c(96, 300),
@@ -46,6 +46,7 @@ library(AER)
 library(pscl) # for ZIP models
 library(xts)
 library(MASS)
+library(stargazer)
 mk.prop.dev <- function(x) {
     ## takes a glm, returns prop reduction diviance 
     ## see zheng 2000

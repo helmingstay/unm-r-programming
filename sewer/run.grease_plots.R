@@ -104,4 +104,4 @@ r <- r + annotate("text", x=-5.5, y=max(greaseblock$N)+1, label = 'B')
 .n.notgrease <- length(notgrease.nb$residuals)
 
 # check that prediction is different for same doy in different years
-bb <- ddply(curlpred, .(doy), summary) 
+#bb <- ddply(curlpred, .(doy), summary) 
