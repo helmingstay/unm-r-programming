@@ -53,6 +53,8 @@ mk.prop.dev <- function(x) {
     D <- 1 - x$deviance/x$null.deviance
     sprintf('%1.3f', D)
 }
+## helper functions
+source('mk.helpers.R')
 ```
 
 ```{r read_data, size='footnotesize', include=FALSE}
@@ -128,6 +130,7 @@ p <- p + theme_classic()
 p <- p + theme(legend.position=c(0.85, 0.2))
 p <- p + xlab('MW-MDAT (°C)') + ylab('MW-SGST (°C)')
 print(p)
+
 ```
 
 ### Sewage temperature (MW-SGST) and sewer blockage frequency (W-SSB)
@@ -139,17 +142,17 @@ employed a negative binomial GLM with a log link function \cite{mass}.
 The final  relationship was highly statistically significant ($p < 0.001$; Table \ref{tab:tempandblock}), 
 
 The W-SSB data followed an overdispersed Poisson 
-distribution, with forty-one weeks (23.8%) showing one or 
+distribution, with forty-one weeks (23.8%??) showing one or 
 zero incidents.
-Consequently, the final negative binomial specification provided a significant improvement over a Poisson GLM (likelihood ratio tests, $p < 0.001$).
+Consequently, the final negative binomial specification provided a significant improvement over a Poisson GLM (likelihood ratio tests, `r sprintf('$p < 0.001?? %s$', lrtest.sewtemp$p.val)`.
 
-$R^2$ statistics are not available for GLM, though the proportional reduction in deviance (D) provides an analogous measure of the model's explanatory power \parencite{zheng2000summarizing}. For the final negative binomial model, we find that D = `r .dev.block.sewtemp`,
+$R^2$ statistics are not available for GLM, though the proportional reduction in deviance (D) provides an analogous measure of the model's explanatory power \parencite{zheng2000summarizing}. For the final negative binomial model, we find that D = `r  block.sewtemp.nb$dev`,
 showing that this model explains only a modest amount of 
 variation in observed sewer blockage frequency.
 
 
 ### Air temperature (MW-MDAT) and sewer blockage frequency (W-SSB)
-We found that sewer blockages were more frequent when air temperature was low. MW-MDAT was a highly significant predictor of W-SSB (Table \ref{tab:sewnb}; Figure \ref{fig:multiblockplot}B).  However, this model explains very little variation in blockage frequency (D = `r .dev.block.airtemp`).
+We found that sewer blockages were more frequent when air temperature was low. MW-MDAT was a highly significant predictor of W-SSB (Table \ref{tab:sewnb}; Figure \ref{fig:multiblockplot}B).  However, this model explains very little variation in blockage frequency (D = `r sewer.nb$dev`).
 
 This dataset includes `r nrow(.grease)` blockages where grease was the estimated blockage cause, representing `r round((nrow(.grease) / (nrow(.grease) + nrow(notgrease))) * 100, 1)`\% of incidents during the study period.
 When these grease-caused SSB events were modeled separately, a statistically significant relationship between W-SSB and MW-MDAT was also observed (Table \ref{tab:greasetab}).
@@ -157,8 +160,8 @@ When these grease-caused SSB events were modeled separately, a statistically sig
 ??Model to test by cause
 However, there was no relationship between temperature and non-grease SSB (Table \ref{tab:nongreasetab}; Figure \ref{fig:multifigplot}). For the model predicting grease-caused blockages,  $D = `r mk.prop.dev(grease.nb)`$, compared with $D = `r mk.prop.dev(notgrease.nb)`$ for the model predicting non-grease-caused blockages.
 
-```{r multiblockplot, echo=FALSE, fig.pos='h', fig.width=10, fig.height=5, fig.cap=sprintf('Both sewage temperature (A; n=%d weeks) and air temperature (B; n=%d weeks) can be used to predict sanitary sewer blockages.', .n.pblock, .n.pairblock), message=FALSE}
-grid.arrange(pblock, pairblock, nrow=1)
+```{r multiblockplot, echo=FALSE, fig.pos='h', fig.width=10, fig.height=5, fig.cap=sprintf('Both sewage temperature (A; n=%d weeks, D=%s) and air temperature (B; n=%d weeks, D=%s) can be used to predict sanitary sewer blockages.', block.sewtemp.nb$nobs, block.sewtemp.nb$dev, block.airtemp.nb$nobs, block.airtemp.nb$dev), message=FALSE}
+grid.arrange(block.sewtemp.nb$plot, block.airtemp.nb$plot, nrow=1)
 ```
 
 
@@ -191,19 +194,20 @@ With continuing population rise and urbanisation, efficient operation of urban w
 ??Need table numbers.
 
 ```{r tabtempandblock, echo=FALSE, results='asis'}
-my.startable( nb.block, 
-    title=sprintf('Weekly mean sewage temperature predicts the number of blocked sewers that week (n=%d weeks)', length(nb.block$residuals)), 
+.l <- block.sewtemp.nb
+my.startable( .l$mod, 
+    title=sprintf('Weekly mean sewage temperature predicts the number of blocked sewers that week (Negative Binomial model, n=%d weeks, D=%s)', .l$nobs, .l$dev), 
     label='tab:tempandblock'
 )
 ```
 
 ```{r sewnb, results='asis', echo=FALSE}
+.l <- block.airtemp.nb
 my.startable(
-    sewer.nb, 
-    title=sprintf('Weekly mean air temperature predicts the number of blocked sewers that week (n=%d weeks)', length(sewer.nb$residuals)), 
+    .l$mod, 
+    title=sprintf('Weekly mean air temperature predicts the number of blocked sewers that week (Negative binomial model, n=%d weeks, D=%s)', .l$nobs, .l$dev), 
     label='tab:sewnb'
 )
-#paste('Pseudo $R^2$ = ', signif(pr2, 2))  # 0.093 
 ```
 
 ```{r greasetab, echo=FALSE, results='asis'}
@@ -264,7 +268,9 @@ my.xtable(summary(.lin.best[[1]]),
 
 summary(sewer.ps)
 # can compare with likelihood ratio test as Poisson model is nested in negbin
-lrtest(sewer.nb, sewer.ps) # negbin is a very significant improvement; 
+## moved to 
+lrtest.airtemp
+#lrtest(sewer.nb, sewer.ps) # negbin is a very significant improvement; 
 ##
 ## grease vs. nongrease diag
 ## check assumptions by comparing to Poisson model
@@ -275,18 +281,4 @@ summary(notgrease.ps) # a bit significant
 lrtest(notgrease.nb, notgrease.ps) # negbin is still a very significant improvement;
 # ie neither model is much good
 AIC(notgrease.nb); AIC(notgrease.ps) # negbin far superior by AIC
-```
-
-<!--  deprecated?? -->
-```{r tempandblockplot, echo=FALSE, fig.pos='h', fig.width=10, fig.height=5, fig.cap='Temperature predicts blockages caused by grease (A) but not other blockages (B)', message=FALSE}
-pblock <- pblock + 
-     #scale_y_sqrt() + #??ytrans
-        annotate("text", 
-                            x=min(sewtemp.join$Temp),
-                            y=max(sewtemp.join$N), label = 'A')
-#print(pblock)
-##
-#proportion of deviance explained
-pr2 <- mk.prop.dev(nb.block)
-#paste('Pseudo $R^2$ = ', signif(pr2, 2))  # 0.059 
 ```

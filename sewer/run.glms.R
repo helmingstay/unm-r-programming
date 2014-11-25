@@ -4,154 +4,123 @@ hist(sewtemp.join$N) # histogram of data
 # but no additional zero-generating process - 
 # therefore negative binomial GLM is best
 
+
+##!! xian 2014-11-24
+## ive organized everything into lists, above, one per model
+## prediction code plotting code wrapped intos functions 
+## in mk.helpers.R
+## 
+## see more notes below on dup code
+## sewer.join is big (all obs)
+## sewtemp.w.join is much smaller, just sewtemp grab weeks
+
+## data to use in model
+.dat <- sewer.join
+## xian -- combine all results for given model into named list
+## use temp list, assign name at end
+## $mod, $dev, $p (for plot), $nobs
+.l <- list()
 ## Overdispersed count data, use negative binomial
-sewer.nb <- glm.nb(N ~ MeanTempC, data=sewer.join)
-summary(sewer.nb) # very signiificant model
-.dev.block.airtemp <- mk.prop.dev(sewer.nb)
+.l$dat <- .dat
+.l$mod <- glm.nb(N ~ MeanTempC, data=.dat)
+.l$dev <- mk.prop.dev(.l$mod)
+.l$nobs <- length(.l$mod$residuals)
+# calculate predicted values and confidence intervals
+.l$pred <- mk.mod.ci(.df=.dat, .mod=.l$mod)
+# plot
+.l$plot <- mk.mod.ci.plot(.l$pred, .x="MeanTempC", .xlab="Mean weekly air temperature (°C)", .ylab="Number of incidents per week")
+## annotate plot, 
+## nudge A/B: >1 goes up/right, <1 goes down/left
+nudge <-  data.frame(x=1.1, y=0.9)
+.l$plot <- .l$plot +
+    annotate("text", 
+        x=min(.dat$MeanTempC)*nudge$x,
+        y=max(.dat$N)*nudge$y, 
+        label = 'XX', size=20
+    )
+## assign list a real name
+## number of sewer blockages by airtemp, negative binom model
+block.airtemp.nb <- .l
+#summary(sewer.nb) # very signiificant model
 ##
+
 ## check assumptions by comparing to Poisson model
-# fit Poisson model
-sewer.ps <- glm(N ~ MeanTempC, data=sewer.join, family='poisson')
+## pack into list as above
+.l <- list()
+.l$dat <- .dat
+.l$mod <- glm(N ~ MeanTempC, data=.dat, family='poisson')
+.l$dev <- mk.prop.dev(.l$mod)
+.l$nobs <- length(.l$mod$residuals)
+.l$pred <- mk.mod.ci(.df=.dat, .mod=.l$mod)
+# plot
+.l$plot <- mk.mod.ci.plot(.l$pred, .x="MeanTempC", .xlab="Mean weekly air temperature (°C)", .ylab="Number of incidents per week")
+block.airtemp.pois <- .l
+
+lrtest.airtemp <- lrtest(block.airtemp.nb$mod, block.airtemp.pois$mod)
 
 #### Predict number of blockages using sewer temperature data
 ## negative binomial model
-nb.block <- glm.nb(N ~ SewTempC, data=sewtemp.join)
-summary(nb.block) # highly significant; AIC = 638.37
+.dat <- sewtemp.join
+## pack list as above
+.l <- list()
+.l$dat <- .dat
+.l$mod <- glm.nb(N ~ SewTempC, data=.dat)
+#summary(nb.block) # highly significant; AIC = 638.37
+.l$nobs <- length(.l$mod$residuals)
 ## get proportion deviance
-.dev.block.sewtemp <- mk.prop.dev(nb.block)
-
-## check assumptions by comparing to Poisson model
-# fit Poisson model
-pois.block <- glm(N ~ SewTempC, data=sewtemp.join, family='poisson')
-pois.block$aic # AIC=811.46 - are these comparable?
-# can compare with likelihood ratio test as Poisson model is nested in negbin
-lrtest(nb.block, pois.block) # negbin is a very significant improvement
-
-## get plots out of .R files!!
-## plotting - no native ggplot2 method for plotting negbin models
-# calculate predicted values and confidence intervals
-glm.pred.pois <- cbind(sewtemp.join, predict(nb.block, type='link', se.fit=T))
-glm.pred.pois <- within(glm.pred.pois, {
-  phat <- exp(fit)
-  LL <- exp(fit - (1.96 * se.fit))
-  UL <- exp(fit + (1.96 * se.fit))
-})
-
+.l$dev <- mk.prop.dev(.l$mod)
+.l$pred <- mk.mod.ci(.df=.dat, .mod=.l$mod)
 # plot
-p <- ggplot(glm.pred.pois, aes(x=SewTempC))
-p <- p + geom_point(aes(y=N), shape=21)
-p <- p + geom_ribbon(aes(ymin=LL, ymax=UL), alpha=0.25)# confidence bounds
-p <- p + geom_line(aes(y=phat), colour='blue') + # fitted points
-  xlab('Mean weekly sewage temperature (°C)') + ylab('Number of incidents per week')
-p <- p + theme_classic() + 
-  theme(panel.grid.major=element_blank(),panel.grid.minor=element_blank())
-print(p)
-pblock <- p
-.n.pblock <- length(nb.block$residuals)
+.l$plot <- mk.mod.ci.plot(.l$pred, .x="SewTempC", .xlab="Mean weekly sewage temperature (°C)", .ylab="Number of incidents per week")
+## annotate plot, 
+## nudge A/B: >1 goes up/right, <1 goes down/left
+nudge <-  data.frame(x=1.1, y=0.9)
+## pull list to manipulate, avoid confusion
+.l$plot <- .l$plot +
+    annotate("text", 
+        x=min(.dat$SewTempC)*nudge$x,
+        y=max(.dat$N)*nudge$y, 
+        label = 'YY', size=16
+    )
+#summary(sewer.nb) # very signiificant model
+block.sewtemp.nb <- .l
+## 
+## check assumptions by comparing to Poisson model
+## use same .dat
+.l <- list()
+.l$dat <- .dat
+.l$mod <- glm(N ~ SewTempC, data=.dat, family='poisson')
+# can compare with likelihood ratio test as Poisson model is nested in negbin
+.l$nobs <- length(.l$mod$residuals)
+## get proportion deviance
+.l$dev <- mk.prop.dev(.l$mod)
+block.sewtemp.pois <- .l
+
+
+lrtest.sewtemp <- lrtest(block.sewtemp.nb$mod, block.sewtemp.pois$mod)
+
+block.sewtemp.pois$mod$aic # AIC=811.46 - are these comparable?
+lrtest(block.sewtemp.nb$mod, block.sewtemp.pois$mod) # negbin is a very significant improvement
+
+
+## !!xian 2014-11-24
+## there was a *lot* of repeated code below
+##
+## Models of glm(N ~ MeanTempC, data=sewer.join) make sense,
+## but glm(N ~ MeanTempC, data=***sewtemp.join***) is *much* smaller, only makes sense for SewTempC.
+## e.g. doesn't make sense to model a dataset that we subsetted for another variable
+
 
 #### Compare the use of weather versus sewer temperature for predicting blockages
 hist(sewtemp.w.join$N) # also seems zero-inflated, but less so
 
-### fit NB models
-
-## sewer temp
-nb.st <- glm.nb(N ~ SewTempC, data=sewtemp.w.join)
-summary(nb.st) # highly sig; AIC = 440.26
-
-## check assumptions by comparing to Poisson model
-# fit Poisson model
-pois.st <- glm(N ~ SewTempC, data=sewtemp.w.join, family='poisson')
-pois.st$aic # AIC = 450.93
-# can compare with likelihood ratio test as Poisson model is nested in negbin
-lrtest(nb.st, pois.st) # negbin is a very significant improvement; 
-
-## weather temperature
-nb.wt <- glm.nb(N ~ MeanTempC, data=sewtemp.w.join)
-summary(nb.wt) # highly sig; AIC = 443.73
-
-## check assumptions by comparing to Poisson model
-# fit Poisson model
-pois.wt <- glm(N ~ MeanTempC, data=sewtemp.w.join, family='poisson')
-pois.wt$aic # AIC = 456.10
-# can compare with likelihood ratio test as Poisson model is nested in negbin
-lrtest(nb.wt, pois.wt) # negbin is a very significant improvement; 
-
-
+##??xian this gives error for model w/different nobs
 ## compare models using sewer and air temperature directly
 # Vuong's closeness test for non-nested models - is there a better test?
-vuong(nb.st, nb.wt) # using sewer temp is not a significant improvement (p > 0.1)
+if(FALSE) vuong(block.sewtemp.nb$mod,block.airtemp.nb$mod) 
+#vuong(nb.st, nb.wt) # using sewer temp is not a significant improvement (p > 0.1)
 
 
 # negbin is a big improvement over standard Poisson
 # using actual sewer temperature is at most a modest improvement over air temperature
 
-
-### plot - no native ggplot2 method for plotting negbin models
-
-## sewer temp
-# calculate predicted values and confidence intervals
-glm.pred.sewtemp <- cbind(sewtemp.w.join, predict(nb.st, type='link', se.fit=T))
-glm.pred.sewtemp <- within(glm.pred.sewtemp, {
-  phat <- exp(fit)
-  LL <- exp(fit - (1.96 * se.fit))
-  UL <- exp(fit + (1.96 * se.fit))
-})
-
-# plot
-p <- ggplot(glm.pred.sewtemp, aes(x=SewTempC))
-p <- p + geom_point(aes(y=N), shape=21)
-p <- p + geom_ribbon(aes(ymin=LL, ymax=UL), alpha=0.25)# confidence bounds
-p <- p + geom_line(aes(y=phat), colour='blue') + # fitted points
-  xlab('Mean weekly sewer temperature (°C)') + ylab('Number of incidents per week')
-p <- p + theme_classic() + 
-  theme(panel.grid.major=element_blank(),panel.grid.minor=element_blank())
-print(p)
-
-## weather temp
-
-# calculate predicted values and confidence intervals
-
-
-glm.pred.airtemp <- cbind(sewtemp.w.join, predict(nb.wt, type='link', se.fit=T))
-glm.pred.airtemp <- within(glm.pred.airtemp, {
-  phat <- exp(fit)
-  LL <- exp(fit - (1.96 * se.fit))
-  UL <- exp(fit + (1.96 * se.fit))
-})
-
-# plot
-p <- ggplot(glm.pred.airtemp, aes(x=MeanTempC))
-p <- p + geom_point(aes(y=N), shape=21)
-p <- p + geom_ribbon(aes(ymin=LL, ymax=UL), alpha=0.25)# confidence bounds
-p <- p + geom_line(aes(y=phat), colour='blue') + # fitted points
-  xlab('Mean weekly air temperature (°C)') + ylab('Number of incidents per week')
-p <- p + theme_classic() + 
-  theme(panel.grid.major=element_blank(),panel.grid.minor=element_blank())
-print(p)
-
-
-## actually used...
-# calculate predicted values and confidence intervals
-sewblock <- cbind(sewer.join, predict(sewer.nb, type='link', se.fit=T))
-sewblock <- within(sewblock, {
-  phat <- exp(fit)
-  LL <- exp(fit - (1.96 * se.fit))
-  UL <- exp(fit + (1.96 * se.fit))
-})
-
-# plot
-p <- ggplot(sewblock, aes(x=MeanTempC))
-p <- p + geom_point(aes(y=N), shape=21)
-p <- p + geom_ribbon(aes(ymin=LL, ymax=UL), alpha=0.25)# confidence bounds
-p <- p + geom_line(aes(y=phat), colour='blue') + # fitted points
-  xlab('Mean weekly air temperature (°C)') + ylab('Number of incidents per week')
-p <- p + theme_classic() + 
-     #scale_y_sqrt() + #??ytrans
-  theme(panel.grid.major=element_blank(),panel.grid.minor=element_blank())
-#print(p)
-# use in multi-figure plot
-pairblock <- p
-pairblock <- pairblock + annotate("text", 
-                            x=min(sewblock$MeanTempC),
-                            y=max(sewblock$N), label = 'B')
-.n.pairblock <- length(sewer.nb$residuals)
