@@ -118,7 +118,7 @@ Indeed, the best-ranked model of the response of MW-SGST to MW-MDAT (Table \ref{
 For reference, all candidate models (ranked by BIC) are shown in Table \ref{tab:bictab}. All high-ranked models (low BIC) show a small but statistically significant effect of interceptors identity on sewage temperature. On the other hand, all models that 
 included manhole identity ranked lower than the null model (which included only MW-MDAT and MW-SGST).
 
-```{r sewweathplot, echo=FALSE, size='footnotesize', include=TRUE, fig.height=4, fig.width=6, fig.cap="Sewage temperature (MW-SGST) increased with air temperature (MW-MDAT), though interceptors differed slightly in their sewage's temperature responses to air temperature. As air temperature dropped below freezing, no further decrease in sewage temperature was observed."}
+```{r sewweathplot, echo=FALSE, size='footnotesize', include=TRUE, fig.height=4, fig.width=6, fig.cap="Sewage temperature (MW-SGST) increased with air temperature (MW-MDAT). The response of sewage temperature to air temperature differed slightly between sewer system interceptors. Overall, as air temperature dropped below freezing, no further decrease in sewage temperature was observed."}
 # plot with ggplot
 p <- ggplot(sewer.weather)
 p <- p + geom_point(aes(x=MeanTempC, y=SewTempC, 
@@ -133,38 +133,36 @@ print(p)
 
 ```
 
+
+```{r multiblockplot, echo=FALSE, fig.pos='h', fig.width=10, fig.height=5, fig.cap=sprintf('Both sewage temperature (*A*: n=%d weeks, D=%s) and air temperature (*B*: n=%d weeks, D=%s) are statistically significant predictors of sanitary sewer blockages in Albuquerque, NM. The explanatory power of air temperature, however, is very small.', block.sewtemp.nb$nobs, block.sewtemp.nb$dev, block.airtemp.nb$nobs, block.airtemp.nb$dev), message=FALSE}
+grid.arrange(block.sewtemp.nb$plot, block.airtemp.nb$plot, nrow=1)
+```
+
 ### Sewage temperature (MW-SGST) and sewer blockage frequency (W-SSB)
 
-We find that sewer blockages occured more frequently during weeks with lower sewage temperatures (Figure \ref{fig:multiblockplot}A). 
-The final linear model specification 
-of the response of W-SSB to MW-MDAT
-employed a negative binomial GLM with a log link function \cite{mass}. 
-The final  relationship was highly statistically significant ($p < 0.001$; Table \ref{tab:tempandblock}), 
-
+Overall, we found that sewer blockages occured more frequently during weeks with lower sewage temperatures (Figure \ref{fig:multiblockplot}A). 
 The W-SSB data followed an overdispersed Poisson 
 distribution, with forty-one weeks (23.8%??) showing one or 
 zero incidents.
-Consequently, the final negative binomial specification provided a significant improvement over a Poisson GLM (likelihood ratio tests, `r sprintf('$p < 0.001?? %s$', lrtest.sewtemp$p.val)`.
+Consequently, we
+employed a negative binomial generalized linear model (GLM) 
+with a log link function \cite{mass} to model the response of W-SSB to MW-MDAT.
+We also tested a Poisson GLM, but the final negative binomial GLM specification proved a much better model
+ (likelihood ratio test, `r sprintf('$p < 0.001?? %s$', lrtest.sewtemp$p.val)`.
 
-$R^2$ statistics are not available for GLM, though the proportional reduction in deviance (D) provides an analogous measure of the model's explanatory power \parencite{zheng2000summarizing}. For the final negative binomial model, we find that D = `r  block.sewtemp.nb$dev`,
-showing that this model explains only a modest amount of 
+The final model showed a highly statistically significant relationship between sewage temperature (MW-SGST) and sewer blockage frequency (W-SSB) ($p < 0.001$; Table \ref{tab:tempandblock}), 
+$R^2$ statistics are not available for GLM, though the proportional reduction in deviance (D) provides an analogous measure of the model's explanatory power \parencite{zheng2000summarizing}. For the final negative binomial model, we find that D = `r  block.sewtemp.nb$dev`.
+Thus this model explains only a modest amount of 
 variation in observed sewer blockage frequency.
 
-
 ### Air temperature (MW-MDAT) and sewer blockage frequency (W-SSB)
-We found that sewer blockages were more frequent when air temperature was low. MW-MDAT was a highly significant predictor of W-SSB (Table \ref{tab:sewnb}; Figure \ref{fig:multiblockplot}B).  However, this model explains very little variation in blockage frequency (D = `r sewer.nb$dev`).
+As with sewage temperature, we found that sewer blockages were also more frequent when air temperatures were low. MW-MDAT was a highly significant predictor of W-SSB (Table \ref{tab:sewnb}; Figure \ref{fig:multiblockplot}B).  However, this model explains very little variation in blockage frequency (D = `r block.airtemp.nb$dev`).
 
 This dataset includes `r nrow(.grease)` blockages where grease was the estimated blockage cause, representing `r round((nrow(.grease) / (nrow(.grease) + nrow(notgrease))) * 100, 1)`\% of incidents during the study period.
 When these grease-caused SSB events were modeled separately, a statistically significant relationship between W-SSB and MW-MDAT was also observed (Table \ref{tab:greasetab}).
 ??Fig3 -- see greaseplot and nongreaseplot
 ??Model to test by cause
 However, there was no relationship between temperature and non-grease SSB (Table \ref{tab:nongreasetab}; Figure \ref{fig:multifigplot}). For the model predicting grease-caused blockages,  $D = `r mk.prop.dev(grease.nb)`$, compared with $D = `r mk.prop.dev(notgrease.nb)`$ for the model predicting non-grease-caused blockages.
-
-```{r multiblockplot, echo=FALSE, fig.pos='h', fig.width=10, fig.height=5, fig.cap=sprintf('Both sewage temperature (A; n=%d weeks, D=%s) and air temperature (B; n=%d weeks, D=%s) can be used to predict sanitary sewer blockages.', block.sewtemp.nb$nobs, block.sewtemp.nb$dev, block.airtemp.nb$nobs, block.airtemp.nb$dev), message=FALSE}
-grid.arrange(block.sewtemp.nb$plot, block.airtemp.nb$plot, nrow=1)
-```
-
-
 
 
 
@@ -266,7 +264,7 @@ my.xtable(summary(.lin.best[[1]]),
 <!-- diagnosis --> 
 ```{r diag, fig.cap='Linear model diagnostic plots.', size='footnotesize', message=FALSE, warning=FALSE, error=FALSE, echo=FALSE, include=FALSE}
 
-summary(sewer.ps)
+#summary(sewer.ps)
 # can compare with likelihood ratio test as Poisson model is nested in negbin
 ## moved to 
 lrtest.airtemp

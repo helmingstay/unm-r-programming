@@ -30,13 +30,13 @@ hist(sewtemp.join$N) # histogram of data
 # plot
 .l$plot <- mk.mod.ci.plot(.l$pred, .x="MeanTempC", .xlab="Mean weekly air temperature (°C)", .ylab="Number of incidents per week")
 ## annotate plot, 
-## nudge A/B: >1 goes up/right, <1 goes down/left
-nudge <-  data.frame(x=1.1, y=0.9)
+## nudge A/B
+nudge <-  data.frame(x=0.90, y=0.97)
 .l$plot <- .l$plot +
     annotate("text", 
         x=min(.dat$MeanTempC)*nudge$x,
         y=max(.dat$N)*nudge$y, 
-        label = 'XX', size=20
+        label = 'B', size=16
     )
 ## assign list a real name
 ## number of sewer blockages by airtemp, negative binom model
@@ -74,13 +74,14 @@ lrtest.airtemp <- lrtest(block.airtemp.nb$mod, block.airtemp.pois$mod)
 .l$plot <- mk.mod.ci.plot(.l$pred, .x="SewTempC", .xlab="Mean weekly sewage temperature (°C)", .ylab="Number of incidents per week")
 ## annotate plot, 
 ## nudge A/B: >1 goes up/right, <1 goes down/left
-nudge <-  data.frame(x=1.1, y=0.9)
+#nudge <-  data.frame(x=1.1, y=0.9)
+nudge <-  data.frame(x=1.01, y=0.97)
 ## pull list to manipulate, avoid confusion
 .l$plot <- .l$plot +
     annotate("text", 
         x=min(.dat$SewTempC)*nudge$x,
         y=max(.dat$N)*nudge$y, 
-        label = 'YY', size=16
+        label = 'A', size=16
     )
 #summary(sewer.nb) # very signiificant model
 block.sewtemp.nb <- .l
