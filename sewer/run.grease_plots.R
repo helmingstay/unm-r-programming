@@ -20,7 +20,7 @@
 # fit Poisson model
 .l$mod.pois <- glm(N ~ MeanTempC, data=.l$data)
 # can compare with likelihood ratio test as Poisson model is nested in negbin
-.l$lrtest <- lrtest(.l$mod, .l$mod.pois) # negbin is a very significant improvement; 
+ .l$lrtest <- lrtest(.l$mod, .l$mod.pois) # negbin is a very significant improvement; 
 ## save list as named obj
 # calculate predicted values and confidence intervals
 .l$pred <- mk.mod.ci(.df=.l$data, .mod=.l$mod)
@@ -44,14 +44,16 @@ grease <- .l
 # number of non-grease incidents
 .l$sum <- sum(.l$data$N)
 ## model
+##!! nb doesn't converge
+#.l$mod <- glm.nb(N ~ MeanTempC, data=.l$data)
+.l$mod.pois <- .l$mod <- glm(N ~ MeanTempC, data=.l$data, family='poisson')
 # fit Poisson model
-.l$mod.pois <- glm(N ~ MeanTempC, data=.l$data, family='poisson')
+#.l$mod.pois <- glm(N ~ MeanTempC, data=.l$data, family='poisson')
+.l$dev <- mk.prop.dev(.l$mod)
 # can compare with likelihood ratio test as Poisson model is nested in negbin
-.l$lrtest <- lrtest(.l$mod, .l$mod.pois) # negbin is still a very significant improvement;
+#.l$lrtest <- lrtest(.l$mod, .l$mod.pois) # negbin is still a very significant improvement;
 # ie neither model is much good
 #AIC(notgrease.nb); AIC(notgrease.ps) # negbin far superior by AIC
-.l$mod <- glm.nb(N ~ MeanTempC, data=.l$data)
-.l$dev <- mk.prop.dev(.l$mod)
 # calculate predicted values and confidence intervals
 .l$pred <- mk.mod.ci(.df=.l$data, .mod=.l$mod)
 .l$plot <- mk.mod.ci.plot(.l$pred, .x="MeanTempC", .xlab="Mean weekly air temperature (°C)", .ylab="Number of incidents per week not caused by grease")

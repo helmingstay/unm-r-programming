@@ -101,7 +101,7 @@ block.sewtemp.pois <- .l
 lrtest.sewtemp <- lrtest(block.sewtemp.nb$mod, block.sewtemp.pois$mod)
 
 block.sewtemp.pois$mod$aic # AIC=811.46 - are these comparable?
-lrtest(block.sewtemp.nb$mod, block.sewtemp.pois$mod) # negbin is a very significant improvement
+#lrtest(block.sewtemp.nb$mod, block.sewtemp.pois$mod) # negbin is a very significant improvement
 
 
 ## !!xian 2014-11-24

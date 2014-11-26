@@ -106,7 +106,7 @@ All analysis was conducted with the R statistical programming environment \paren
 ### Air temperature (MW-MDAT) and sewage temperature (MW-SGST)
 
 We found that sewage temperature increased with air temperature (Figure \ref{fig:sewweathplot}).
-Indeed, the best-ranked model of the response of MW-SGST to MW-MDAT (Table \ref{tab:bestlin}) explained the majority of variation in MW-SGST ($R^2 = `r .best.rsq`$).
+Indeed, the best-ranked model of the response of MW-SGST to MW-MDAT (Table \ref{tab:bestlin}) explained the majority of variation in MW-SGST (R^2 = `r .best.rsq`).
  However, as air temperature fells below freezing, little further decrease in sewage temperatures was observed (Figure \ref{fig:sewweathplot}).
 
 For reference, all candidate models (ranked by BIC) are shown in Table \ref{tab:bictab}. All high-ranked models (low BIC) show a small but statistically significant effect of interceptors identity on sewage temperature. On the other hand, all models that 
@@ -119,8 +119,8 @@ p <- p + geom_point(aes(x=MeanTempC, y=SewTempC,
                         colour=Interceptor, shape=Interceptor)) 
 p <- p + scale_shape_manual(values=c(21, 23, 24))
 ##?? this started segfaulting, no idea why...
-#p <- p + geom_smooth(aes(x=MeanTempC, y=SewTempC, 
-                         #colour=Interceptor, linetype=Interceptor), method='lm')
+p <- p + geom_smooth(aes(x=MeanTempC, y=SewTempC, 
+                         colour=Interceptor, linetype=Interceptor), method='lm')
 p <- p + theme_classic()
 p <- p + theme(legend.position=c(0.85, 0.2))
 p <- p + xlab('MW-MDAT (°C)') + ylab('MW-SGST (°C)')
@@ -142,11 +142,11 @@ Consequently, we
 employed a negative binomial generalized linear model (GLM) 
 with a log link function \cite{mass} to model the response of W-SSB to MW-MDAT.
 We also tested a Poisson GLM, but the final negative binomial GLM specification proved a much better model
- (likelihood ratio test, $p < 0.001?$.
+ (likelihood ratio test, p < 0.001).
 <!-- `r sprintf('$p < 0.001?? %s$', lrtest.sewtemp$Pr)` -->
 
-The final model showed a highly statistically significant relationship between sewage temperature (MW-SGST) and sewer blockage frequency (W-SSB) ($p < 0.001$; Table \ref{tab:tempandblock}), 
-$R^2$ statistics are not available for GLM, though the proportional reduction in deviance (D) provides an analogous measure of the model's explanatory power \parencite{zheng2000summarizing}. For the final negative binomial model, we find that D = `r  block.sewtemp.nb$dev`.
+The final model showed a highly statistically significant relationship between sewage temperature (MW-SGST) and sewer blockage frequency (W-SSB) (p < 0.001; Table \ref{tab:tempandblock}), 
+R^2 statistics are not available for GLM, though the proportional reduction in deviance (D) provides an analogous measure of the model's explanatory power \parencite{zheng2000summarizing}. For the final negative binomial model, we find that D = `r  block.sewtemp.nb$dev`.
 Thus this model explains only a modest amount of 
 variation in observed sewer blockage frequency.
 
@@ -157,7 +157,7 @@ This dataset includes `r grease$sum` blockages where grease was the estimated bl
 When these grease-caused SSB events were modeled separately, a statistically significant relationship between W-SSB and MW-MDAT was also observed (Table \ref{tab:greasetab}).
 ??Fig3 -- see greaseplot and nongreaseplot
 ??Model to test by cause
-However, there was no relationship between temperature and non-grease SSB (Table \ref{tab:nongreasetab}; Figure \ref{fig:multifigplot}). For the model predicting grease-caused blockages,  $D = $`r = grease$dev`, compared with $D = $`r not.grease$dev` for the model predicting non-grease-caused blockages.
+However, there was no relationship between temperature and non-grease SSB (Table \ref{tab:nongreasetab}; Figure \ref{fig:multifigplot}). For the model predicting grease-caused blockages,  D = `r grease$dev`, compared with D = `r not.grease$dev` for the model predicting non-grease-caused blockages.
 
 
 ```{r multifigplot, echo=FALSE, fig.pos='h', fig.width=10, fig.height=5, fig.cap=sprintf('Mean weekly air temperature predicts blockages caused by grease (A: n=%d weeks, D=%s) but not other blockages (B: n=%d weeks, D=%s)', grease$nobs, grease$dev,  not.grease$nobs, not.grease$dev),  message=FALSE}
@@ -261,11 +261,11 @@ my.xtable(summary(.lin.best[[1]]),
 # can compare with likelihood ratio test as Poisson model is nested in negbin
 ## moved to 
 "Airtemp lrtest"
-lrtest.airtemp
+#lrtest.airtemp
 "grease lrtest"
-grease$lrtest
+#grease$lrtest
 "not grease lrtest"
-not.grease$lrtest
+#not.grease$lrtest
 #lrtest(sewer.nb, sewer.ps) # negbin is a very significant improvement; 
 ##
 ```
