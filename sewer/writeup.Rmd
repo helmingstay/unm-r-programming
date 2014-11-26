@@ -118,7 +118,6 @@ p <- ggplot(sewtemp.weather)
 p <- p + geom_point(aes(x=MeanTempC, y=SewTempC, 
                         colour=Interceptor, shape=Interceptor)) 
 p <- p + scale_shape_manual(values=c(21, 23, 24))
-##?? this started segfaulting, no idea why...
 p <- p + geom_smooth(aes(x=MeanTempC, y=SewTempC, 
                          colour=Interceptor, linetype=Interceptor), method='lm')
 p <- p + theme_classic()
@@ -132,7 +131,7 @@ print(p)
 grid.arrange(block.sewtemp.nb$plot, block.airtemp.nb$plot, nrow=1)
 ```
 
-### Sewage temperature (MW-SGST) and sewer blockage frequency (W-SSB)
+### Sewage temperature (MW-SGST), air temperature (MW-MDAT), and sewer blockage frequency (W-SSB)
 
 Overall, we found that sewer blockages occured more frequently during weeks with lower sewage temperatures (Figure \ref{fig:multiblockplot}A). 
 The W-SSB data followed an overdispersed Poisson 
@@ -150,18 +149,16 @@ R^2 statistics are not available for GLM, though the proportional reduction in d
 Thus this model explains only a modest amount of 
 variation in observed sewer blockage frequency.
 
-### Air temperature (MW-MDAT) and sewer blockage frequency (W-SSB)
-As with sewage temperature, we found that sewer blockages were also more frequent when air temperatures were low. MW-MDAT was a highly significant predictor of W-SSB (Table \ref{tab:sewnb}; Figure \ref{fig:multiblockplot}B).  However, this model explains very little variation in blockage frequency (D = `r block.airtemp.nb$dev`).
+As with sewage temperature, we found low air temperature was associated with more sewer blockages. MW-MDAT was a highly significant predictor of W-SSB (Table \ref{tab:sewnb}; Figure \ref{fig:multiblockplot}B).  However, this model explains very little variation in blockage frequency (D = `r block.airtemp.nb$dev`).
 
-This dataset includes `r grease$sum` blockages where grease was the estimated blockage cause, representing `r sprintf("%2.1f", grease.ratio * 100)`\% of total incidents during the study period.
-When these grease-caused SSB events were modeled separately, a statistically significant relationship between W-SSB and MW-MDAT was also observed (Table \ref{tab:greasetab}).
-??Fig3 -- see greaseplot and nongreaseplot
-??Model to test by cause
-However, there was no relationship between temperature and non-grease SSB (Table \ref{tab:nongreasetab}; Figure \ref{fig:multifigplot}). For the model predicting grease-caused blockages,  D = `r grease$dev`, compared with D = `r not.grease$dev` for the model predicting non-grease-caused blockages.
+### Causes of sewer blockage frequency (W-SSB)
+Above, we see that sanitary sewer blockage frequency (W-SSB) is weakly correlated with both air and sewage temperature.   While both sewage and air temperature are poor predictors, sewage temperature is somewhat better. Yet sewage temperature measurements are expensive and labor-intensive, and thus sparse relative to automated air temperature measurements.  As such, a direct comparison between models is not possible. 
+
+This dataset includes `r grease$sum` total blockages where grease was the estimated blockage cause, representing `r sprintf("%2.1f", grease.ratio * 100)`\% of total incidents during the study period. We constructed a Poisson GLM  using both air temperature (MW-MDAT) and blockage cause (grease vs not grease) as predictor variables.  Here, both air temperature and blockage cause are highly significant and inter-dependent predictors of blockage frequency (Figure \ref{fig:multifigplot} and Table \ref{tab:greasetab}).   The full model explains a sizable proportion of variation in blockage frequency (D = `r grease.fullmod$dev`), particularly for grease-caused blockages (Figure \ref{fig:multifigplot}A).
 
 
-```{r multifigplot, echo=FALSE, fig.pos='h', fig.width=10, fig.height=5, fig.cap=sprintf('Mean weekly air temperature predicts blockages caused by grease (A: n=%d weeks, D=%s) but not other blockages (B: n=%d weeks, D=%s)', grease$nobs, grease$dev,  not.grease$nobs, not.grease$dev),  message=FALSE}
-grid.arrange(grease$plot, not.grease$plot, nrow=1)
+```{r multifigplot, echo=FALSE, fig.pos='h', fig.width=10, fig.height=5, fig.cap=sprintf('Mean weekly air temperature predicts blockages caused by grease (A: n=%d weeks), but is a poor predictor of blockages due to other causes (B: n=%d weeks). See Table ?? for model details.', grease$nobs, not.grease$nobs),  message=FALSE}
+grid.arrange(grease.fullmod$plot.grease, grease.fullmod$plot.not.grease, nrow=1)
 ```
 
 # Discussion
@@ -192,6 +189,20 @@ my.startable( .l$mod,
 )
 ```
 
+
+```{r greasetab, echo=FALSE, results='asis'}
+my.startable( grease.fullmod$mod, 
+    title=sprintf('Poisson GLM predicting blockage frequency as a function of air temperature and cause (grease versus not grease).'), 
+    label='tab:greasetab'
+)
+```
+
+
+#References
+
+
+# Supplemental Information
+
 ```{r sewnb, results='asis', echo=FALSE}
 .l <- block.airtemp.nb
 my.startable(
@@ -201,26 +212,6 @@ my.startable(
 )
 ```
 
-```{r greasetab, echo=FALSE, results='asis'}
-my.startable( grease$mod, 
-    title=sprintf('Negative binomial GLM predicting blockages caused by grease (n=%d weeks)', grease$nobs), 
-    label='tab:greasetab'
-)
-```
-
-```{r nongreasetab, echo=FALSE, results='asis'}
-my.startable( not.grease$mod, 
-    title=sprintf('Negative binomial GLM predicting blockages not caused by grease (n=%d weeks)', not.grease$nobs), 
-    label='tab:nongreasetab'
-)
-#paste('Pseudo $R^2$ = ', signif(pr2.notgrease,2))
-```
-
-#References
-
-\clearpage
-
-# Supplemental Information
 ```{r bictab, echo=FALSE, size='footnotesize', results='asis'}
 names(.lin.bic) <- c('Model', 'BIC')
 # calculate Delta BIC

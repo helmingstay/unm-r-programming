@@ -1,3 +1,4 @@
+.annotate.size = 12
 #### Fit models
 hist(block.sewtemp.week$N) # histogram of data
 # overdispersed count data with a lot of zeros, 
@@ -28,7 +29,7 @@ hist(block.sewtemp.week$N) # histogram of data
 # calculate predicted values and confidence intervals
 .l$pred <- mk.mod.ci(.df=.dat, .mod=.l$mod)
 # plot
-.l$plot <- mk.mod.ci.plot(.l$pred, .x="MeanTempC", .xlab="Mean weekly air temperature (°C)", .ylab="Number of incidents per week")
+.l$plot <- mk.mod.ci.plot(.l$pred, .x="MeanTempC", .xlab="Mean weekly air temperature (°C)", .ylab="Number of incidents per week", .theme=theme_bw())
 ## annotate plot, 
 ## nudge A/B
 nudge <-  data.frame(x=0.90, y=0.97)
@@ -36,7 +37,7 @@ nudge <-  data.frame(x=0.90, y=0.97)
     annotate("text", 
         x=min(.dat$MeanTempC)*nudge$x,
         y=max(.dat$N)*nudge$y, 
-        label = 'B', size=16
+        label = 'B', size=.annotate.size
     )
 ## assign list a real name
 ## number of sewer blockages by airtemp, negative binom model
@@ -71,7 +72,7 @@ lrtest.airtemp <- lrtest(block.airtemp.nb$mod, block.airtemp.pois$mod)
 .l$dev <- mk.prop.dev(.l$mod)
 .l$pred <- mk.mod.ci(.df=.dat, .mod=.l$mod)
 # plot
-.l$plot <- mk.mod.ci.plot(.l$pred, .x="SewTempC", .xlab="Mean weekly sewage temperature (°C)", .ylab="Number of incidents per week")
+.l$plot <- mk.mod.ci.plot(.l$pred, .x="SewTempC", .xlab="Mean weekly sewage temperature (°C)", .ylab="Number of incidents per week", .theme=theme_bw())
 ## annotate plot, 
 ## nudge A/B: >1 goes up/right, <1 goes down/left
 #nudge <-  data.frame(x=1.1, y=0.9)
@@ -81,7 +82,7 @@ nudge <-  data.frame(x=1.01, y=0.97)
     annotate("text", 
         x=min(.dat$SewTempC)*nudge$x,
         y=max(.dat$N)*nudge$y, 
-        label = 'A', size=16
+        label = 'A', size=.annotate.size
     )
 #summary(sewer.nb) # very signiificant model
 block.sewtemp.nb <- .l
