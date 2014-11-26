@@ -1,3 +1,21 @@
+mk.prop.dev <- function(x) {
+    ## takes a glm, returns prop reduction diviance 
+    ## see zheng 2000
+    D <- 1 - x$deviance/x$null.deviance
+    sprintf('%1.3f', D)
+}
+
+## alternate versions, From Bolker's lmm page:
+## http://glmm.wikidot.com/faq
+.pseudo.r.sq1 <- function(m) {
+    1-var(residuals(m))/(var(model.response(model.frame(m))))
+}
+.pseudo.r.sq2 <- function(m) {
+   lmfit <-  lm(model.response(model.frame(m)) ~ fitted(m))
+   summary(lmfit)$r.squared
+}
+
+
 ## bind model predictions into df, add CI
 mk.mod.ci <- function(.df, .mod) {
     ## actually used...

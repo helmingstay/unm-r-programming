@@ -3,14 +3,15 @@
 ## xian - shared intercept, different slopes
 ## best model??
 ## use maximum likelihood (REML=F) so results are comparable w/anova
+.dat <- sewtemp.weather
 temp.mix.models <- list(
-    rand_both=lmer(SewTempC ~ MeanTempC + (1|Interceptor:Manhole), data=sewer.weather, REML=F),
-    rand_both_1=lmer(SewTempC ~ MeanTempC + (1|Interceptor/Manhole), data=sewer.weather, REML=F),
-    rand_interceptor=lmer(SewTempC ~ MeanTempC + (1|Interceptor), data=sewer.weather, REML=F),
-    rand_manhole=lmer(SewTempC ~ MeanTempC + (1|Manhole), data=sewer.weather, REML=F),
-    fixed_b_by_interceptor.rand_manhole=lmer(SewTempC ~ MeanTempC+Interceptor  + (1|Manhole), data=sewer.weather, REML=F),
-    fixed_m_by_interceptor.rand_manhole=lmer(SewTempC ~ MeanTempC:Interceptor  + (1|Manhole), data=sewer.weather, REML=F),
-    fixed_mb_by_interceptor.rand_manhole=lmer(SewTempC ~ MeanTempC*Interceptor  + (1|Manhole), data=sewer.weather, REML=F)
+    rand_both=lmer(SewTempC ~ MeanTempC + (1|Interceptor:Manhole), data=.dat, REML=F),
+    rand_both_1=lmer(SewTempC ~ MeanTempC + (1|Interceptor/Manhole), data=.dat, REML=F),
+    rand_interceptor=lmer(SewTempC ~ MeanTempC + (1|Interceptor), data=.dat, REML=F),
+    rand_manhole=lmer(SewTempC ~ MeanTempC + (1|Manhole), data=.dat, REML=F),
+    fixed_b_by_interceptor.rand_manhole=lmer(SewTempC ~ MeanTempC+Interceptor  + (1|Manhole), data=.dat, REML=F),
+    fixed_m_by_interceptor.rand_manhole=lmer(SewTempC ~ MeanTempC:Interceptor  + (1|Manhole), data=.dat, REML=F),
+    fixed_mb_by_interceptor.rand_manhole=lmer(SewTempC ~ MeanTempC*Interceptor  + (1|Manhole), data=.dat, REML=F)
 )
 
 
@@ -23,16 +24,7 @@ temp.mix.models <- list(
 .mix.best <- .best.n(temp.mix.models, .mix.bic)
 ## compare with anova
 anova(.mix.best[[2]], .mix.best[[1]])
-##
-## From Bolker's lmm page:
-## http://glmm.wikidot.com/faq
-.pseudo.r.sq1 <- function(m) {
-    1-var(residuals(m))/(var(model.response(model.frame(m))))
-}
-.pseudo.r.sq2 <- function(m) {
-   lmfit <-  lm(model.response(model.frame(m)) ~ fitted(m))
-   summary(lmfit)$r.squared
-}
+
 ## xian - I'm *not* sure the BIC numbers above are directly comparable 
 ## between linear models and mixed models 
 ## I *think* they are??

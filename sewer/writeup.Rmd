@@ -47,12 +47,6 @@ library(pscl) # for ZIP models
 library(xts)
 library(MASS)
 library(stargazer)
-mk.prop.dev <- function(x) {
-    ## takes a glm, returns prop reduction diviance 
-    ## see zheng 2000
-    D <- 1 - x$deviance/x$null.deviance
-    sprintf('%1.3f', D)
-}
 ## helper functions
 source('mk.helpers.R')
 ```
@@ -120,17 +114,17 @@ included manhole identity ranked lower than the null model (which included only 
 
 ```{r sewweathplot, echo=FALSE, size='footnotesize', include=TRUE, fig.height=4, fig.width=6, fig.cap="Sewage temperature (MW-SGST) increased with air temperature (MW-MDAT). The response of sewage temperature to air temperature differed slightly between sewer system interceptors. Overall, as air temperature dropped below freezing, no further decrease in sewage temperature was observed."}
 # plot with ggplot
-p <- ggplot(sewer.weather)
+p <- ggplot(sewtemp.weather)
 p <- p + geom_point(aes(x=MeanTempC, y=SewTempC, 
                         colour=Interceptor, shape=Interceptor)) 
 p <- p + scale_shape_manual(values=c(21, 23, 24))
-p <- p + geom_smooth(aes(x=MeanTempC, y=SewTempC, 
-                         colour=Interceptor, linetype=Interceptor), method='lm')
+##?? this started segfaulting, no idea why...
+#p <- p + geom_smooth(aes(x=MeanTempC, y=SewTempC, 
+                         #colour=Interceptor, linetype=Interceptor), method='lm')
 p <- p + theme_classic()
 p <- p + theme(legend.position=c(0.85, 0.2))
 p <- p + xlab('MW-MDAT (°C)') + ylab('MW-SGST (°C)')
 print(p)
-
 ```
 
 
@@ -148,7 +142,8 @@ Consequently, we
 employed a negative binomial generalized linear model (GLM) 
 with a log link function \cite{mass} to model the response of W-SSB to MW-MDAT.
 We also tested a Poisson GLM, but the final negative binomial GLM specification proved a much better model
- (likelihood ratio test, `r sprintf('$p < 0.001?? %s$', lrtest.sewtemp$p.val)`.
+ (likelihood ratio test, $p < 0.001?$.
+<!-- `r sprintf('$p < 0.001?? %s$', lrtest.sewtemp$Pr)` -->
 
 The final model showed a highly statistically significant relationship between sewage temperature (MW-SGST) and sewer blockage frequency (W-SSB) ($p < 0.001$; Table \ref{tab:tempandblock}), 
 $R^2$ statistics are not available for GLM, though the proportional reduction in deviance (D) provides an analogous measure of the model's explanatory power \parencite{zheng2000summarizing}. For the final negative binomial model, we find that D = `r  block.sewtemp.nb$dev`.
@@ -158,17 +153,15 @@ variation in observed sewer blockage frequency.
 ### Air temperature (MW-MDAT) and sewer blockage frequency (W-SSB)
 As with sewage temperature, we found that sewer blockages were also more frequent when air temperatures were low. MW-MDAT was a highly significant predictor of W-SSB (Table \ref{tab:sewnb}; Figure \ref{fig:multiblockplot}B).  However, this model explains very little variation in blockage frequency (D = `r block.airtemp.nb$dev`).
 
-This dataset includes `r nrow(.grease)` blockages where grease was the estimated blockage cause, representing `r round((nrow(.grease) / (nrow(.grease) + nrow(notgrease))) * 100, 1)`\% of incidents during the study period.
+This dataset includes `r grease$sum` blockages where grease was the estimated blockage cause, representing `r sprintf("%2.1f", grease.ratio * 100)`\% of total incidents during the study period.
 When these grease-caused SSB events were modeled separately, a statistically significant relationship between W-SSB and MW-MDAT was also observed (Table \ref{tab:greasetab}).
 ??Fig3 -- see greaseplot and nongreaseplot
 ??Model to test by cause
-However, there was no relationship between temperature and non-grease SSB (Table \ref{tab:nongreasetab}; Figure \ref{fig:multifigplot}). For the model predicting grease-caused blockages,  $D = `r mk.prop.dev(grease.nb)`$, compared with $D = `r mk.prop.dev(notgrease.nb)`$ for the model predicting non-grease-caused blockages.
+However, there was no relationship between temperature and non-grease SSB (Table \ref{tab:nongreasetab}; Figure \ref{fig:multifigplot}). For the model predicting grease-caused blockages,  $D = $`r = grease$dev`, compared with $D = $`r not.grease$dev` for the model predicting non-grease-caused blockages.
 
 
-
-
-```{r multifigplot, echo=FALSE, fig.pos='h', fig.width=10, fig.height=5, fig.cap=sprintf('Mean weekly air temperature predicts blockages caused by grease (A; n=%d weeks) but not other blockages (B; n=%d weeks)', .n.grease, .n.notgrease), message=FALSE}
-grid.arrange(.p.grease, .p.notgrease, nrow=1)
+```{r multifigplot, echo=FALSE, fig.pos='h', fig.width=10, fig.height=5, fig.cap=sprintf('Mean weekly air temperature predicts blockages caused by grease (A: n=%d weeks, D=%s) but not other blockages (B: n=%d weeks, D=%s)', grease$nobs, grease$dev,  not.grease$nobs, not.grease$dev),  message=FALSE}
+grid.arrange(grease$plot, not.grease$plot, nrow=1)
 ```
 
 # Discussion
@@ -209,15 +202,15 @@ my.startable(
 ```
 
 ```{r greasetab, echo=FALSE, results='asis'}
-my.startable( grease.nb, 
-    title=sprintf('Negative binomial GLM predicting blockages caused by grease (n=%d weeks)', .n.grease), 
+my.startable( grease$mod, 
+    title=sprintf('Negative binomial GLM predicting blockages caused by grease (n=%d weeks)', grease$nobs), 
     label='tab:greasetab'
 )
 ```
 
 ```{r nongreasetab, echo=FALSE, results='asis'}
-my.startable( notgrease.nb, 
-    title=sprintf('Negative binomial GLM predicting blockages not caused by grease (n=%d weeks)', .n.notgrease), 
+my.startable( not.grease$mod, 
+    title=sprintf('Negative binomial GLM predicting blockages not caused by grease (n=%d weeks)', not.grease$nobs), 
     label='tab:nongreasetab'
 )
 #paste('Pseudo $R^2$ = ', signif(pr2.notgrease,2))
@@ -267,16 +260,12 @@ my.xtable(summary(.lin.best[[1]]),
 #summary(sewer.ps)
 # can compare with likelihood ratio test as Poisson model is nested in negbin
 ## moved to 
+"Airtemp lrtest"
 lrtest.airtemp
+"grease lrtest"
+grease$lrtest
+"not grease lrtest"
+not.grease$lrtest
 #lrtest(sewer.nb, sewer.ps) # negbin is a very significant improvement; 
 ##
-## grease vs. nongrease diag
-## check assumptions by comparing to Poisson model
-# fit Poisson model
-notgrease.ps <- glm(N ~ MeanTempC, data=sewer.join.notgrease, family='poisson')
-summary(notgrease.ps) # a bit significant
-# can compare with likelihood ratio test as Poisson model is nested in negbin
-lrtest(notgrease.nb, notgrease.ps) # negbin is still a very significant improvement;
-# ie neither model is much good
-AIC(notgrease.nb); AIC(notgrease.ps) # negbin far superior by AIC
 ```

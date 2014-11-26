@@ -1,23 +1,16 @@
-## Number of problems for each code and week
-.grease <- subset(sewer, grepl('GR', CAUSE))
-head(.grease)
-sewer.fail.grease = ddply( .grease, c('year', 'week'),
-    function(x) { 
-      data.frame(N=nrow(x))  } 
-    ## show progress
-    #.progress='text'
-)
+## pack list
+## pull out is/isnt grease for inspection
 ##
-sewer.join.grease <- join(sewer.fail.grease, temp.week.df, type='full')
+.l <- list()
+.l$data <- subset(block.cause.airtemp.week, is.grease)
 ##
-## Weeks with no problems 
-sewer.join.grease$N[is.na(sewer.join.grease$N)] <- 0
 # number of grease incidents
-sum(sewer.join.grease$N)
-sewer.join.grease <- na.omit(sewer.join.grease)
+.l$sum <- sum(.l$data$N)
+#sewer.join.grease <- na.omit(sewer.join.grease)
 ##
-grease.nb <- glm.nb(N ~ MeanTempC, data=sewer.join.grease)
-summary(grease.nb)
+.l$mod <- glm.nb(N ~ MeanTempC, data=.l$data)
+.l$dev <- mk.prop.dev(.l$mod)
+#summary(grease.nb)
 ##
 # pseudo R^2
 #pr2.grease <- with(grease.nb, (null.deviance-deviance)/null.deviance) 
@@ -25,83 +18,57 @@ summary(grease.nb)
 ##
 ## check assumptions by comparing to Poisson model
 # fit Poisson model
-grease.ps <- glm(N ~ MeanTempC, data=sewer.join.grease)
-summary(grease.ps)
+.l$mod.pois <- glm(N ~ MeanTempC, data=.l$data)
 # can compare with likelihood ratio test as Poisson model is nested in negbin
-lrtest(grease.nb, grease.ps) # negbin is a very significant improvement; 
+.l$lrtest <- lrtest(.l$mod, .l$mod.pois) # negbin is a very significant improvement; 
+## save list as named obj
+# calculate predicted values and confidence intervals
+.l$pred <- mk.mod.ci(.df=.l$data, .mod=.l$mod)
+.l$plot <- mk.mod.ci.plot(.l$pred, .x="MeanTempC", .xlab="Mean weekly air temperature (°C)", .ylab="Number of grease-caused incidents per week")
+.l$plot <- .l$plot +
+    annotate("text", x=-5.5, y=max(.l$data$N)+1, 
+        label = 'A', size=16
+    ) + 
+    ylim(0, max(.l$data$N)+1) # set both plots with equal y axes
+#print(p) 
+.l$nobs <- length(.l$mod$residuals)
+grease <- .l
 
-
-# number of problems that weren't caused by grease
-notgrease <- subset(sewer, !grepl('GR', sewer$CAUSE))
-sewer.fail.notgrease = ddply(notgrease, c('year', 'week'),
-    function(x) { 
-      data.frame(N=nrow(x))  } 
-    ## show progress
-    #.progress='text'
-)
-##
-sewer.join.notgrease <- join(sewer.fail.notgrease, temp.week.df, type='full')
+## as above for not grease
+.l <- list()
+.l$data  <- subset(block.cause.airtemp.week, !is.grease)
+## NAs in data??
 ##
 ## Weeks with no problems 
-sewer.join.notgrease$N[is.na(sewer.join.notgrease$N)] <- 0
-## Why are there remaining NAs in Mean.TemperatureF?
-sewer.join.notgrease <- na.omit(sewer.join.notgrease)
 ##
 # number of non-grease incidents
-sum(sewer.join.notgrease$N)
-# proportion that are greasey
-sum(sewer.join.grease$N) / ( sum(sewer.join.grease$N) + sum(sewer.join.notgrease$N))
-##
+.l$sum <- sum(.l$data$N)
 ## model
-notgrease.nb <- glm.nb(N ~ MeanTempC, data=sewer.join.notgrease)
-pr2.notgrease<-with(notgrease.nb, (null.deviance-deviance)/null.deviance) 
-summary(notgrease.nb) # only just significant
+# fit Poisson model
+.l$mod.pois <- glm(N ~ MeanTempC, data=.l$data, family='poisson')
+# can compare with likelihood ratio test as Poisson model is nested in negbin
+.l$lrtest <- lrtest(.l$mod, .l$mod.pois) # negbin is still a very significant improvement;
+# ie neither model is much good
+#AIC(notgrease.nb); AIC(notgrease.ps) # negbin far superior by AIC
+.l$mod <- glm.nb(N ~ MeanTempC, data=.l$data)
+.l$dev <- mk.prop.dev(.l$mod)
+# calculate predicted values and confidence intervals
+.l$pred <- mk.mod.ci(.df=.l$data, .mod=.l$mod)
+.l$plot <- mk.mod.ci.plot(.l$pred, .x="MeanTempC", .xlab="Mean weekly air temperature (°C)", .ylab="Number of incidents per week not caused by grease")
+.l$plot <- .l$plot +
+    annotate("text", x=-5.5, y=max(grease$data$N)+1, 
+        label = 'B', size=16
+    ) + 
+    ylim(0, max(grease$data$N)+1) # set both plots with equal y axes
+#print(p) 
+.l$nobs <- length(.l$mod$residuals)
+not.grease <- .l
+
 ## Temperature does not significantly predict non-grease blockages!
 
-# calculate predicted values and confidence intervals
-greaseblock <- cbind(sewer.join.grease, predict(grease.nb, type='link', se.fit=T))
-greaseblock <- within(greaseblock, {
-  phat <- exp(fit)
-  LL <- exp(fit - (1.96 * se.fit))
-  UL <- exp(fit + (1.96 * se.fit))
-})
-##
-# plot
-p <- ggplot(greaseblock, aes(x=MeanTempC))
-p <- p + geom_point(aes(y=N), shape=21)
-p <- p + geom_ribbon(aes(ymin=LL, ymax=UL), alpha=0.25)# confidence bounds
-p <- p + geom_line(aes(y=phat), colour='blue') + # fitted points
-  xlab('Mean weekly air temperature (°C)') + ylab('Number of grease-caused incidents per week')
-p <- p + theme_classic() + 
-  theme(panel.grid.major=element_blank(),panel.grid.minor=element_blank())
-p <- p + annotate("text", x=-5.5, y=max(greaseblock$N)+1, label = 'A')
-p <- p + ylim(0, max(greaseblock$N)+1) # set both plots with equal y axes
-#print(p) 
-.p.grease <- p
-.n.grease <- length(grease.nb$residuals)
+# proportion that are greasey
+grease.ratio <- grease$sum/(grease$sum + not.grease$sum)
 
-# calculate predicted values and confidence intervals
-notgreaseblock <- cbind(sewer.join.notgrease, predict(notgrease.nb, type='link', se.fit=T))
-notgreaseblock <- within(notgreaseblock, {
-  phat <- exp(fit)
-  LL <- exp(fit - (1.96 * se.fit))
-  UL <- exp(fit + (1.96 * se.fit))
-})
-##
-# make plot
-r <- ggplot(notgreaseblock, aes(x=MeanTempC))
-r <- r + geom_point(aes(y=N), shape=21)
-r <- r + geom_ribbon(aes(ymin=LL, ymax=UL), alpha=0.25)# confidence bounds
-r <- r + geom_line(aes(y=phat), colour='blue') + # fitted points
-  xlab('Mean weekly air temperature (°C)') + ylab('Weekly number of incidents not caused by grease')
-r <- r + theme_classic() + 
-  theme(panel.grid.major=element_blank(),panel.grid.minor=element_blank())
-r <- r + ylim(0, max(greaseblock$N + 1)) # set both plots with equal y axes
-r <- r + annotate("text", x=-5.5, y=max(greaseblock$N)+1, label = 'B')
-#print(r)
-.p.notgrease <- r
-## number of observations in model
-.n.notgrease <- length(notgrease.nb$residuals)
 
 # check that prediction is different for same doy in different years
 #bb <- ddply(curlpred, .(doy), summary) 

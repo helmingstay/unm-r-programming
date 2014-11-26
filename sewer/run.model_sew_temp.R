@@ -1,15 +1,16 @@
 ## build all possible models in named list
 ## y = mx + b
+.dat <- sewtemp.weather
 temp.lin.models <- list(
-    null=lm(SewTempC ~ MeanTempC, data=sewer.weather),
+    null=lm(SewTempC ~ MeanTempC, data=.dat),
     ## including min & max temp - signif but doesn't help much
-    #all.temp=lm(SewTempC ~ MeanTempC + Max, data=sewer.weather),
-    b.by.interceptor=lm(SewTempC ~ MeanTempC + Interceptor, data=sewer.weather),
-    b.by.manhole=lm(SewTempC ~ MeanTempC + Manhole, data=sewer.weather),
-    m.by.interceptor=lm(SewTempC ~ MeanTempC : Interceptor, data=sewer.weather),
-    m.by.manhole=lm(SewTempC ~ MeanTempC : Manhole, data=sewer.weather),
-    mb.by.interceptor=lm(SewTempC ~ MeanTempC * Interceptor, data=sewer.weather),
-    mb.by.manhole=lm(SewTempC ~ MeanTempC * Manhole, data=sewer.weather)
+    #all.temp=lm(SewTempC ~ MeanTempC + Max, data=.dat),
+    b.by.interceptor=lm(SewTempC ~ MeanTempC + Interceptor, data=.dat),
+    b.by.manhole=lm(SewTempC ~ MeanTempC + Manhole, data=.dat),
+    m.by.interceptor=lm(SewTempC ~ MeanTempC : Interceptor, data=.dat),
+    m.by.manhole=lm(SewTempC ~ MeanTempC : Manhole, data=.dat),
+    mb.by.interceptor=lm(SewTempC ~ MeanTempC * Interceptor, data=.dat),
+    mb.by.manhole=lm(SewTempC ~ MeanTempC * Manhole, data=.dat)
 )
 
 ## compare linear models

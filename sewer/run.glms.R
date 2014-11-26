@@ -1,5 +1,5 @@
 #### Fit models
-hist(sewtemp.join$N) # histogram of data
+hist(block.sewtemp.week$N) # histogram of data
 # overdispersed count data with a lot of zeros, 
 # but no additional zero-generating process - 
 # therefore negative binomial GLM is best
@@ -11,11 +11,11 @@ hist(sewtemp.join$N) # histogram of data
 ## in mk.helpers.R
 ## 
 ## see more notes below on dup code
-## sewer.join is big (all obs)
-## sewtemp.w.join is much smaller, just sewtemp grab weeks
+## block.airtemp.week is big (all obs)
+## block.sewtemp.airtemp.week is much smaller, just sewtemp grab weeks
 
 ## data to use in model
-.dat <- sewer.join
+.dat <- block.airtemp.week
 ## xian -- combine all results for given model into named list
 ## use temp list, assign name at end
 ## $mod, $dev, $p (for plot), $nobs
@@ -60,7 +60,7 @@ lrtest.airtemp <- lrtest(block.airtemp.nb$mod, block.airtemp.pois$mod)
 
 #### Predict number of blockages using sewer temperature data
 ## negative binomial model
-.dat <- sewtemp.join
+.dat <- block.sewtemp.week
 ## pack list as above
 .l <- list()
 .l$dat <- .dat
@@ -107,13 +107,13 @@ lrtest(block.sewtemp.nb$mod, block.sewtemp.pois$mod) # negbin is a very signific
 ## !!xian 2014-11-24
 ## there was a *lot* of repeated code below
 ##
-## Models of glm(N ~ MeanTempC, data=sewer.join) make sense,
-## but glm(N ~ MeanTempC, data=***sewtemp.join***) is *much* smaller, only makes sense for SewTempC.
+## Models of glm(N ~ MeanTempC, data=block.airtemp.week) make sense,
+## but glm(N ~ MeanTempC, data=***block.sewtemp.week***) is *much* smaller, only makes sense for SewTempC.
 ## e.g. doesn't make sense to model a dataset that we subsetted for another variable
 
 
 #### Compare the use of weather versus sewer temperature for predicting blockages
-hist(sewtemp.w.join$N) # also seems zero-inflated, but less so
+hist(block.sewtemp.airtemp.week$N) # also seems zero-inflated, but less so
 
 ##??xian this gives error for model w/different nobs
 ## compare models using sewer and air temperature directly
