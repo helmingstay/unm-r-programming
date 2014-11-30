@@ -13,7 +13,7 @@
 ## read grab-data
 ## path relative to current dir
 ## 
-sewtemp <- read.table("allgrabdata_datefix.csv", sep=',', header=T, comment.char='#', colClasses=.colClasses)
+sewtemp <- read.table("data/allgrabdata_datefix.csv", sep=',', header=T, comment.char='#', colClasses=.colClasses)
 ## xian - posixct gives a full date spec, 
 ## can't use it *just* for time
 ## we're not really using this though
@@ -48,10 +48,14 @@ sewtemp.week$year <- .indexyear(sewtemp.week) + 1900
 ## Turn into data.frame and join with sewer data
 sewtemp.week.df <- data.frame(sewtemp.week)
 
+precip <- read.csv('data/abq-tempsandrain-2005-2014.csv')
+precip <- subset(precip, select=c(MST, Precipitationmm))
+precip$no.precip <- precip$Precipitationmm == "0.00"
+
 ########################################
 ### Air temperature / weather data
 ########################################
-weather <- read.csv('http://unm-r-programming.googlecode.com/git/sewer/abq-temps-2005-2014.csv')
+weather <- read.csv('data/abq-temps-2005-2014.csv')
 ## shorten colnames for convenience
 colnames(weather) <- gsub('.Temperature', 'Temp', colnames(weather))
 # Turn factor into date    
@@ -90,7 +94,7 @@ airtemp.week.df <- data.frame(airtemp.week)
 ## 10-40 near miss
 ## 10-42 any spill
 ## 10-48 property damage 
-sewer <- read.csv('http://unm-r-programming.googlecode.com/files/new-ABQ-sewer.csv')
+sewer <- read.csv('data/new-ABQ-sewer.csv')
 ## Convert reporting date column into time-based object
 sewer$date <- as.POSIXct( sewer$REPORTDATE, format='%m/%d/%Y %H:%M')
 sewer$day <- as.Date(sewer$date)
