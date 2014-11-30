@@ -1,3 +1,47 @@
+## convenience function, turn data.frame into xts using date col
+mk.xts <- function(.df, .datcol) {
+    xts(.df[,.datcol], .df$Date)
+}
+
+## convenience fun, cbind.xts weather to data
+## filling w/zeros, but subset to range of data
+mk.cbind.weather <- function(.weather, .dat){
+    .ind <- index(.dat)
+    .range <- sprintf("%s::%s", min(.ind), max(.ind))
+    .weather = .weather[.range,]
+    ret <- cbind.xts(.weather, .dat, fill=0)
+    ret
+}
+
+
+
+## convenience fun,
+## weekly mean temp, sum of other variables
+mk.weekly.summary <- function(x, .tempcol = 'MeanTempC') {
+   ret = colSums(x)
+    ret[.tempcol] <- mean(x[,.tempcol])
+    ret
+}
+
+## convenience function,
+## return melted data.frame of xts, including date col
+mk.df.melt <- function(.xts, .idvars =c('Date', 'MeanTempC')) {
+    ret <- as.data.frame(.xts)
+    ret$Date <- index(.xts)
+    ret <- melt(ret, id.vars=.idvars)
+    return(ret)
+}
+
+## used?
+## function for period.apply
+## number of observations w/ grease (is.grease TRUE), not.grease, and total
+.greasefun <- function(x){
+    grease <- length(x[x])
+    not.grease <- length(x[!x])
+    ret <- c(grease=grease, not.grease=not.grease, total = grease+not.grease)
+    return(ret)
+}
+
 mk.prop.dev <- function(x) {
     ## takes a glm, returns prop reduction diviance 
     ## see zheng 2000

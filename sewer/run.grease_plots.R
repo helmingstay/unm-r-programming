@@ -1,8 +1,8 @@
 .annotate.size = 12
 ##
 .l <- list()
-.dat <- block.cause.airtemp.week
-.form <- formula(N ~ is.grease*MeanTempC) 
+.l$dat <- .dat <- block.cause.airtemp.week
+.form <- formula(value ~ variable*MeanTempC) 
 .l$mod <- glm.nb(.form, data=.dat)
 .l$mod.pois <- glm(.form, data=.dat, family='poisson')
 ## no difference 
@@ -10,8 +10,8 @@
 .l$pred <- mk.mod.ci(.df=.dat, .mod=.l$mod.pois)
 .l$dev <- mk.prop.dev(.l$mod)
 ## model predictions
-.pred.grease <- subset(.l$pred, is.grease)
-.pred.not.grease <- subset(.l$pred, !is.grease)
+.pred.grease <- subset(.l$pred, variable == 'grease')
+.pred.not.grease <- subset(.l$pred, variable == 'not.grease')
 ## plots
 ## grease
 .l$plot.grease <- mk.mod.ci.plot(.pred.grease, 
@@ -36,7 +36,7 @@ grease.fullmod <- .l
 ## pull out is/isnt grease for inspection
 ##
 .l <- list()
-.l$data <- subset(block.cause.airtemp.week, is.grease)
+.l$data <- subset(block.cause.airtemp.week, variable=='grease')
 ##
 # number of grease incidents
 .l$sum <- sum(.l$data$N)
@@ -46,7 +46,7 @@ grease <- .l
 
 ## as above for not grease
 .l <- list()
-.l$data  <- subset(block.cause.airtemp.week, !is.grease)
+.l$data <- subset(block.cause.airtemp.week, variable=='not.grease')
 ## NAs in data??
 ##
 ## Weeks with no problems 
