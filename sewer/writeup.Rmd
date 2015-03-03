@@ -11,9 +11,9 @@ output: html_document
 library(knitr)
 ## 
 opts_chunk$set(dev=c('png', 'tiff'),
-    dpi=c(96, 300),
+    dpi=c(150, 300),
     dev.args=list( 
-        png = list(type="cairo"),
+        png = list(type="cairo-png", antialias='subpixel'),
         tiff = list(compression="lzw")
     )
 )
@@ -64,21 +64,17 @@ source('run.model_sew_temp.R')
 ## was source('sewtempandblock.R')
 source('run.glms.R')
 ```
-```{r grease_plots, size='footnotesize', echo=FALSE, message=FALSE, warning=FALSE, error=FALSE, include=FALSE}
-## includes models
-source('run.grease_plots.R')
-```
 
 # Methods
 
 ### Data
-Albuquerque Bernalillo County Water Utility Authority (ABCWUA) responds to SSB events after discovery by maintenance workers or reports of blockages from the public. This study used an anonymised dataset of SSB dates, along with engineers' estimates of blockage cause. In total, `r nrow(sewer)` SSB reports from the period `r format(range(sewer$day, na.rm=T)[1], '%B %d, %Y')` - `r format(range(sewer$day, na.rm=T)[2], '%B %d, %Y') ` (inclusive) were used in this study.
+Albuquerque Bernalillo County Water Utility Authority (ABCWUA) responds to SSB events after discovery by maintenance workers or reports of blockages from the public. This study used an anonymised dataset of SSB dates, along with engineers' estimates of blockage cause. In total, `r sewer.stats$nobs` SSB reports from the period `r sewer.stats$min` to `r sewer.stats$max` (inclusive) were used in this study.
 The frequency of sanitary sewer blockages is the primary focus of this work.
 
 Various testing is performed to verify cost-effective chemical odor control on three north-south interceptor sewers in the ABCWUA system, which are shown in Figure S1. The testing includes grab samples obtained by the chemical treatment vendor at 15 manholes on the three treated interceptors. The sewage grab sample measurements were obtained, typically bi-weekly, using a Cooper Atkins DPP400W Waterproof Pen Style thermometer with an accuracy range of +/- 1 C° (from -10° to 100°C) in a liquid sample collected from the manhole.  
-In total, `r nrow(sewtemp)` SGST measurements from the period `r format(range(sewtemp$Date, na.rm=T)[1], '%B %d, %Y')` - `r format(range(sewtemp$Date, na.rm=T)[2], '%B %d, %Y') ` (inclusive) were used in this study.
+In total, `r nrow(sewtemp)` SGST measurements from the period `r sewtemp.stats$min` to `r sewtemp.stats$max` (inclusive) were used in this study.
 
-Mean daily air temperature (MDAT) was obtained from the Albuquerque International airport's (KABQ) automated METAR data collection system (available from \url{http://www.wunderground.com/history/airport/KABQ}) spanning the years during which either SSB and SGST or measurements were available (`r format(range(weather$Date, na.rm=T)[1], '%B %d, %Y')` - `r format(range(weather$Date, na.rm=T)[2], '%B %d, %Y') `, inclusive).
+Mean daily air temperature (MDAT) was obtained from the Albuquerque International airport's (KABQ) automated METAR data collection system (available from \url{http://www.wunderground.com/history/airport/KABQ}) spanning the entire period of study noted above.
 
 Since most days had no SSB events, the total number of SSB 
 events per week (W-SSB) was computed and used in subsequent 
@@ -112,7 +108,7 @@ Indeed, the best-ranked model of the response of MW-SGST to MW-MDAT (Table \ref{
 For reference, all candidate models (ranked by BIC) are shown in Table \ref{tab:bictab}. All high-ranked models (low BIC) show a small but statistically significant effect of interceptors identity on sewage temperature. On the other hand, all models that 
 included manhole identity ranked lower than the null model (which included only MW-MDAT and MW-SGST).
 
-```{r sewweathplot, echo=FALSE, size='footnotesize', include=TRUE, fig.height=4, fig.width=6, fig.cap="Sewage temperature (MW-SGST) increased with air temperature (MW-MDAT). The response of sewage temperature to air temperature differed slightly between sewer system interceptors. Overall, as air temperature dropped below freezing, no further decrease in sewage temperature was observed."}
+```{r sewweathplot, echo=FALSE, size='footnotesize', include=TRUE, fig.height=4.5, fig.width=4.5, fig.cap="Sewage temperature (MW-SGST) increased with air temperature (MW-MDAT). The response of sewage temperature to air temperature differed slightly between sewer system interceptors. Overall, as air temperature dropped below freezing, no further decrease in sewage temperature was observed."}
 # plot with ggplot
 p <- ggplot(sewtemp.weather)
 p <- p + geom_point(aes(x=MeanTempC, y=SewTempC, 
@@ -126,39 +122,45 @@ p <- p + xlab('MW-MDAT (°C)') + ylab('MW-SGST (°C)')
 print(p)
 ```
 
-
-```{r multiblockplot, echo=FALSE, fig.pos='h', fig.width=10, fig.height=5, fig.cap=sprintf('Both sewage temperature (*A*: n=%d weeks, D=%s) and air temperature (*B*: n=%d weeks, D=%s) are statistically significant predictors of sanitary sewer blockages in Albuquerque, NM. The explanatory power of air temperature, however, is very small.', block.sewtemp.nb$nobs, block.sewtemp.nb$dev, block.airtemp.nb$nobs, block.airtemp.nb$dev), message=FALSE}
-grid.arrange(block.sewtemp.nb$plot, block.airtemp.nb$plot, nrow=1)
+```{r multiblockplot, eval=F, echo=FALSE, fig.pos='h', fig.width=10, fig.height=5, fig.cap=sprintf('Both sewage temperature (*A*: n=%d weeks, D=%s) and air temperature (*B*: n=%d weeks, D=%s) are statistically significant predictors of sanitary sewer blockages in Albuquerque, NM. The explanatory power of air temperature, however, is very small.', block.sewtemp.nb$nobs, block.sewtemp.nb$dev, block.airtemp.nb$nobs, block.airtemp.nb$dev), message=FALSE}
+'redo'
+#grid.arrange(block.sewtemp.nb$plot, block.airtemp.nb$plot, nrow=1)
 ```
 
 ### Sewage temperature (MW-SGST), air temperature (MW-MDAT), and sewer blockage frequency (W-SSB)
 
 Overall, we found that sewer blockages occured more frequently during weeks with lower sewage temperatures (Figure \ref{fig:multiblockplot}A). 
+We employed a Poisson GLM, with mean weekly temperature and cause predicting weekly blockage frequency.
+<!-- 
+ (likelihood ratio test, p < 0.001).
 The W-SSB data followed an overdispersed Poisson 
 distribution, with forty-one weeks (23.8%??) showing one or 
 zero incidents.
 Consequently, we
 employed a negative binomial generalized linear model (GLM) 
 with a log link function \cite{mass} to model the response of W-SSB to MW-MDAT.
-We also tested a Poisson GLM, but the final negative binomial GLM specification proved a much better model
- (likelihood ratio test, p < 0.001).
-<!-- `r sprintf('$p < 0.001?? %s$', lrtest.sewtemp$Pr)` -->
+-->
 
 The final model showed a highly statistically significant relationship between sewage temperature (MW-SGST) and sewer blockage frequency (W-SSB) (p < 0.001; Table \ref{tab:tempandblock}), 
-R^2 statistics are not available for GLM, though the proportional reduction in deviance (D) provides an analogous measure of the model's explanatory power \parencite{zheng2000summarizing}. For the final negative binomial model, we find that D = `r  block.sewtemp.nb$dev`.
+R^2 statistics are not available for GLM, though the proportional reduction in deviance (D) provides an analogous measure of the model's explanatory power \parencite{zheng2000summarizing}. For the final model, we find that D = `r  block.sewtemp.list$dev`.
+<!-- 
 Thus this model explains only a modest amount of 
 variation in observed sewer blockage frequency.
+-->
 
-As with sewage temperature, we found low air temperature was associated with more sewer blockages. MW-MDAT was a highly significant predictor of W-SSB (Table \ref{tab:sewnb}; Figure \ref{fig:multiblockplot}B).  However, this model explains very little variation in blockage frequency (D = `r block.airtemp.nb$dev`).
+As with sewage temperature, we found low air temperature was associated with more sewer blockages. MW-MDAT was a highly significant predictor of W-SSB (Table \ref{tab:sewnb}; Figure \ref{fig:multiblockplot}B).  
 
 ### Causes of sewer blockage frequency (W-SSB)
 Above, we see that sanitary sewer blockage frequency (W-SSB) is weakly correlated with both air and sewage temperature.   While both sewage and air temperature are poor predictors, sewage temperature is somewhat better. Yet sewage temperature measurements are expensive and labor-intensive, and thus sparse relative to automated air temperature measurements.  As such, a direct comparison between models is not possible. 
 
-This dataset includes `r grease$sum` total blockages where grease was the estimated blockage cause, representing `r sprintf("%2.1f", grease.ratio * 100)`\% of total incidents during the study period. We constructed a Poisson GLM  using both air temperature (MW-MDAT) and blockage cause (grease vs not grease) as predictor variables.  Here, both air temperature and blockage cause are highly significant and inter-dependent predictors of blockage frequency (Figure \ref{fig:multifigplot} and Table \ref{tab:greasetab}).   The full model explains a sizable proportion of variation in blockage frequency (D = `r grease.fullmod$dev`), particularly for grease-caused blockages (Figure \ref{fig:multifigplot}A).
+This dataset includes `r block.counts$grease` total blockages where grease was the estimated blockage cause, representing `r sprintf("%2.1f", grease.ratio * 100)`\% of total incidents during the study period. We constructed a Poisson GLM  using both air temperature (MW-MDAT) and blockage cause (grease vs not grease) as predictor variables.  Here, both air temperature and blockage cause are highly significant predictors of blockage frequency (Figure \ref{fig:block.airtemp} and Table \ref{tab:greasetab}). Again, there is a strong interaction between temperature and blockage cause, with grease-caused blocks responding more strongly to temperature.   The full model explains a sizable proportion of variation in blockage frequency (D = `r block.airtemp.list$dev`), particularly for grease-caused blockages (Figure \ref{fig:block.airtemp}A).
 
+```{r block.sewtemp, echo=FALSE, fig.pos='h', fig.width=4.5, fig.height=4.5, fig.cap=sprintf('Mean weekly sewer temperature predicts blockages caused by grease, and is a poor predictor of blockages due to other causes. %d weeks total, pseudo-R2: D=%s. See Table ?? for model details.', block.sewtemp.list$nweeks, block.sewtemp.list$dev), message=FALSE}
+plot(block.sewtemp.list$plot)
+```
 
-```{r multifigplot, echo=FALSE, fig.pos='h', fig.width=10, fig.height=5, fig.cap=sprintf('Mean weekly air temperature predicts blockages caused by grease (A: n=%d weeks), but is a poor predictor of blockages due to other causes (B: n=%d weeks). See Table ?? for model details.', grease$nobs, not.grease$nobs),  message=FALSE}
-grid.arrange(grease.fullmod$plot.grease, grease.fullmod$plot.not.grease, nrow=1)
+```{r block.airtemp, echo=FALSE, fig.pos='h', fig.width=4.5, fig.height=4.5, fig.cap=sprintf('Mean weekly air temperature predicts blockages caused by grease (A: %d total blocks), and is a poor predictor of blockages due to other causes (B: %d total blocks). %d weeks total, pseudo-R2: D=%s. See Table ?? for model details.', block.counts$grease, block.counts$not.grease,  block.airtemp.list$nweeks, block.airtemp.list$dev, block.airtemp.list$dev), message=FALSE}
+plot(block.airtemp.list$plot)
 ```
 
 # Discussion
@@ -182,19 +184,20 @@ With continuing population rise and urbanisation, efficient operation of urban w
 ??Need table numbers.
 
 ```{r tabtempandblock, echo=FALSE, results='asis'}
-.l <- block.sewtemp.nb
-my.startable( .l$mod, 
-    title=sprintf('Weekly mean sewage temperature predicts the number of blocked sewers that week (Negative Binomial model, n=%d weeks, D=%s)', .l$nobs, .l$dev), 
+with(block.sewtemp.list,
+my.startable( mod, 
+    title=sprintf('Weekly mean sewage temperature and blockage cause predict weekly blockage frequency ( Poisson GLM, n=%d weeks, D=%s)', nweeks, dev), 
     label='tab:tempandblock'
-)
+))
 ```
 
 
 ```{r greasetab, echo=FALSE, results='asis'}
-my.startable( grease.fullmod$mod, 
-    title=sprintf('Poisson GLM predicting blockage frequency as a function of air temperature and cause (grease versus not grease).'), 
+with(block.airtemp.list,
+my.startable( mod, 
+    title=sprintf('Weekly mean air temperature and blockage cause predicts weekly blockage frequency ( Poisson GLM, n=%d weeks, D=%s)', nweeks, dev), 
     label='tab:greasetab'
-)
+))
 ```
 
 
@@ -202,61 +205,3 @@ my.startable( grease.fullmod$mod,
 
 
 # Supplemental Information
-
-```{r sewnb, results='asis', echo=FALSE}
-.l <- block.airtemp.nb
-my.startable(
-    .l$mod, 
-    title=sprintf('Weekly mean air temperature predicts the number of blocked sewers that week (Negative binomial model, n=%d weeks, D=%s)', .l$nobs, .l$dev), 
-    label='tab:sewnb'
-)
-```
-
-```{r bictab, echo=FALSE, size='footnotesize', results='asis'}
-names(.lin.bic) <- c('Model', 'BIC')
-# calculate Delta BIC
-.lin.bic$Delta <- c('-', # first element of vector is blank
-                    round( digits=1,   # for table
-                           x = cumsum( # cumulative difference from top model
-                             diff(.lin.bic$BIC) ) ) ) # calcs differences
-my.xtable(.lin.bic, label='tab:bictab', caption='Candidate models for predicting sewage temperature using mean air temperature, ranked using Bayes Information Criterion. Delta BIC, the difference between each model and its highest-ranked competitor, is a measure of empirical support for that model. A value over $> 10$ is considered strong evidence against that model (Kass and Raftery, 1995)')
-```
-
-```{r bestlin, echo=FALSE, size='footnotesize', results='asis'}
-my.startable(.lin.best[[1]], 
-    ## column formatting, first element is rownames
-    #display = c('s', 'fg', 'g', 'f', 'g'),
-    digits=3,
-    label='tab:bestlin', 
-    title=sprintf('Summary table of the best-ranked model of the response of mean weekly sewage grab sample temperature (MW-SGST) to mean weekly mean daily air temperature (MW-MDAT). Sewer interceptor identity has a significant effect on both model slope and model intercept. $R^2 = %s$.', .best.rsq)
-)
-```
-
-??Summary of the same linear model in xtable, 
-xtable html output is ugly in browser, but
-looks fine in libreoffice
-```{r bestlin1, echo=FALSE, size='footnotesize', results='asis'}
-## as above, but with xtable
-my.xtable(summary(.lin.best[[1]]), 
-    ## column formatting, first element is rownames
-    display = c('s', 'fg', 'g', 'f', 'g'),
-    digits=3,
-    label='tab:bestlin', 
-    caption=sprintf('Summary table of the best-ranked model of the response of mean weekly sewage grab sample temperature (MW-SGST) to mean weekly mean daily air temperature (MW-MDAT). Sewer interceptor identity has a significant effect on both model slope and model intercept. $R^2 = %s$.', .best.rsq)
-)
-```
-<!-- diagnosis --> 
-```{r diag, fig.cap='Linear model diagnostic plots.', size='footnotesize', message=FALSE, warning=FALSE, error=FALSE, echo=FALSE, include=FALSE}
-
-#summary(sewer.ps)
-# can compare with likelihood ratio test as Poisson model is nested in negbin
-## moved to 
-"Airtemp lrtest"
-#lrtest.airtemp
-"grease lrtest"
-#grease$lrtest
-"not grease lrtest"
-#not.grease$lrtest
-#lrtest(sewer.nb, sewer.ps) # negbin is a very significant improvement; 
-##
-```

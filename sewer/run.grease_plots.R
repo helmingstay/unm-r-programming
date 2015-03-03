@@ -1,7 +1,7 @@
 .annotate.size = 12
 ##
 .l <- list()
-.l$dat <- .dat <- block.cause.airtemp.week
+.l$dat <- .dat <- block.airtemp.week
 .form <- formula(value ~ variable*MeanTempC) 
 .l$mod <- glm.nb(.form, data=.dat)
 .l$mod.pois <- glm(.form, data=.dat, family='poisson')
