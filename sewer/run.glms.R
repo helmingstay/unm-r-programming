@@ -1,9 +1,32 @@
 .annotate.size = 12
 #### Fit models
 hist(block.sewtemp.week$value) # histogram of data
-# overdispersed count data with a lot of zeros, 
-# but no additional zero-generating process - 
-# therefore negative binomial GLM is best
+
+library(gtable)
+
+## both sewer temp and air temp,
+## not separated by cause
+block.bothtemp.list <- within(list(),{
+    dat <- block.bothtemp
+    ## clean up factors for facet plotting
+    dat$variable <- factor(dat$variable, 
+        levels=c('SewTempC', 'MeanTempC'),
+        labels=c('Sewer Temp: mST/W (C)', 'Air Temp: mAT/W')
+    )
+    plot <- ggplot(dat, aes(x=value, y=all)) +
+        theme_bw() + 
+        xlab('Mean Weekly Sewer and Air Temperature (C)') +
+        ylab('Total Blocks Per Week') + 
+        facet_wrap(~variable, scales='free_x') + 
+        geom_smooth(method = "glm", family="poisson", colour='blue', size=1.2) +
+        geom_point()
+
+    mods <- dlply(dat, 'variable', function(.df){
+        ret <- glm(all ~ value, data=.df, family='poisson')
+        return(ret)
+    })
+    devs <- llply(mods, mk.prop.dev)
+})
 
 
 ##!! xian 2014-11-24
@@ -24,6 +47,11 @@ hist(block.sewtemp.week$value) # histogram of data
 block.airtemp.list <- within(list(), {
     ## now just use poisson
     dat <- block.airtemp.week
+    ## clean up factors for facet plotting
+    dat$variable <- factor(dat$variable, 
+        levels=c('grease', 'not.grease'),
+        labels=c('Grease', 'Not Grease')
+    )
     mod <- glm(value ~ MeanTempC * variable, 
         data=dat, family='poisson'
     )
@@ -43,27 +71,16 @@ block.airtemp.list <- within(list(), {
         geom_point() 
 })
 
-#mk.mod.ci.plot(.l$pred, .x="MeanTempC", .xlab="Mean weekly air temperature (°C)", .ylab="Number of incidents per week", .theme=theme_bw())
-    ## annotate plot, 
-    ## nudge A/B
-    #.nudge <-  data.frame(x=0.90, y=0.97)
-    #.l$plot <- .l$plot +
-    #    annotate("text", 
-    #        x=min(.dat$MeanTempC)*nudge$x,
-    #        y=max(.dat$value)*nudge$y, 
-    #        label = 'B', size=.annotate.size
-    #    )
-    ## assign list a real name
-    ## number of sewer blockages by airtemp, negative binom model
-    #block.airtemp <- .l
-    #summary(sewer.nb) # very signiificant model
-    ##
-
 #### Predict number of blockages using sewer temperature data
 .dat <- block.sewtemp.week
 ## pack list as above
 block.sewtemp.list <- within(list(), {
     dat <- block.sewtemp.week
+    ## clean up factors for facet plotting
+    dat$variable <- factor(dat$variable, 
+        levels=c('grease', 'not.grease'),
+        labels=c('Grease', 'Not Grease')
+    )
     mod <- glm(value ~ SewTempC + variable, data=dat, family='poisson')
     #summary(nb.block) # highly significant; AIC = 638.37
     nobs <- length(mod$residuals)
@@ -100,9 +117,3 @@ block.sewtemp.list <- within(list(), {
     #lrtest(block.sewtemp.nb$mod, block.sewtemp.pois$mod) # negbin is a very significant improvement
 
 
-    ## !!xian 2014-11-24
-    ## there was a *lot* of repeated code below
-    ##
-    ## Models of glm(N ~ MeanTempC, data=block.airtemp.week) make sense,
-    ## but glm(N ~ MeanTempC, data=***block.sewtemp.week***) is *much* smaller, only makes sense for SewTempC.
-    ## e.g. doesn't make sense to model a dataset that we subsetted for another variable

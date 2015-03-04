@@ -205,6 +205,17 @@ sewer.block.cause.week = ddply( sewer, c('year', 'week', 'is.grease'),
 ## inner join fixes
 sewtemp.weather <- join(sewtemp, weather, type='inner')
 
+.temps <- join(
+    subset(sewtemp.week.df, select=-nobs), 
+    airtemp.week.df, type='full'
+)
+.blocks <- subset(sewer.block.week, select=c(Date, all))
+## keep all blocks, trim weather
+block.bothtemp <- join(.blocks, .temps, type='left')
+## melt air/sewtemp together, remove nas
+## e.g. weekly temp for one but not the other
+block.bothtemp <- na.omit(melt(block.bothtemp, id.vars=c('Date','all')))
+
 
 ## join failures with air temp.
 ## sewer.block.week already sampled for all weeks
