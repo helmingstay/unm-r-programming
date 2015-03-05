@@ -37,8 +37,8 @@ mk.modlist <- function(.df,
     return(ret)
 }
 
-obs.period <- seq(from=2, to=13, by=1)
-obs.lag <- seq(from=-6, to=10, by=2)
+obs.period <- seq(from=2, to=30, by=1)
+obs.lag <- seq(from=-30, to=40, by=3)
 ## re-aggregate and rerun for each observation window length
 #uberlist <- lapply(obs.period, function(.per) {
 uberlist <- lapply(obs.lag, function(this.lag) {
@@ -96,14 +96,15 @@ uber.df <- ldply(uberlist, function(.llag) {
     ldply(.llag, function(.lper) {
         ldply( .lper$modlist, function(.lin) {
             with(.lin, data.frame(
-                per=.lper$per, lag=.lper$lag, dev=as.numeric(dev), nobs, nweeks)
+                per=.lper$per, lag=.lper$lag, dev=as.numeric(dev), nobs, nweeks, null.dev = mod$null.deviance)
             )
         })
     })
 })
 
 ## nice plot of predictive power by lag and observation period
-uber.plot <- ggplot(uber.df, aes(x=lag, y=per, fill=dev)) + 
+uber.plot <- ggplot(uber.df, aes(x=lag, y=per, fill=null.dev)) + 
     facet_wrap( ~.id) + geom_tile() + 
     scale_fill_gradient2(low='blue', mid='grey', high='red', midpoint=0.1);
+#pdf('uber.pdf', width=7, height=5); plot(uber.plot); dev.off()
 #plot(p)

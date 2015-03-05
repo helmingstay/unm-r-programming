@@ -35,6 +35,7 @@ weather$Date <- as.Date(as.POSIXct(weather$MST, format='%Y-%m-%d'))
 # Convert Fahrenheit into Celsius
 ## find cols containing temp
 .wcols <- grep('TempF', colnames(weather))
+fahrenheit.to.celsius <- function(x) (x-32)*(9/5)
 weather[,.wcols] <- fahrenheit.to.celsius(weather[,.wcols])
 ## update colnames to reflect C
 colnames(weather) <- gsub('TempF', 'TempC', colnames(weather))

@@ -39,11 +39,11 @@ library(gridExtra)
 library(reshape2)
 library(plyr)
 library(xtable)
-library(weathermetrics) ## F to C
-library(HH) # for fancy ancova plot
+#library(weathermetrics) ## F to C
+#library(HH) # for fancy ancova plot
 library(lme4) # for glmer - mixed effects (nested interceptors / manholes)
-library(AER)
-library(pscl) # for ZIP models
+#library(AER)
+#library(pscl) # for ZIP models
 library(xts)
 library(MASS)
 library(stargazer)
