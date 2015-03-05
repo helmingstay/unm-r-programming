@@ -22,6 +22,8 @@ mk.xts.fill <- function(dat, skel, ret.col){
     return(ret)
 }
 
+
+
 ########################################
 ### Air temperature / weather data
 ########################################
@@ -41,6 +43,8 @@ colnames(weather) <- gsub('TempF', 'TempC', colnames(weather))
 # only grab measurement / non-date columns
 #.tmp <- subset(weather, select=c(MaxTempC, MeanTempC, MinTempC))
 weather.xts <- xts(subset(weather, select=MeanTempC), weather$Date)
+
+
 ## Get weekly mean temp
 airtemp.week <- apply.weekly(weather.xts$MeanTempC, FUN=mean)
 airtemp.week.df <- data.frame(
@@ -148,6 +152,7 @@ sewer.xts <- mk.xts.fill(sewer.xts, weather.xts, 'is.grease')
 ## compute blockages per week using xts,
 ## then move into data.frame
 .tmp.all <- apply.weekly(sewer.xts, function(x){
+    ## all nas have length 0
     length(na.omit(x))
 })
 ## as above, by cause

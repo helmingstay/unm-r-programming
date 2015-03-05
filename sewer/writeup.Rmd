@@ -130,7 +130,7 @@ print(p)
 
 ### Sewage temperature (mST/W), air temperature (mAT/W), and sewer blockage frequency (SSB/W)
 
-```{r multiblockplot, eval=T, echo=FALSE, fig.pos='h', fig.width=4.5, fig.height=4.5, fig.cap=sprintf('Mean weekly sewage temperature (*A*: n=%d weeks, D=%s) and mean weekly air temperature (*B*: n=%d weeks, D=%s) are both statistically significant predictors of sanitary sewer blockage frequency in Albuquerque, NM. Here, blockages of all causes are shown.  Note that sewer temperature is only available for select weeks, while air temperature is available for the entire period of blockage record.', block.sewtemp.list$nweeks, block.sewtemp.list$dev, block.airtemp.list$nweeks, block.airtemp.list$dev), message=FALSE}
+```{r multiblockplot, eval=T, echo=FALSE, fig.pos='h', fig.width=4.5, fig.height=3.5, fig.cap=sprintf('Mean weekly sewage temperature (*A*: n=%d weeks, D=%s) and mean weekly air temperature (*B*: n=%d weeks, D=%s) are both statistically significant predictors of sanitary sewer blockage frequency in Albuquerque, NM. Here, blockages of all causes are shown.  Note that sewer temperature is only available for select weeks, while air temperature is available for the entire period of blockage record.', block.sewtemp.list$nweeks, block.sewtemp.list$dev, block.airtemp.list$nweeks, block.airtemp.list$dev), message=FALSE}
 plot(block.bothtemp.list$plot)
 ```
 
@@ -157,11 +157,11 @@ on reported blockage cause, grouped into grease versus not grease.  Again, we co
 
 This dataset includes `r block.counts$grease` total blockages where grease was the estimated blockage cause, representing `r sprintf("%2.1f", grease.ratio * 100)`\% of total incidents during the study period. We constructed a Poisson GLM  using both air temperature (mAT/W) and blockage cause (grease vs not grease) as predictor variables.  Here, both air temperature and blockage cause are highly significant predictors of blockage frequency (Figure \ref{fig:block.airtemp} and Table \ref{tab:greasetab}). Again, there is a strong interaction between temperature and blockage cause, with grease-caused blocks responding more strongly to temperature.   The full model explains a sizable proportion of variation in blockage frequency (D = `r block.airtemp.list$dev`), particularly for grease-caused blockages (Figure \ref{fig:block.airtemp}A).
 
-```{r block.sewtemp, echo=FALSE, fig.pos='h', fig.width=4.5, fig.height=4.5, fig.cap=sprintf('Mean weekly sewer temperature predicts blockages caused by grease, and is a poor predictor of blockages due to other causes. %d weeks total, pseudo-R2: D=%s. See Table ?? for model details.', block.sewtemp.list$nweeks, block.sewtemp.list$dev), message=FALSE}
+```{r block.sewtemp, echo=FALSE, fig.pos='h', fig.width=4.5, fig.height=3.5, fig.cap=sprintf('Mean weekly sewer temperature predicts blockages caused by grease, and is a poor predictor of blockages due to other causes. %d weeks total, pseudo-R2: D=%s. See Table ?? for model details.', block.sewtemp.list$nweeks, block.sewtemp.list$dev), message=FALSE}
 plot(block.sewtemp.list$plot)
 ```
 
-```{r block.airtemp, echo=FALSE, fig.pos='h', fig.width=4.5, fig.height=4.5, fig.cap=sprintf('Mean weekly air temperature predicts blockages caused by grease (A: %d total blocks), and is a poor predictor of blockages due to other causes (B: %d total blocks). %d weeks total, pseudo-R2: D=%s. See Table ?? for model details.', block.counts$grease, block.counts$not.grease,  block.airtemp.list$nweeks, block.airtemp.list$dev, block.airtemp.list$dev), message=FALSE}
+```{r block.airtemp, echo=FALSE, fig.pos='h', fig.width=4.5, fig.height=3.5, fig.cap=sprintf('Mean weekly air temperature predicts blockages caused by grease (A: %d total blocks), and is a poor predictor of blockages due to other causes (B: %d total blocks). %d weeks total, pseudo-R2: D=%s. See Table ?? for model details.', block.counts$grease, block.counts$not.grease,  block.airtemp.list$nweeks, block.airtemp.list$dev, block.airtemp.list$dev), message=FALSE}
 plot(block.airtemp.list$plot)
 ```
 

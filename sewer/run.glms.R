@@ -55,6 +55,7 @@ block.airtemp.list <- within(list(), {
     mod <- glm(value ~ MeanTempC * variable, 
         data=dat, family='poisson'
     )
+    submod <- glm(value ~ MeanTempC, data=subset(dat, variable=='Grease'), family='poisson')
     dev <- mk.prop.dev(mod)
     nobs <- length(mod$residuals)
     ## number of unique dates post-merge
@@ -81,7 +82,8 @@ block.sewtemp.list <- within(list(), {
         levels=c('grease', 'not.grease'),
         labels=c('Grease', 'Not Grease')
     )
-    mod <- glm(value ~ SewTempC + variable, data=dat, family='poisson')
+    mod <- glm(value ~ SewTempC * variable, data=dat, family='poisson')
+    submod <- glm(value ~ SewTempC, data=subset(dat, variable=='Grease'), family='poisson')
     #summary(nb.block) # highly significant; AIC = 638.37
     nobs <- length(mod$residuals)
     nweeks <- length(unique(dat$Date))
