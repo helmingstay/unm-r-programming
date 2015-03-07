@@ -2,8 +2,6 @@
 #### Fit models
 hist(block.sewtemp.week$value) # histogram of data
 
-library(gtable)
-
 ## both sewer temp and air temp,
 ## not separated by cause
 block.bothtemp.list <- within(list(),{
@@ -55,8 +53,11 @@ block.airtemp.list <- within(list(), {
     mod <- glm(value ~ MeanTempC * variable, 
         data=dat, family='poisson'
     )
-    submod <- glm(value ~ MeanTempC, data=subset(dat, variable=='Grease'), family='poisson')
     dev <- mk.prop.dev(mod)
+    mod.grease <- glm(value ~ MeanTempC, data=subset(dat, variable=='Grease'), family='poisson')
+    dev.grease <- mk.prop.dev(mod.grease)
+    mod.nogrease <- glm(value ~ MeanTempC, data=subset(dat, variable!='Grease'), family='poisson')
+    dev.nogrease <- mk.prop.dev(mod.nogrease)
     nobs <- length(mod$residuals)
     ## number of unique dates post-merge
     nweeks <- length(unique(dat$Date))

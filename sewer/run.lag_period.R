@@ -15,6 +15,9 @@ obs.period <- seq(from=1, to=20, by=1)
 obs.lag <- 0
 #obs.lag <- seq(from=-11, to=11, by=1)
 
+## rollmean weather from run.model_sew_temp.R 
+weather.per <- best.weather.roll
+
 ## for each observation window length
 ## re-aggregate and rerun 
 uberlist <- lapply(obs.period, function(this.per) {
@@ -30,7 +33,7 @@ uberlist <- lapply(obs.period, function(this.per) {
     ret.lag <- lapply(obs.lag, function(this.lag){
         ## lag daily, then aggregate
         ## otherwise total lag = this.lag * this.per days
-        weather.lag <- lag(weather.xts, k=this.lag)
+        #weather.lag <- lag(weather.xts, k=this.lag)
         sewtemp.lag <- lag(sewtemp.day, k=this.lag)
         cat('+')
         ## store everything in return list
@@ -38,9 +41,9 @@ uberlist <- lapply(obs.period, function(this.per) {
             lag <- this.lag
             per <- this.per
             ## final lagged then agged predictor temps
-            weather.per <- mk.period.apply(
-                weather.lag, k=this.per, mean
-            )
+            #weather.per <- mk.period.apply(
+            #    weather.lag, k=this.per, mean
+            #)
             sewtemp.per <- mk.period.apply(
                 sewtemp.lag$SewTempC, k=this.per, function(x) mean(x, na.rm=T)
             )

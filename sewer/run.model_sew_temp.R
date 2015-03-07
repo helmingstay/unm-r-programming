@@ -6,10 +6,10 @@ ndays.list <- lapply(.ndays.mean, function(.ndays) {
     ## store non-dotted vars for return
     ret <- within(list(), {
         ## rolling mean of preceding vals (e.g. align right)
-        .tmp.weather <- rollmean(weather.xts, .ndays, align='right')
-        .tmp.weather <- cbind(Date=index(.tmp.weather), as.data.frame(.tmp.weather))
+        weather.roll <- rollmean(weather.xts, .ndays, align='right')
+        weather.df <- cbind(Date=index(weather.roll), as.data.frame(weather.roll))
         ## left join should equal inner - we have plenty of weather
-        dat <- join(sewtemp, .tmp.weather, type='inner')
+        dat <- join(sewtemp, weather.df, type='inner')
         ## test the same simple model for each ndays
         mod <- lm(SewTempC ~ MeanTempC + Interceptor, dat)
     })
@@ -23,12 +23,13 @@ rsq.ndays <- data.frame(
 
 ## 43?
 ## pull out the best rsq, and model + data
-best.df <- subset(rsq.ndays, adj.r.sq == max(adj.r.sq))
-best.ndays <- best.df$ndays
-best.index <- which.max(best.df$adj.r.sq)
-.best.rsq <- best.df$adj.r.sq
+best.index <- which.max(rsq.ndays$adj.r.sq)
+best.ndays <- rsq.ndays$ndays[best.index]
+.best.rsq <- rsq.ndays$adj.r.sq[best.index]
 .lin.best <- ndays.list[[best.index]]$mod
 best.dat <- ndays.list[[best.index]]$dat
+best.weather <- ndays.list[[best.index]]$weather.df
+best.weather.roll <- ndays.list[[best.index]]$weather.roll
 
 if(F) {
     ## model selection stuff

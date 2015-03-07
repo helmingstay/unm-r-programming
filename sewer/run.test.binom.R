@@ -23,8 +23,8 @@ days.l <- within(list(),{
     ## binomial response - there are blocks today
     block.per$grease <- block.per$grease > 0
     ## try moving average of temp
-    .mean.win <- 7
-    .weather.ma <- rollmean(weather.xts, .mean.win, align='right')
+    #.mean.win <- 7
+    #.weather.ma <- rollmean(weather.xts, .mean.win, align='right')
     ret.lag <- lapply(obs.lag, function(this.lag){
         ## lag daily, then aggregate
         ## only lag temps, not blocks

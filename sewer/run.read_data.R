@@ -46,10 +46,12 @@ weather.xts <- xts(subset(weather, select=MeanTempC), weather$Date)
 
 
 ## Get weekly mean temp
+## use best.weather data.frame instead? rollmean computed above in run.model...
 airtemp.week <- apply.weekly(weather.xts$MeanTempC, FUN=mean)
 airtemp.week.df <- data.frame(
     MeanTempC=airtemp.week, Date=index(airtemp.week)
 )
+
 
 ########################################
 ### Sewage grabsample data
@@ -76,6 +78,10 @@ sewtemp <- unique(sewtemp) # remove duplicate entries
 sewtemp <- rename(sewtemp, c(Temp='SewTempC'))
 ## remove rows with no sewer temperature readings
 sewtemp <- na.omit(subset(sewtemp, select=c(Date, SewTempC, Interceptor, Manhole)))
+## model best N days for rolling mean
+## need stuff from here later
+source('run.model_sew_temp.R')
+
 ## store range of finished data for later
 sewtemp.stats <- with(sewtemp, list(
     min=min(Date),
@@ -193,26 +199,8 @@ if(!identical( index(.tmp.all), index(.tmp.cause))){
     stop('Indexes should be identical')
 }
 
-if(F){
-## deprecated, replaced w/xts cbind
-# - Number of problems for each week
-sewer.block.week = ddply( sewer, c('year', 'week'),
-    function(x) { 
-      data.frame(N=nrow(x))  }
-    ## show progress
-    #.progress='text'
-)
 
-## as above, by cause
-.tmp <- sewer
-sewer.block.cause.week = ddply( sewer, c('year', 'week', 'is.grease'),
-    function(x) { 
-      data.frame(N=nrow(x))  }
-    ## show progress
-    #.progress='text'
-)
-}
-
+## 
 ########################################
 ### Combining data / post-processing
 ########################################
@@ -224,7 +212,7 @@ sewer.block.cause.week = ddply( sewer, c('year', 'week', 'is.grease'),
 
 .temps <- join(
     subset(sewtemp.week.df, select=-nobs), 
-    airtemp.week.df, type='full'
+    best.weather, type='full'
 )
 .blocks <- subset(sewer.block.week, select=c(Date, all))
 ## keep all blocks, trim weather
@@ -238,7 +226,7 @@ block.bothtemp <- na.omit(melt(block.bothtemp, id.vars=c('Date','all')))
 ## sewer.block.week already sampled for all weeks
 ## left join limits air temp to sewer block timerange 
 block.airtemp.week <- join(
-    sewer.block.week.melt, airtemp.week.df, type='inner'
+    sewer.block.week.melt, best.weather, type='inner'
 )
 
 block.counts <- dlply(block.airtemp.week, 'variable', function(x)

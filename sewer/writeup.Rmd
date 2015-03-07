@@ -52,12 +52,14 @@ source('mk.helpers.R')
 ```
 
 ```{r read_data, size='footnotesize', include=FALSE}
-#source('run.weather.R')
+## this also sources run.model_sew_temp.R
 source('run.read_data.R')
 ```
 
-```{r model_sew_temp, echo=FALSE, size='footnotesize', include=FALSE}
-source('run.model_sew_temp.R')
+```{r mod_lags, echo=FALSE, size='footnotesize', include=FALSE}
+source('run.lag_period.R')
+## not interesting? retest w/running mean temps...
+#source('run.test.binom.R')
 ```
 ```{r tempandblock, fig.cap='Linear model diagnostic plots.', size='footnotesize', message=FALSE, warning=FALSE, error=FALSE, echo=FALSE, include=FALSE}
 ## prepare linear models / diagnosis plots
@@ -167,7 +169,7 @@ This dataset includes `r block.counts$grease` total blockages where grease was t
 plot(block.sewtemp.list$plot)
 ```
 
-```{r block.airtemp, echo=FALSE, fig.pos='h', fig.width=4.5, fig.height=3.5, fig.cap=sprintf('Mean weekly air temperature predicts blockages caused by grease (A: %d total blocks), and is a poor predictor of blockages due to other causes (B: %d total blocks). %d weeks total, pseudo-R2: D=%s. See Table ?? for model details.', block.counts$grease, block.counts$not.grease,  block.airtemp.list$nweeks, block.airtemp.list$dev, block.airtemp.list$dev), message=FALSE}
+```{r block.airtemp, echo=FALSE, fig.pos='h', fig.width=4.5, fig.height=3.5, fig.cap=sprintf('Mean weekly air temperature predicts blockages caused by grease (A: %d total blocks), and is a poor predictor of blockages due to other causes (B: %d total blocks). %d weeks total, pseudo-R2 (D) %s and %s for grease and non-grease blockage frequency, respectively. See Table ?? for model details.', block.counts$grease, block.counts$not.grease,  block.airtemp.list$nweeks, block.airtemp.list$dev.grease, block.airtemp.list$dev.nogrease ), message=FALSE}
 plot(block.airtemp.list$plot)
 ```
 
@@ -231,6 +233,6 @@ my.xtable(summary(.lin.best),
     display = c('s', 'fg', 'g', 'f', 'g'),
     digits=3,
     label='tab:bestlin',
-    caption=sprintf('Summary table of the best-ranked model of the response of mean weekly sewage grab sample temperature (MW-SGST) to mean weekly mean daily air temperature (MW-MDAT). Sewer interceptor identity has a significant effect on both model slope and model intercept. $R^2 = %1.2f$.', .best.rsq)
+    caption=sprintf('Summary table of the model of the response of mean weekly sewage grab sample temperature (MW-SGST) to mean weekly mean daily air temperature (MW-MDAT). Sewer interceptor identity has a significant effect on model intercept. $R^2 = %1.2f$.', .best.rsq)
 )
 ```
