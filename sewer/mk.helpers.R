@@ -1,3 +1,6 @@
+## 
+fahrenheit.to.celsius <- function(x) (x-32)*(5/9)
+
 ## convenience function, turn data.frame into xts using date col
 mk.xts <- function(.df, .datcol) {
     xts(.df[,.datcol], .df$Date)

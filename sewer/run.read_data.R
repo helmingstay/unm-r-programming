@@ -35,7 +35,6 @@ weather$Date <- as.Date(as.POSIXct(weather$MST, format='%Y-%m-%d'))
 # Convert Fahrenheit into Celsius
 ## find cols containing temp
 .wcols <- grep('TempF', colnames(weather))
-fahrenheit.to.celsius <- function(x) (x-32)*(9/5)
 weather[,.wcols] <- fahrenheit.to.celsius(weather[,.wcols])
 ## update colnames to reflect C
 colnames(weather) <- gsub('TempF', 'TempC', colnames(weather))
@@ -132,9 +131,18 @@ precip$no.precip <- precip$Precipitationmm == "0.00"
 ## 10-42 any spill
 ## 10-48 property damage 
 sewer <- read.csv('data/new-ABQ-sewer.csv')
-sewer$is.grease <- grepl('GR', sewer$CAUSE)
+  
 ## Convert reporting date column into time-based object
 sewer$Date <- as.Date(as.POSIXct( sewer$REPORTDATE, format='%m/%d/%Y %H:%M'))
+
+## Report from Jan 2009 appears to be an outlier
+## i.e. first report and then none for months?
+sewer <- subset(sewer, Date > '2009-03-01')
+
+## Grease is involved, include codes:
+## GREASE + alot more?  GRS??
+sewer$is.grease <- grepl('GR', sewer$CAUSE)
+
 sewer.stats <- with(sewer, list(
     min=min(Date),
     max=max(Date),
@@ -163,6 +171,10 @@ sewer.xts <- mk.xts.fill(sewer.xts, weather.xts, 'is.grease')
         ## T/F index removes NAs
         cbind(grease=nrow(x[x]), not.grease=nrow(x[!x]))
 })
+
+## save ts object for plotting
+blocks.xts <- cbind(.tmp.all, .tmp.cause[,1])
+colnames(blocks.xts) <- c('All Causes', 'Grease')
 
 ## combine into one object 
 sewer.block.week <- data.frame(
@@ -209,7 +221,6 @@ sewer.block.cause.week = ddply( sewer, c('year', 'week', 'is.grease'),
 ##?? there are some odd edge effects 
 ## due to alignment of incomplete weeks leading to a weather-NA
 ## inner join fixes
-sewtemp.weather <- join(sewtemp, weather, type='inner')
 
 .temps <- join(
     subset(sewtemp.week.df, select=-nobs), 
