@@ -1,4 +1,5 @@
 ## depends on run.lag_period.R
+source('run.lag_period.R')
 cc <- uberlist$d15$l0
 dd <- na.omit(cc$modlist$MeanTempC$fin.xts)
 dd <- cbind(dd, daycos=mk.year.cos(.indexyday(dd)))
