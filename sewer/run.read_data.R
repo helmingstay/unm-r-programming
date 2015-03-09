@@ -166,12 +166,12 @@ sewer.xts <- mk.xts.fill(sewer.xts, weather.xts, 'is.grease')
 
 ## compute blockages per week using xts,
 ## then move into data.frame
-.tmp.all <- apply.weekly(sewer.xts, function(x){
+block.all.xts <- apply.weekly(sewer.xts, function(x){
     ## all nas have length 0
     length(na.omit(x))
 })
 ## as above, by cause
-.tmp.cause <- apply.weekly( sewer.xts, function(x){
+block.cause.xts <- apply.weekly( sewer.xts, function(x){
         x <- na.omit(x)
         if (length(x) == 0) return(c(0,0))
         ## T/F index removes NAs
@@ -179,15 +179,15 @@ sewer.xts <- mk.xts.fill(sewer.xts, weather.xts, 'is.grease')
 })
 
 ## save ts object for plotting
-blocks.xts <- cbind(.tmp.all, .tmp.cause[,1])
-colnames(blocks.xts) <- c('All Causes', 'Grease')
+block.plot.xts <- cbind(block.all.xts, block.cause.xts[,1])
+colnames(block.plot.xts) <- c('All Causes', 'Grease')
 
 ## combine into one object 
 sewer.block.week <- data.frame(
-    Date=index(.tmp.all),
-    all=as.vector(.tmp.all),
-    grease=.tmp.cause[,1],
-    not.grease=.tmp.cause[,2]
+    Date=index(block.all.xts),
+    all=as.vector(block.all.xts),
+    grease=block.cause.xts[,1],
+    not.grease=block.cause.xts[,2]
 )
 ## long-form, just keep 
 sewer.block.week.melt <- melt(
