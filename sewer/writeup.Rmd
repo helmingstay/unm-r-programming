@@ -186,25 +186,93 @@ pattern of grease blockage frequency.
 plot(block.airtemp.pred$plot)
 ```
 
+Figure \ref{fig:tday} compares model residuals from the weeks containing and immediately after Thanksgiving with other weeks.  
+
+```{r tday, echo=FALSE, fig.pos='h', fig.width=4.5, fig.height=3.5, fig.cap=sprintf('Once air temperature is accounted for, the weeks containing and following Thanksgiving show no evidence of elevated frequencies of grease-caused blockages.'), message=FALSE}
+plot(block.airtemp.list$tday.plot)
+```
+
 # Discussion
 
-The suggestive link between air temperature and sewer blockage frequency shown above, coupled with the ease of collecting air temperature records, makes air temperature an attractive 
 
-Notes / todo:
-??both sewer temp and air temp are signif predictors,
-sewer temp is better
-??likely that the reponse of sewer temp to air temp is dependent on local local climate and sewer configuration (mark?), warrants testing in different locales.  ABQ diurnal temp, elevation gradient and cold air drainage.
-??if municipalities are already collecting SGST, it would be an appropriate addition to system maintainance planning
+We have demonstrated a significant, conserved pattern of 
+FOG-caused blockages in response to sewer and air 
+temperature in 
+the city of Albuquerque, New Mexico.   The city of Albuquerque has a number of unique geographic and climactic features, 
+including large yearly temperature swings, highly variable precipitation, a significant 
+within-system elevation gradient, and extensive cold air 
+drainage.  Whether our results will hold in other locales
+remains an intriguing question.  The ready 
+availability of automated air temperature records
+suggests that the analyses presented here could easily be 
+replicated in other cities where sanitary sewer blockage
+data is routinely collected.  A comparison between cities
+from a range of climates and topographies could provide valuable evidence on empirical patterns of FOG blockages.
 
-Air temperature data, which are widely and freely available, have modest utility in predicting sewer blockages over weekly timescales. It is useful for practitioners to understand variables impacting SSOs, even with a weak relationship. Consideration could be given in sewer design to select locations subject to higher winter temperatures, either through greater depth or under asphalt pavement. These results also suggest that areas experiencing increasing average temperatures may find that this trend alleviates the pressure placed on sewage systems by FOG deposits. Similarly, weather forecasts and real-time weather observations may prove useful for predicting and responding rapidly to blockages, reducing the threat to property and public health. 
+We find that mean air temperature has
+only modest utility in predicting sewer blockages over
+weekly timescales. Nonetheless, an increased 
+understand of the drivers of SSOs in general, 
+and FOG-related blockages in particular, 
+could aid in system design and maintainence.   
+Consideration could be given in sewer design
+to select locations subject to higher winter temperatures,
+either through greater depth or under asphalt pavement.
+Similarly, cleaning operations could be prioritized to areas
+expected to experience coldest temperatures.
 
-Data from sewer measurements are a slightly more accurate predictor of blocking frequency. Where these data are regularly collected and rapidly analysed, they could be used in place of air temperature to anticipate problems in sanitation infrastructure and plan system maintenance. 
+Our results suggest that sewer temperature provides a
+somewhat more accurate predictor of blocking frequency than 
+air temperature. In
+systems where these data are regularly collected and made
+available to managers, such data could potentially be used
+anticipate problems in sanitation infrastructure and plan
+system maintenance.
 
-Both sewage and air temperature are significant predictors of SSOs, with sewage temperature being the superior predictor. The sewage temperature is understood to be primarily driven by soil temperatures (author’s communication with Dr. Jes Vollertsen, 2014). Literature is available (e.g., \cite{Hasfurther1972}) to predict soil temperature from air temperature in a non-urban area. The relationship between air and soil temperature is likely to be mediated by groundwater levels. The difference in predictive ability between sewage and air temperature may reflect the variable groundwater levels during the seasonal cycle in Albuquerque. Similarly, differences between interceptors and manholes may reflect elevation and land use, via their effects on groundwater temperature. Models including precipitation patterns and/or local physical characteristics (e.g. water table height, land use, sewer configuration, soil type, geology) could test this hypothesis. 
+We note that sewage temperature is driven primarily by soil
+temperatures (author’s communication with Dr. Jes
+Vollertsen, 2014), and a body of literature on the
+prediction of soil temperature from air temperature in
+non-urban areas exists (e.g., \cite{Hasfurther1972}). The
+relationship between air and soil temperature is likely to
+be mediated by groundwater levels. Differences in the
+response of sewer temperature to air temperature between
+interceptors and manholes likely reflects elevation and land
+use, possibly via their effects on groundwater temperature.
+Models including precipitation patterns and/or local
+physical characteristics (e.g. water table height, land use,
+sewer configuration, soil type, geology) could test this
+hypothesis. 
 
-Because lower temperatures occur coincidental to the Thanksgiving and Christmas season in the Northern Hemisphere, it is possible that FOG related SSOs increase during the holiday season but not due to higher levels of holiday generated FOG. Further study of SSO rates versus holiday seasons for Southern Hemisphere utilities may be enlightening. Further study may be appropriate of temperature impacts to FOG transformations in the sewer and to seasonal variations in FOG levels.
+Because lower air and soil temperatures occur 
+coincidental to the
+Thanksgiving and Christmas season in the Northern
+Hemisphere, it is possible that FOG related SSOs increase
+during the holiday season but not due to higher levels of
+holiday generated FOG. 
+Indeed, we find no excess blockage frequency in Thanksgiving weeks.  Further study of SSO rates versus
+holiday seasons in Southern Hemisphere cities could further
+test this hypothesis.
 
-With continuing population rise and urbanisation, efficient operation of urban waste-water infrastructure is an increasingly important issue for global public health. \cite{Sato2013} recently highlighted the importance of more research into efficacy of waste-water treatment techniques, particularly in the developing world. The data in this study were not collected specially for research purposes. Rather, this study used data already collected by industry as part of standard operations, married with publicly accessible weather data available online. This demonstrates the potential usefulness of historic industry datasets for addressing future challenges. 
+Our results also suggest that areas experiencing
+increasing average temperatures due to climate change may
+experience an overall reduction in blockage frequencies over time.
+Indeed, large-scale climatic trends could serve as natural
+experiments to study the impact of temperature on long-term
+(e.g. yearly) blockage frequencies.
+
+With continuing population rise and urbanisation, efficient
+operation of urban waste-water infrastructure is an
+increasingly important issue for global public health.
+\cite{Sato2013} recently highlighted the importance of more
+research into efficacy of waste-water treatment techniques,
+particularly in the developing world. The sewer blockage 
+and temperature data presented here
+were collected during routine system monitoring in the 
+course of standard operations.  We hope this work 
+demonstrates the
+potential usefulness of historic datasets 
+in addressing modern (and future) urban infrastructure challenges.
 
 # Tables
 ??Need table numbers.

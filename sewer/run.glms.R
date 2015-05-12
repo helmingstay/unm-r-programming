@@ -71,6 +71,23 @@ block.airtemp.list <- within(list(), {
         facet_grid(.~variable) + 
         geom_smooth(method = "glm", family="poisson", colour='blue', size=1.2) +
         geom_point() 
+    ##
+    ## thanksgiving residuals
+    tday <- mod.grease$data; 
+    ## day of year
+    tday$yday <- as.POSIXlt(bb$Date)$yday; 
+    tday$resid = mod.grease$residuals; 
+    tday$Thanksgiving = FALSE; 
+    tday = within(tday, {
+       Thanksgiving[yday>=329 & yday <= 341] <- TRUE
+    });
+    tday.plot <- ggplot(tday, aes(y=resid, x=Thanksgiving)) +
+        theme_bw() + 
+        ylab('Model Residuals\n(Excess Grease Blocks/week)') +
+        xlab('Thanksgiving Weeks') +
+        #theme(legend.position=c(0.85, 0.2)) +
+        geom_point(position=position_jitter(width=0.2), size=1.3, color="#777777")+
+        geom_boxplot(fill=NA) 
 })
 
 #### Predict number of blockages using sewer temperature data
