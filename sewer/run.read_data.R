@@ -1,3 +1,4 @@
+require(reshape2)
 ## In this file,
 ## sewer temp grabsamples, air temp, and sewer blockages
 ## do temps first
@@ -27,7 +28,7 @@ mk.xts.fill <- function(dat, skel, ret.col){
 ########################################
 ### Air temperature / weather data
 ########################################
-weather <- read.csv('data/abq-temps-2005-2014.csv')
+weather <- read.csv('data/abq-temps-2005-2015.csv')
 ## shorten colnames for convenience
 colnames(weather) <- gsub('.Temperature', 'Temp', colnames(weather))
 # Turn factor into date    
@@ -137,9 +138,18 @@ precip$no.precip <- precip$Precipitationmm == "0.00"
 ## 10-42 any spill
 ## 10-48 property damage 
 sewer <- read.csv('data/new-ABQ-sewer.csv')
-  
 ## Convert reporting date column into time-based object
 sewer$Date <- as.Date(as.POSIXct( sewer$REPORTDATE, format='%m/%d/%Y %H:%M'))
+## editted CAUSE2 to CAUSE
+sewer.new <- read.csv('data/new-ABQ-sewer.through.2015.csv')
+## Date format differs for new data - mm/dd/yy
+sewer.new$Date <- as.Date(as.POSIXct( sewer.new$REPORTDATE, format='%m/%d/%y %H:%M'))
+## column order differs in new data, 
+## pull out the columns that are shared,
+## then use to index both and combine
+.cols <- intersect(colnames(sewer), colnames(sewer.new))
+sewer <- rbind(sewer[,.cols], sewer.new[,.cols])
+  
 
 ## Report from Jan 2009 appears to be an outlier
 ## i.e. first report and then none for months?
@@ -148,6 +158,8 @@ sewer <- subset(sewer, Date > '2009-03-01')
 ## Grease is involved, include codes:
 ## GREASE + alot more?  GRS??
 sewer$is.grease <- grepl('GR', sewer$CAUSE)
+## except for this one, as per Mark 
+sewer$is.grease[grepl("SDGTGRVL", sewer$CAUSE)] <- FALSE
 
 sewer.stats <- with(sewer, list(
     min=min(Date),

@@ -84,12 +84,15 @@ block.sewtemp.list <- within(list(), {
         labels=c('Grease', 'Not Grease')
     )
     mod <- glm(value ~ SewTempC * variable, data=dat, family='poisson')
-    submod <- glm(value ~ SewTempC, data=subset(dat, variable=='Grease'), family='poisson')
+    sub.grease <- glm(value ~ SewTempC, data=subset(dat, variable=='Grease'), family='poisson')
+    sub.nogrease <- glm(value ~ SewTempC, data=subset(dat, variable!='Grease'), family='poisson')
     #summary(nb.block) # highly significant; AIC = 638.37
     nobs <- length(mod$residuals)
     nweeks <- length(unique(dat$Date))
     ## get proportion deviance
     dev <- mk.prop.dev(mod)
+    dev.grease <- mk.prop.dev(sub.grease)
+    dev.nogrease <- mk.prop.dev(sub.nogrease)
     #pred <- mk.mod.ci(.df=.l$.dat, .mod=.l$mod)
     # plot
     plot <- ggplot(dat, aes(x=SewTempC, y=value)) +
@@ -120,3 +123,21 @@ block.sewtemp.list <- within(list(), {
     #lrtest(block.sewtemp.nb$mod, block.sewtemp.pois$mod) # negbin is a very significant improvement
 
 
+block.airtemp.pred <- within(list(), {
+    ## fit model to before cutoff, predict after
+    cutoff = as.Date('2012-04-12')
+    ## only look at grease
+    .tmpdat <- subset(block.airtemp.week, variable == 'grease')
+    dat <- subset(.tmpdat, Date < cutoff)
+    pred <- subset(.tmpdat, Date > cutoff)
+    mod <- glm(value ~ MeanTempC, 
+        data=dat, family='poisson'
+    )
+    pred$pred <- predict(mod, newdata=pred, type='response')
+    plot <- ggplot(pred, aes(x=pred, y=value)) +
+        theme_bw() + 
+        xlab('Blocks Per Week (Predicted)') +
+        ylab('Blocks Per Week (Observed)') + 
+        geom_smooth() + 
+        geom_point() 
+})
