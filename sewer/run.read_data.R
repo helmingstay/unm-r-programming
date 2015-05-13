@@ -244,7 +244,7 @@ block.airtemp.week <- join(
 block.counts <- dlply(block.airtemp.week, 'variable', function(x)
     sum(x$value)
 )
-grease.ratio <- with(block.counts, grease/not.grease)
+grease.ratio <- with(block.counts, grease/(grease+not.grease))
 
 ## Inner join - weeks where we have both blockage data and temp measures
 block.sewtemp.week <- join(sewer.block.week.melt, sewtemp.week.df, 

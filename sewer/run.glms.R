@@ -75,7 +75,7 @@ block.airtemp.list <- within(list(), {
     ## thanksgiving residuals
     tday <- mod.grease$data; 
     ## day of year
-    tday$yday <- as.POSIXlt(bb$Date)$yday; 
+    tday$yday <- as.POSIXlt(tday$Date)$yday; 
     tday$resid = mod.grease$residuals; 
     tday$Thanksgiving = FALSE; 
     tday = within(tday, {
