@@ -182,7 +182,7 @@ used to predict grease blockage frequency in the weeks after
 pattern of grease blockage frequency.
 
 
-```{r validate, echo=FALSE, fig.pos='h', fig.width=4.5, fig.height=3.5, fig.cap=sprintf('Model validation comparing predicted and observed weekly grease blockage frequency. To generate predictions, a model was fit using weeks prior to %s (%s weeks total).  Observed air temperatures in subsequent weeks (%s weeks total) were used to predict grease blockage frequency (X-axis). Also plotted are the observed grease blockage frequencies in those weeks (Y-axis).', block.airtemp.pred$cutoff, nrow(block.airtemp.pred$dat), nrow(block.airtemp.pred$pred) ), message=FALSE}
+```{r validate, echo=FALSE, fig.pos='h', fig.width=4.5, fig.height=3.5, fig.cap=sprintf('Model validation comparing predicted and observed weekly grease blockage frequency. To generate predictions, a model was fit using weeks prior to %s (%s weeks total).  Observed air temperatures in subsequent weeks (%s weeks total) were used to predict grease blockage frequency (X-axis). Also plotted are the observed grease blockage frequencies in those weeks (Y-axis). The dotted line is the identity line y = x, and the solid line shows the linear relationship between observed and predicted blockages (y = %sx %s).', block.airtemp.pred$cutoff, nrow(block.airtemp.pred$dat), nrow(block.airtemp.pred$pred), round(coef(block.airtemp.pred$pred.lm), 2)[2], round(coef(block.airtemp.pred$pred.lm), 2)[1] ), message=FALSE}
 plot(block.airtemp.pred$plot)
 ```
 

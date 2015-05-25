@@ -155,6 +155,9 @@ block.airtemp.pred <- within(list(), {
         theme_bw() + 
         xlab('Blocks Per Week (Predicted)') +
         ylab('Blocks Per Week (Observed)') + 
-        geom_smooth() + 
+      geom_abline(slope=1, intercept=0, linetype='dotted') +
+        geom_smooth(method='lm') + 
         geom_point() 
+    # linear model of fitted vs observed values
+    pred.lm <- lm(value~pred, data=pred)
 })
