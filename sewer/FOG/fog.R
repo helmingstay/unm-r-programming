@@ -5,7 +5,20 @@ str(allfog)
 # create date and day of year (doy) columns
 allfog$date <- as.Date(allfog$Convert.Date, format="%m/%d/%y")
 allfog$doy  <- as.numeric(strftime(allfog$date, format="%j"))
-allfog$fog  <- as.numeric(allfog$RESULT)
+
+# which results are non-numeric?
+levels(allfog$RESULT)[grep('<', levels(allfog$RESULT))] # many.....
+allfog$inequality <- grepl('<', allfog$RESULT) # which elements have inequality?
+
+# initialise new vector for cleaned data
+allfog$fog <- NA
+# directly copy numeric strings
+allfog$fog[!allfog$inequality] <- as.numeric(
+  as.character(allfog$RESULT[!allfog$inequality]))
+# remove inequality sign and use half detection limit, per Bruce Thomson
+allfog$fog[allfog$inequality] <- as.numeric(
+  as.character( gsub('<', '', allfog$RESULT[allfog$inequality]) ) ) / 2 
+
 
 # plot trends for all data
 with(allfog, plot(date, RESULT))
@@ -29,17 +42,11 @@ by(allfog, allfog$SAMPLE_POINT_ID, FUN=function(df) {
 })
 par(opar) # restore old par settings
 
-summary(lm(as.numeric(RESULT) ~ doy, data=allfog)) # bad fit; not sig
+summary(lm(fog ~ doy, data=allfog)) # bad fit; not sig
 # try a quadratic - still a bad fit
-summary(lm(as.numeric(RESULT) ~ poly(doy, 2), data=allfog)) # model just sig, params not
+summary(lm(fog ~ poly(doy, 2), data=allfog)) # bad fit; not sig
 # try a third order
-summary(lm(as.numeric(RESULT) ~ poly(doy, 3), data=allfog)) # bad fit; not sig
-
-# TODO - plot the quadratic - this doesn't work
-# with(allfog, plot(doy, RESULT))
-# lines(predict(lm(as.numeric(RESULT) ~ I(doy^2) + doy, data=allfog)))
-# abline(lm(as.numeric(RESULT) ~ doy, data=allfog))
-
+summary(lm(fog ~ poly(doy, 3), data=allfog)) # bad fit; not sig
 
 #### join with weather data
 
@@ -52,6 +59,7 @@ weather$date <- as.Date(as.POSIXct(weather$MST, format='%Y-%m-%d'))
 # Convert Fahrenheit into Celsius
 ## find cols containing temp
 .wcols <- grep('TempF', colnames(weather))
+require(weathermetrics)
 weather[,.wcols] <- fahrenheit.to.celsius(weather[,.wcols])
 ## update colnames to reflect C
 colnames(weather) <- gsub('TempF', 'TempC', colnames(weather))
@@ -62,12 +70,14 @@ require(plyr)
 fogtemp <- join(allfog, weather, type='inner')
 
 # linear model
-lm.temp.fog <- lm(fog ~ MeanTempC, data=fogtemp)
-summary(lm.temp.fog) # not sig at all, R^2 ~0
+lm.temp.fog <- lm(fog ~ MeanTempC, data=fogtemp); summary(lm.temp.fog) # not sig at all, R^2 ~0
+# try with log transformed values because of outliers / extreme values
+lm.temp.lfog <- lm(log(fog) ~ MeanTempC, data=fogtemp); summary(lm.temp.lfog) # still terrible
 
 #plot
-with(fogtemp, plot(MeanTempC, fog))
-abline(lm.temp.fog)
+with(fogtemp, plot(MeanTempC, fog)); abline(lm.temp.fog)
+# plot of log values
+with(fogtemp, plot(MeanTempC, log(fog))); abline(lm.temp.lfog) # clearly shows no relationship!
 
 ##### differences between interceptors
 # identify interceptors with enough data
@@ -82,8 +92,8 @@ bwplot(fog ~ SAMPLE_POINT_ID, data=fogints)
 ## test
 lm.ints.fog <- lm(fog ~ SAMPLE_POINT_ID, data=fogints)
 summary(lm.ints.fog)
-# Edith and  Tijeri have signifcantly higher fog levels
+# Tijeri has signifcantly lower FOG levels but tiny R^2
 
 ####### model with interceptor and temp
 lm.ints.temp <- lm(fog ~ SAMPLE_POINT_ID + MeanTempC, data=fogints)
-summary(lm.ints.temp) # no effect of temp, just same 2 interceptors
+summary(lm.ints.temp) # no effect of temp, just same interceptor
