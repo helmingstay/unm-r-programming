@@ -18,11 +18,13 @@ allfog$fog[!allfog$inequality] <- as.numeric(
 # remove inequality sign and use half detection limit, per Bruce Thomson
 allfog$fog[allfog$inequality] <- as.numeric(
   as.character( gsub('<', '', allfog$RESULT[allfog$inequality]) ) ) / 2 
+# log transform because of extreme values
+allfog$lfog <- log(allfog$fog)
 
 
 # plot trends for all data
-with(allfog, plot(date, RESULT))
-with(allfog, plot(doy , RESULT))
+with(allfog, plot(date, lfog))
+with(allfog, plot(doy , lfog))
 
 
 ## plot each interceptor individually
@@ -31,22 +33,24 @@ with(allfog, plot(doy , RESULT))
 opar <- par() # save old par settings
 par(mfrow=c(2,3)) # two rows , three cols
 
-with(allfog, plot(doy , RESULT, main="All")) # first plot contains all data
+with(allfog, plot(doy , lfog, main="All")) # first plot contains all data
 
 # remove interceptors with few data points
 by(allfog, allfog$SAMPLE_POINT_ID, FUN=function(df) {
   if(nrow(df) >= 52) { # exclude points with less than a 1 week/year measurements
-    plot(df$doy, df$RESULT,
+    plot(df$doy, df$lfog,
          main=paste(df$SAMPLE_POINT_ID[1]))
   }
 })
 par(opar) # restore old par settings
 
-summary(lm(fog ~ doy, data=allfog)) # bad fit; not sig
+
+# models using log-transformed data
+summary(lm(lfog ~ doy, data=allfog)) # bad fit; but sig decrease during the year
 # try a quadratic - still a bad fit
-summary(lm(fog ~ poly(doy, 2), data=allfog)) # bad fit; not sig
+summary(lm(lfog ~ poly(doy, 2), data=allfog)) # bad fit; 2nd order not sig
 # try a third order
-summary(lm(fog ~ poly(doy, 3), data=allfog)) # bad fit; not sig
+summary(lm(lfog ~ poly(doy, 3), data=allfog)) # bad fit; 2nd & 3rd orders not sig
 
 #### join with weather data
 
@@ -87,13 +91,14 @@ fogints <- subset(fogtemp, SAMPLE_POINT_ID %in% .ints)
 
 # plot
 require(lattice)
-bwplot(fog ~ SAMPLE_POINT_ID, data=fogints)
+bwplot(lfog ~ SAMPLE_POINT_ID, data=fogints) # using log-transformed points
 
 ## test
-lm.ints.fog <- lm(fog ~ SAMPLE_POINT_ID, data=fogints)
+lm.ints.fog <- lm(lfog ~ SAMPLE_POINT_ID, data=fogints)
 summary(lm.ints.fog)
-# Tijeri has signifcantly lower FOG levels but tiny R^2
+# sig differences between most interceptors using log-transformed values
+# R^2 = 0.12
 
 ####### model with interceptor and temp
-lm.ints.temp <- lm(fog ~ SAMPLE_POINT_ID + MeanTempC, data=fogints)
-summary(lm.ints.temp) # no effect of temp, just same interceptor
+lm.ints.temp <- lm(lfog ~ SAMPLE_POINT_ID + MeanTempC, data=fogints)
+summary(lm.ints.temp) # no effect of temp, just same interceptors
