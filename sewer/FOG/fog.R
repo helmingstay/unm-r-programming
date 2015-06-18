@@ -47,9 +47,12 @@ par(opar) # restore old par settings
 
 # models using log-transformed data
 summary(lm(lfog ~ doy, data=allfog)) # bad fit; but sig decrease during the year
-# try a quadratic - still a bad fit
+## I guess in Abq's climate, Jan & Feb are the months with anomalously cold periods?
+## counts against holiday hypothesis?
+
+# try a quadratic - a parabola would make more sense re: seasonality
 summary(lm(lfog ~ poly(doy, 2), data=allfog)) # bad fit; 2nd order not sig
-# try a third order
+# try a third order - just in case
 summary(lm(lfog ~ poly(doy, 3), data=allfog)) # bad fit; 2nd & 3rd orders not sig
 
 #### join with weather data
@@ -98,6 +101,9 @@ lm.ints.fog <- lm(lfog ~ SAMPLE_POINT_ID, data=fogints)
 summary(lm.ints.fog)
 # sig differences between most interceptors using log-transformed values
 # R^2 = 0.12
+pairwise.t.test(fogints$lfog, fogints$SAMPLE_POINT_ID,
+                p.adjust.method='fdr') # significant differences between all
+# except 142A == TP2.3
 
 ####### model with interceptor and temp
 lm.ints.temp <- lm(lfog ~ SAMPLE_POINT_ID + MeanTempC, data=fogints)
