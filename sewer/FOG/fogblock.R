@@ -59,7 +59,7 @@ glm.btf.n <- glm(value ~ MeanTempC + meanlfog,
 summary(glm.btf.n) # positive association with blockages; interaction not sig
 
 ## try including cause in the model as well
-glm.btf.c <- glm(value ~ MeanTempC + meanlfog + variable, data=baw.join) # all 3 are v sig
+glm.btf.c <- glm(value ~ MeanTempC + meanlfog + variable, data=baw.join, family='poisson') # all 3 are v sig
 summary(glm.btf.c)
 
 ##### Plotting these results
@@ -99,3 +99,31 @@ p <- ggplot(gridded.data) + theme_classic()
 p <- p + stat_contour(aes(x=temp, y=fog, z=block, color=..level..))
 p.grid <- p + xlab('Mean Weekly Air Temperature') + ylab('Mean Weekly log(FOG)')
 print(p.grid)
+
+
+####### Model selection#########
+require(MuMIn) # MUlti Model INference
+
+### for full model
+glm.full <- glm(value ~ MeanTempC + meanlfog + variable, data=baw.join, family='poisson')
+
+# rank all models
+glm.dredge <- dredge(glm.full, rank='BIC') # what is the best IC here?
+glm.dredge # check out the table
+# top model is full model
+# deltaBIC ~13 for model w/o fog !
+
+# model averaging
+glm.mav <- model.avg(glm.dredge)
+summary(glm.mav) # variable importance of all vars == 1
+
+###for subsets - no differences in model ranks etc
+glm.g.full <- glm(value ~ MeanTempC + meanlfog, 
+               data=subset(baw.join, variable=='grease'), family='poisson')
+glm.g.dredge <- dredge(glm.g.full)
+glm.g.dredge # same story as for full model
+
+glm.n.full <- glm(value ~ MeanTempC + meanlfog, 
+                 data=subset(baw.join, variable!='grease'), family='poisson')
+glm.n.dredge <- dredge(glm.n.full)
+glm.n.dredge # same story as full model
