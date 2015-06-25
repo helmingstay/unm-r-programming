@@ -58,9 +58,14 @@ source('mk.helpers.R')
 ```{r read_data, size='footnotesize', include=FALSE}
 ## this also sources run.model_sew_temp.R
 source('run.read_data.R')
+## find best timeperiod to integrate air temp over
+## model best N days for rolling mean
+source('run.model_sew_temp.R')
+## Post-processing
+source('run.combine.data.R')
 ```
 
-```{r mod_lags, echo=FALSE, size='footnotesize', include=FALSE}
+```{r mod_lags, eval=F, echo=FALSE, size='footnotesize', include=FALSE}
 source('run.lag_period.R')
 ## not interesting? retest w/running mean temps...
 #source('run.test.binom.R')

@@ -135,7 +135,7 @@ precip$no.precip <- precip$Precipitationmm == "0.00"
 ## 10-42 any spill
 ## 10-48 property damage 
   
-sewer <- read.csv('data/UNM_R_Analysis_Join_Update.csv')
+sewer <- read.csv('data/UNM_R_Analysis_Join_Update.csv.gz')
 ## Convert reporting date column into time-based object
 sewer$Date <- as.Date(as.POSIXct(as.character(sewer$REPORTDATE), format='%m/%d/%y %H:%M'))
 
@@ -191,6 +191,6 @@ sewer.block.week.melt <- melt(
 )
 
 ## error-checking
-if(!identical( index(.tmp.all), index(.tmp.cause))){
-    stop('Indexes should be identical')
-}
+#if(!identical( index(.tmp.all), index(.tmp.cause))){
+#    stop('Indexes should be identical')
+#}
