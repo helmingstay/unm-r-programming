@@ -79,9 +79,6 @@ sewtemp <- unique(sewtemp) # remove duplicate entries
 sewtemp <- rename(sewtemp, c(Temp='SewTempC'))
 ## remove rows with no sewer temperature readings
 sewtemp <- na.omit(subset(sewtemp, select=c(Date, SewTempC, Interceptor, Manhole)))
-## model best N days for rolling mean
-## need stuff from here later
-source('run.model_sew_temp.R')
 
 ## store range of finished data for later
 sewtemp.stats <- with(sewtemp, list(
@@ -137,23 +134,10 @@ precip$no.precip <- precip$Precipitationmm == "0.00"
 ## 10-40 near miss
 ## 10-42 any spill
 ## 10-48 property damage 
-sewer <- read.csv('data/new-ABQ-sewer.csv')
-## Convert reporting date column into time-based object
-sewer$Date <- as.Date(as.POSIXct( sewer$REPORTDATE, format='%m/%d/%Y %H:%M'))
-## editted CAUSE2 to CAUSE
-sewer.new <- read.csv('data/new-ABQ-sewer.through.2015.csv')
-## Date format differs for new data - mm/dd/yy
-sewer.new$Date <- as.Date(as.POSIXct( sewer.new$REPORTDATE, format='%m/%d/%y %H:%M'))
-## column order differs in new data, 
-## pull out the columns that are shared,
-## then use to index both and combine
-.cols <- intersect(colnames(sewer), colnames(sewer.new))
-sewer <- rbind(sewer[,.cols], sewer.new[,.cols])
   
-
-## Report from Jan 2009 appears to be an outlier
-## i.e. first report and then none for months?
-sewer <- subset(sewer, Date > '2009-03-01')
+sewer <- read.csv('data/UNM_R_Analysis_Join_Update.csv')
+## Convert reporting date column into time-based object
+sewer$Date <- as.Date(as.POSIXct(as.character(sewer$REPORTDATE), format='%m/%d/%y %H:%M'))
 
 ## Grease is involved, include codes:
 ## GREASE + alot more?  GRS??
@@ -168,9 +152,7 @@ sewer.stats <- with(sewer, list(
     ndays=length(unique(Date))
 ))
 sewer.range <- range(sewer$Date)
-#sewer$doy <- as.numeric(strftime(sewer$Date, format='%j'))
-#sewer$week <- sewer$doy %/% 7
-#sewer$year <- as.numeric(strftime(sewer$Date, format='%Y'))
+## Pull bool vector of whether blockage is grease-caused
 sewer.xts <- xts( subset(sewer, select=is.grease), sewer$Date)
 ## use merge to fill unsampled weeks w/NA
 ## only for sample duration of sewer blockages
@@ -187,6 +169,8 @@ block.cause.xts <- apply.weekly( sewer.xts, function(x){
         x <- na.omit(x)
         if (length(x) == 0) return(c(0,0))
         ## T/F index removes NAs
+        ## sums blocks caused by grease (T) 
+        ## vs not grease (F)
         cbind(grease=nrow(x[x]), not.grease=nrow(x[!x]))
 })
 
@@ -210,49 +194,3 @@ sewer.block.week.melt <- melt(
 if(!identical( index(.tmp.all), index(.tmp.cause))){
     stop('Indexes should be identical')
 }
-
-
-## 
-########################################
-### Combining data / post-processing
-########################################
-## join to sewer temperatures
-#intersect(colnames(weather), colnames(sewtemp)) # both contain 'Date
-##?? there are some odd edge effects 
-## due to alignment of incomplete weeks leading to a weather-NA
-## inner join fixes
-
-.temps <- join(
-    subset(sewtemp.week.df, select=-nobs), 
-    best.weather, type='full'
-)
-.blocks <- subset(sewer.block.week, select=c(Date, all))
-## keep all blocks, trim weather
-block.bothtemp <- join(.blocks, .temps, type='left')
-## melt air/sewtemp together, remove nas
-## e.g. weekly temp for one but not the other
-block.bothtemp <- na.omit(melt(block.bothtemp, id.vars=c('Date','all')))
-
-
-## join failures with air temp.
-## sewer.block.week already sampled for all weeks
-## left join limits air temp to sewer block timerange 
-block.airtemp.week <- join(
-    sewer.block.week.melt, best.weather, type='inner'
-)
-
-block.counts <- dlply(block.airtemp.week, 'variable', function(x)
-    sum(x$value)
-)
-grease.ratio <- with(block.counts, grease/(grease+not.grease))
-
-## Inner join - weeks where we have both blockage data and temp measures
-block.sewtemp.week <- join(sewer.block.week.melt, sewtemp.week.df, 
-    type='inner'
-)
-
-### make another data frame to include weather data
-## joining sewer data to the temp.weekdf from Sewer_results_summary.Rnw
-#block.sewtemp.airtemp.week <- join(block.sewtemp.week, airtemp.week.df, by=c('week', 'year'), type='left')
-## remove missing rows
-#block.sewtemp.airtemp.week <- na.omit(block.sewtemp.airtemp.week) # n=95
