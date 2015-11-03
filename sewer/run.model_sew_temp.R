@@ -28,11 +28,11 @@ ndays.list <- lapply(.ndays.mean, function(.ndays) {
         dat.block.week <- join(sewer.block.week.melt, weather.df, type='inner')
         ## try lm, AICs can be compared w/above
         ## much less good
-        mod.block.week <- glm(value ~ MeanTempC * variable, dat.block.week, family = 'poisson')
+        mod.block.week <- glm.nb(value ~ MeanTempC * variable, dat.block.week)
         mod.block.week.lm <- lm(value ~ MeanTempC, dat.block.week)
         ## just grease / nongrease separately
-        mod.block.week.grease <- glm(value ~ MeanTempC, subset(dat.block.week, variable=='grease'), family = 'poisson')
-        mod.block.week.not <- glm(value ~ MeanTempC, subset(dat.block.week, variable!='grease'), family = 'poisson')
+        mod.block.week.grease <- glm.nb(value ~ MeanTempC, subset(dat.block.week, variable=='grease'))
+        mod.block.week.not <- glm.nb(value ~ MeanTempC, subset(dat.block.week, variable!='grease'))
 
         dat.block.week.grease.ar <- droplevels(subset(dat.block.week, variable=='grease'))
         ## lag blocks by 1 week and join
@@ -49,7 +49,7 @@ ndays.list <- lapply(.ndays.mean, function(.ndays) {
         ))
         dat.block.week.grease.ar <- join(dat.block.week.grease.ar, .tmp.lag1) 
         dat.block.week.grease.ar <- join(dat.block.week.grease.ar, .tmp.lag2) 
-        mod.block.week.grease.ar <- glm(value ~ MeanTempC + lag1, dat.block.week.grease.ar, family = 'poisson')
+        mod.block.week.grease.ar <- glm.nb(value ~ MeanTempC + lag1, dat.block.week.grease.ar)
     }))
     return(ret)
 })
@@ -59,13 +59,13 @@ ndays.list <- lapply(.ndays.mean, function(.ndays) {
 fit.block.week <- ldply(ndays.list, function(.l) with(.l, 
     data.frame(ndays, 
         aic=AIC(mod.block.week), 
-        prop.dev=as.numeric(mk.prop.dev(mod.block.week)),
+        prop.dev=mk.prop.dev(mod.block.week, .as.string=F),
         aic.grease=AIC(mod.block.week.grease), 
-        prop.dev.grease=as.numeric(mk.prop.dev(mod.block.week.grease)),
+        prop.dev.grease=mk.prop.dev(mod.block.week.grease, .as.string=F),
         aic.not=AIC(mod.block.week.not), 
-        prop.dev.not=as.numeric(mk.prop.dev(mod.block.week.not)),
+        prop.dev.not=mk.prop.dev(mod.block.week.not, .as.string=F),
         aic.ar=AIC(mod.block.week.grease.ar), 
-        prop.dev.ar=as.numeric(mk.prop.dev(mod.block.week.grease.ar))
+        prop.dev.ar=mk.prop.dev(mod.block.week.grease.ar, .as.string=F)
         #aic.lm=AIC(mod.block.week.lm), 
         #rsq=summary(mod.block.week.lm)$adj.r.sq
     )

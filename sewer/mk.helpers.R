@@ -45,11 +45,14 @@ mk.df.melt <- function(.xts, .idvars =c('Date', 'MeanTempC')) {
     return(ret)
 }
 
-mk.prop.dev <- function(x) {
+mk.prop.dev <- function(x, .as.string=T) {
     ## takes a glm, returns prop reduction diviance 
     ## see zheng 2000
     D <- 1 - x$deviance/x$null.deviance
-    sprintf('%1.3f', D)
+    if (.as.string) {
+        D <- sprintf('%2.3f', D)
+    }
+    return(D)
 }
 
 ## alternate versions, From Bolker's lmm page:

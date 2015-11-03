@@ -20,7 +20,8 @@ block.bothtemp.list <- within(list(),{
         geom_point()
 
     mods <- dlply(dat, 'variable', function(.df){
-        ret <- glm(all ~ value, data=.df, family='poisson')
+        ret <- glm.nb(all ~ value, data=.df)
+        ret$data <- .df
         return(ret)
     })
     devs <- llply(mods, mk.prop.dev)
@@ -44,19 +45,27 @@ block.bothtemp.list <- within(list(),{
 #.l$mod <- glm.nb(value ~ MeanTempC, data=.dat)
 block.airtemp.list <- within(list(), {
     ## now just use poisson
+    ## xian: 2015-11 sorry, my bad, NB is really needed
+    ## pois has wildly overoptimistic standard errors
     dat <- block.airtemp.week
     ## clean up factors for facet plotting
     dat$variable <- factor(dat$variable, 
         levels=c('grease', 'not.grease'),
         labels=c('Grease', 'Not Grease')
     )
-    mod <- glm(value ~ MeanTempC * variable, 
-        data=dat, family='poisson'
+    mod <- glm.nb(value ~ MeanTempC * variable, 
+        data=dat
     )
+    mod$data <- dat
     dev <- mk.prop.dev(mod)
-    mod.grease <- glm(value ~ MeanTempC, data=subset(dat, variable=='Grease'), family='poisson')
+    .dat.sub <- subset(dat, variable=='Grease')
+    mod.grease <- glm.nb(value ~ MeanTempC, data=.dat.sub)
+    ## for compat w/glm
+    mod.grease$data <- .dat.sub
     dev.grease <- mk.prop.dev(mod.grease)
-    mod.nogrease <- glm(value ~ MeanTempC, data=subset(dat, variable!='Grease'), family='poisson')
+    .dat.sub <- subset(dat, variable!='Grease')
+    mod.nogrease <- glm.nb(value ~ MeanTempC, data=.dat.sub)
+    mod.nogrease$data <- .dat.sub
     dev.nogrease <- mk.prop.dev(mod.nogrease)
     nobs <- length(mod$residuals)
     ## number of unique dates post-merge
@@ -100,9 +109,9 @@ block.sewtemp.list <- within(list(), {
         levels=c('grease', 'not.grease'),
         labels=c('Grease', 'Not Grease')
     )
-    mod <- glm(value ~ SewTempC * variable, data=dat, family='poisson')
-    sub.grease <- glm(value ~ SewTempC, data=subset(dat, variable=='Grease'), family='poisson')
-    sub.nogrease <- glm(value ~ SewTempC, data=subset(dat, variable!='Grease'), family='poisson')
+    mod <- glm.nb(value ~ SewTempC * variable, data=dat)
+    sub.grease <- glm.nb(value ~ SewTempC, data=subset(dat, variable=='Grease'))
+    sub.nogrease <- glm.nb(value ~ SewTempC, data=subset(dat, variable!='Grease'))
     #summary(nb.block) # highly significant; AIC = 638.37
     nobs <- length(mod$residuals)
     nweeks <- length(unique(dat$Date))
@@ -147,9 +156,7 @@ block.airtemp.pred <- within(list(), {
     .tmpdat <- subset(block.airtemp.week, variable == 'grease')
     dat <- subset(.tmpdat, Date < cutoff)
     pred <- subset(.tmpdat, Date > cutoff)
-    mod <- glm(value ~ MeanTempC, 
-        data=dat, family='poisson'
-    )
+    mod <- glm.nb(value ~ MeanTempC, data=dat)
     pred$pred <- predict(mod, newdata=pred, type='response')
     plot <- ggplot(pred, aes(x=pred, y=value)) +
         theme_bw() + 
