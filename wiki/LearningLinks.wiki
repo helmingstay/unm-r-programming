@@ -1,0 +1,32 @@
+summary Links for learning about R
+labels Reference,Docs
+
+= R Package Documentation =
+* Search for R packages by topic.  Shows development activity and reviews.  http://crantastic.org/ 
+* Full list of R packages in one page -- search with browser for keywords: [http://cran.r-project.org/web/packages/available_packages_by_name.html Full package list]
+
+= R Core Documentation = 
+* [http://cran.r-project.org/faqs.html FAQs], including OSX and Windows -- check these if you have problems with installation, etc.
+* [http://cran.r-project.org/manuals.html The core manuals] -- these are the sacred texts and ultimate authority of R.   They can answer obscure questions.  The data import/export manual is short and sweet.
+
+= Graphing =
+* [http://science.nature.nps.gov/im/datamgmt/statistics/r/advanced/latticegraphics.cfm Overview of Lattice]
+* [http://docs.ggplot2.org/current/ ggplot2 docs] 
+* [http://rgraphgallery.blogspot.com/ R Graph Gallery]
+* [http://rgm3.lab.nig.ac.jp/RGM/R_image_list?navi_idx=0 R Graphical Manual]
+
+= R News =
+* David at Revolutions Analytics does a great job of collecting R news here: http://blog.revolutionanalytics.com/
+* R Bloggers is perhaps the go-to community R blog:  http://www.r-bloggers.com/
+* [http://journal.r-project.org/ The R Journal] is a peer-reviewed journal with articles about packages, as well as general R news and tutorials.
+
+= Tutorials =
+* A series of in-depth labs on the vegan package, including good coverage of ordination: http://ecology.msu.montana.edu/labdsv/R/
+* A series of 2 minute R video tutorials -- fun and informative: http://www.twotorials.com/
+
+= R Studio = 
+* A great list of keyboard shortcuts for using R Studio: http://rstudio.org/docs/using/keyboard_shortcuts
+
+= Other Languages =
+* Matlab -- the [http://www.math.umaine.edu/~hiebeler/comp/matlabR.html definitive reference] on translating from R to Matlab, and vise versa.
+* Matlab -- A detailed comparison of differences, available free to UNM patrons: http://www.springerlink.com/content/g0673qq11172u44j/
