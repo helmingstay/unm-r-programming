@@ -1,0 +1,1 @@
+This is the permanent website for UNM's R Programming Group.  We meet weekly during the semester.
