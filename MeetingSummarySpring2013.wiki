@@ -1,0 +1,51 @@
+#labels Reference
+Summary of Spring 2013 Meetings<br>
+*Click date to download script file*
+
+= [http://unm-r-programming.googlecode.com/files/R_group_8_Feb_2013.Rnw 8 Feb 2013] =
+  * A working LaTeX installation is required!  Get it here: http://www.latex-project.org/ftp.html
+  * In Rstudio, go to the menu |Tools -> Options -> Sweave| and set "Weave Rnw files using:" to "knitr".
+  * [http://unm-r-programming.googlecode.com/files/R_group_8_Feb_2013.pdf PDF of Rnw file]
+  * Discussion of color and plotting characters
+  * Introduction to knitr, Rstudio
+  * Reading in weather data, dealing with dates.
+
+= 1 Feb 2013 =
+  * No script file for this week
+  * Josh found prcomp() for principle component analysis
+  * Start looking at sewer data, dependence on air temp
+  * Intro to ggplot
+  * Discussion of ggplot and aes:
+{{{
+## CORRECT
+## use a variable to control an aesthetic
+geom_point(aes(color=size))
+## If using a constant, don't use aes()
+geom_point(color='green')
+
+## WRONG
+## works but probably isn't what you want
+geom_point(aes(color='green'))
+## doesn't make sense
+geom_point(color=size)
+}}}
+
+= [http://unm-r-programming.googlecode.com/files/R_group_25_Jan_2013.R 25 Jan 2013] =
+  * Different plotting systems in R
+    # Base graphics: plot(x,y)
+    # Lattice: xyplot(y~x, data)
+    # ggplot2: ggplot(data, aes(x=x, y=y)) + geom_point()
+    # Both lattice and ggplot are based on the grid package
+  * Intro to ggplot with bird mophology dataset
+  * Tab-based autocompletion in Rstudio
+  * Cool ggplot tricks:  
+    # facet_wrap()
+    # geom_smooth()
+
+= [http://unm-r-programming.googlecode.com/files/R_group_18_Jan_2013.R 18 Jan 2013] =
+  * Introductions.
+  * Mark Holstadt's dataset -- excel vs. R!
+  * Intro to data types in R
+    # Vectors: atomic mode
+    # Lists: arbitrary collection of objects
+    # Data.frames: special lists, each list element has same length

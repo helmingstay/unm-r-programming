@@ -1,0 +1,93 @@
+= Introduction =
+
+An annoted list of tropical storms and hurricanes affecting Puerto Rico 2002 to 2011.
+
+
+= Tropical storms and hurricanes making landfall on Puerto Rico =
+
+===*2004*===
+
+Tropical Storm Jeanne
+  * Sept 15-16
+  * http://www.nhc.noaa.gov/pdf/TCR-AL112004_Jeanne.pdf
+
+===*2007*===
+
+Subtropical Storm Olga
+  * Dec 11-12
+  * http://www.nhc.noaa.gov/pdf/TCR-AL172007_Olga.pdf
+
+===*2011*===
+
+Hurricane Irene
+  * Aug 21-22
+  * http://www.nhc.noaa.gov/data/tcr/AL092011_Irene.pdf
+
+
+
+= Tropical storms and hurricanes passing Puerto Rico =
+
+===*2007*===
+
+Hurricane Dean
+  * Aug 17-18
+  * http://www.nhc.noaa.gov/pdf/TCR-AL042007_Dean.pdf
+  * passed on south
+
+Tropical Storm Ingrid
+  * Sep 20?
+  * http://www.nhc.noaa.gov/pdf/TCR-AL082007_Ingrid.pdf
+  * remnants passed to north
+
+Hurricane Noel
+  * Oct 26
+  * http://www.nhc.noaa.gov/pdf/TCR-AL162007_Noel.pdf
+  * precursor passed just off southeast
+
+===*2008*===
+
+Tropical Storm Fay
+  * Aug 15
+  * http://www.nhc.noaa.gov/pdf/TCR-AL062008_Fay.pdf
+  * formed over Puerto Rico and moved west
+
+Hurricane Omar
+  * Oct 14-16
+  * http://www.nhc.noaa.gov/pdf/TCR-AL152008_Omar.pdf
+  * passed on southeast
+
+===*2009*===
+
+Tropical Storm Ana
+  * Aug 17
+  * http://www.nhc.noaa.gov/pdf/TCR-AL022009_Ana.pdf
+  * passed to south after dissipating before passing Puerto Rico
+
+Tropical Storm Erika
+  * Sep 4-5
+  * http://www.nhc.noaa.gov/pdf/TCR-AL062009_Erika.pdf
+  * passed to south as it dissipated
+
+===*2010*===
+
+Hurrican Earl
+  * Aug 30-31
+  * http://www.nhc.noaa.gov/pdf/TCR-AL072010_Earl.pdf
+  * passed to northeast
+
+Tropical Storm Gaston
+  * Sep 8
+  * http://www.nhc.noaa.gov/pdf/TCR-AL092010_Gaston.pdf
+  * passed to south after dissipating
+
+===*2011*===
+
+Tropical Storm Emily
+  * Aug 2-3
+  * http://www.nhc.noaa.gov/data/tcr/AL052011_Emily.pdf
+  * passed to south
+
+Hurricane Maria
+  * Sep 11-12
+  * http://www.nhc.noaa.gov/data/tcr/AL142011_Maria.pdf
+  * passed to northeast
