@@ -2,6 +2,7 @@
 A collection of educational material for R
 
 ## Tutorials 
+* [Introduction to R](http://www.nd.edu/~mclark19/learn/R1.html) by Michael Clark.  Clean, modern, and very readable.
 * [R Labs for Community Ecologists](http://ecology.msu.montana.edu/labdsv/R/) is a series of in-depth labs on the vegan package, including good coverage of ordination.
 * [Twotorials](http://www.twotorials.com/) is fun and informative series of 2 minute R video tutorials. 
 * Hadley Wickham's [thorough and well-written guide to advanced R](http://adv-r.had.co.nz/) is a great place to really learn R. 
