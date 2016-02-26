@@ -1,4 +1,14 @@
 require(reshape2)
+
+## names of files
+data.files <- within(list(), {
+    weather <- 'data/abq-temps-2005-2015.csv.gz'
+    sewtemp <- "data/allgrabdata_datefix.csv.gz"
+    precip <- 'data/abq-tempsandrain-2005-2014.csv.gz'
+    sewblock <- 'data/UNM_R_Analysis_Join_Update.csv.gz'
+})
+    
+    
 ## In this file,
 ## sewer temp grabsamples, air temp, and sewer blockages
 ## do temps first
@@ -28,7 +38,7 @@ mk.xts.fill <- function(dat, skel, ret.col){
 ########################################
 ### Air temperature / weather data
 ########################################
-weather <- read.csv('data/abq-temps-2005-2015.csv')
+weather <- read.csv(data.files$weather) 
 ## shorten colnames for convenience
 colnames(weather) <- gsub('.Temperature', 'Temp', colnames(weather))
 # Turn factor into date    
@@ -65,7 +75,10 @@ airtemp.week.df <- data.frame(
 ## read grab-data
 ## path relative to current dir
 ## 
-sewtemp <- read.table("data/allgrabdata_datefix.csv", sep=',', header=T, comment.char='#', colClasses=.colClasses)
+sewtemp <- read.table(
+    data.files$sewtemp, sep=',', header=T, 
+    comment.char='#', colClasses=.colClasses
+)
 ## from char to date
 sewtemp$Date <- as.Date(as.POSIXct(sewtemp$Date, format='%d-%m-%y')) 
 ##
@@ -121,7 +134,7 @@ sewtemp.week.df <- subset(sewtemp.week.df, nobs>0)
 
 
 ## not much to see here...
-precip <- read.csv('data/abq-tempsandrain-2005-2014.csv')
+precip <- read.csv(data.files$precip)
 precip <- subset(precip, select=c(MST, Precipitationmm))
 precip$no.precip <- precip$Precipitationmm == "0.00"
 
@@ -135,7 +148,7 @@ precip$no.precip <- precip$Precipitationmm == "0.00"
 ## 10-42 any spill
 ## 10-48 property damage 
   
-sewer <- read.csv('data/UNM_R_Analysis_Join_Update.csv.gz')
+sewer <- read.csv(data.files$sewblock)
 ## Convert reporting date column into time-based object
 sewer$Date <- as.Date(as.POSIXct(as.character(sewer$REPORTDATE), format='%m/%d/%y %H:%M'))
 

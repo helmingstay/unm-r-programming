@@ -1,3 +1,4 @@
+require(plyr)
 ## Grab daily weather temps for ABQ METAR station
 ## For many years, 
 ## combine into single data frame
@@ -20,4 +21,6 @@ abq.temps <- ldply(.urls, function(.url) {
     ret
 })
 ## write out file
-write.table(abq.temps, file='data/abq-temps-2005-2015.csv', sep=',', row.names=F)
+## then gzip?
+.fn <- 'data/abq-temps-2005-2015.csv.gz'
+write.table(abq.temps, file=gzfile(.fn), sep=',', row.names=F)
