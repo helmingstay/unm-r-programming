@@ -1,26 +1,26 @@
 require(reshape2)
 ## In this file,
-## sewer temp grabsamples, air temp, and sewer blockages
+## sewer temp grabsamples, air temp, sewer blockages and FOG data
 ## do temps first
 
 ## convenience function - turn range into xts time index
 ## e.g. '2001-01-01::2002-01-01'
 mk.xts.range <- function(.range) {
-    sprintf('%s::%s', .range[1], .range[2])
+  sprintf('%s::%s', .range[1], .range[2])
 }
 
 ## convenience function, take 2 xts objects
 ## the skeleton should be sampled daily
 ## dat is NA filled to missing timepoints
 mk.xts.fill <- function(dat, skel, ret.col){
-    .range <- range(index(dat))
-    ## subset skel to limits of dat
-    skel <- skel[mk.xts.range(.range),]
-    ## fill dat w/NAs
-    ret <- suppressWarnings(cbind(dat, skel))
-    ret <- ret[,ret.col]
-    ## only return the specified columns 
-    return(ret)
+  .range <- range(index(dat))
+  ## subset skel to limits of dat
+  skel <- skel[mk.xts.range(.range),]
+  ## fill dat w/NAs
+  ret <- suppressWarnings(cbind(dat, skel))
+  ret <- ret[,ret.col]
+  ## only return the specified columns 
+  return(ret)
 }
 
 
@@ -50,7 +50,7 @@ weather.xts <- xts(subset(weather, select=MeanTempC), weather$Date)
 ## use best.weather data.frame instead? rollmean computed above in run.model...
 airtemp.week <- apply.weekly(weather.xts$MeanTempC, FUN=mean)
 airtemp.week.df <- data.frame(
-    MeanTempC=airtemp.week, Date=index(airtemp.week)
+  MeanTempC=airtemp.week, Date=index(airtemp.week)
 )
 
 
@@ -82,10 +82,10 @@ sewtemp <- na.omit(subset(sewtemp, select=c(Date, SewTempC, Interceptor, Manhole
 
 ## store range of finished data for later
 sewtemp.stats <- with(sewtemp, list(
-    min=min(Date),
-    max=max(Date),
-    nobs=length(Date),
-    ndays=length(unique(Date))
+  min=min(Date),
+  max=max(Date),
+  nobs=length(Date),
+  ndays=length(unique(Date))
 ))
 
 ## process merges w/timeseries tools
@@ -96,9 +96,9 @@ sewtemp.xts <- mk.xts.fill(sewtemp.xts, weather.xts, 'SewTempC')
 #### Get weekly mean sewer temperature
 ### at the moment this averages across all interceptors, manholes and days
 mk.na.omit.mean <- function(x) {
-    .tmp <- na.omit(x)
-    ret <- c(SewTempC=mean(as.numeric(.tmp)), nobs=length(.tmp))
-    return(ret)
+  .tmp <- na.omit(x)
+  ret <- c(SewTempC=mean(as.numeric(.tmp)), nobs=length(.tmp))
+  return(ret)
 }
 
 
@@ -134,7 +134,7 @@ precip$no.precip <- precip$Precipitationmm == "0.00"
 ## 10-40 near miss
 ## 10-42 any spill
 ## 10-48 property damage 
-  
+
 sewer <- read.csv('data/UNM_R_Analysis_Join_Update.csv.gz')
 ## Convert reporting date column into time-based object
 sewer$Date <- as.Date(as.POSIXct(as.character(sewer$REPORTDATE), format='%m/%d/%y %H:%M'))
@@ -146,10 +146,10 @@ sewer$is.grease <- grepl('GR', sewer$CAUSE)
 sewer$is.grease[grepl("SDGTGRVL", sewer$CAUSE)] <- FALSE
 
 sewer.stats <- with(sewer, list(
-    min=min(Date),
-    max=max(Date),
-    nobs=length(Date),
-    ndays=length(unique(Date))
+  min=min(Date),
+  max=max(Date),
+  nobs=length(Date),
+  ndays=length(unique(Date))
 ))
 sewer.range <- range(sewer$Date)
 ## Pull bool vector of whether blockage is grease-caused
@@ -161,17 +161,17 @@ sewer.xts <- mk.xts.fill(sewer.xts, weather.xts, 'is.grease')
 ## compute blockages per week using xts,
 ## then move into data.frame
 block.all.xts <- apply.weekly(sewer.xts, function(x){
-    ## all nas have length 0
-    length(na.omit(x))
+  ## all nas have length 0
+  length(na.omit(x))
 })
 ## as above, by cause
 block.cause.xts <- apply.weekly( sewer.xts, function(x){
-        x <- na.omit(x)
-        if (length(x) == 0) return(c(0,0))
-        ## T/F index removes NAs
-        ## sums blocks caused by grease (T) 
-        ## vs not grease (F)
-        cbind(grease=nrow(x[x]), not.grease=nrow(x[!x]))
+  x <- na.omit(x)
+  if (length(x) == 0) return(c(0,0))
+  ## T/F index removes NAs
+  ## sums blocks caused by grease (T) 
+  ## vs not grease (F)
+  cbind(grease=nrow(x[x]), not.grease=nrow(x[!x]))
 })
 
 ## save ts object for plotting
@@ -180,14 +180,14 @@ colnames(block.plot.xts) <- c('All Causes', 'Grease')
 
 ## combine into one object 
 sewer.block.week <- data.frame(
-    Date=index(block.all.xts),
-    all=as.vector(block.all.xts),
-    grease=block.cause.xts[,1],
-    not.grease=block.cause.xts[,2]
+  Date=index(block.all.xts),
+  all=as.vector(block.all.xts),
+  grease=block.cause.xts[,1],
+  not.grease=block.cause.xts[,2]
 )
 ## long-form, just keep 
 sewer.block.week.melt <- melt(
-    subset(sewer.block.week, select=-all), id.vars='Date'
+  subset(sewer.block.week, select=-all), id.vars='Date'
 )
 
 ## error-checking

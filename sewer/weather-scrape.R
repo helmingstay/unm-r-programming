@@ -10,7 +10,7 @@
 
 ## subset data, just keep temp cols
 ## first colname changes from MST to MDT, apparently at random
-.weather.cols <- c('Max.TemperatureF', 'Mean.TemperatureF', 'Min.TemperatureF')
+.weather.cols <- c('Max.TemperatureC', 'Mean.TemperatureC', 'Min.TemperatureC')
 abq.temps <- ldply(.urls, function(.url) {
     print(.url)
     ## read data from web
