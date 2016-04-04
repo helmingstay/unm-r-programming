@@ -1,3 +1,5 @@
+## deprecated
+##
 source('mk.ts.helpers.R')
 
 ## xts class not meant for repeated measures per timestep

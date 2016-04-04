@@ -1,3 +1,18 @@
+## Miscellaneous convenience functions
+
+## output helpers
+## print xtables as html
+my.xtable <- function(x,...) print(xtable(x, ...), type='html')
+my.startable <- function(x,...) stargazer(x, type='html', ...)
+## prep model into lsmeans data.frame for my.xtable
+## Get 95%CI as text
+my.lsm.df <- function(mod, .spec) {
+    ret <- summary(lsmeans(mod, .spec), type='response')
+    ret$CI <- sprintf('%1.2f-%1.2f', ret$asymp.LCL, ret$asymp.UCL)
+    ret <- subset(ret, select=c(-df,-asymp.LCL, -asymp.UCL))
+    ret
+}
+
 ## 
 fahrenheit.to.celsius <- function(x) (x-32)*(5/9)
 

@@ -50,8 +50,8 @@ block.airtemp.list <- within(list(), {
   dat <- block.airtemp.week
   ## clean up factors for facet plotting
   dat$variable <- factor(dat$variable, 
-                         levels=c('grease', 'not.grease'),
-                         labels=c('Grease', 'Not Grease')
+                         levels=c('not.grease', 'grease'),
+                         labels=c('Not Grease', 'Grease')
   )
   mod <- glm.nb(value ~ MeanTempC * variable, 
                 data=dat
@@ -106,8 +106,8 @@ block.sewtemp.list <- within(list(), {
   dat <- block.sewtemp.week
   ## clean up factors for facet plotting
   dat$variable <- factor(dat$variable, 
-                         levels=c('grease', 'not.grease'),
-                         labels=c('Grease', 'Not Grease')
+                         levels=c('not.grease', 'grease'),
+                         labels=c('Not Grease', 'Grease')
   )
   mod <- glm.nb(value ~ SewTempC * variable, data=dat)
   sub.grease <- glm.nb(value ~ SewTempC, data=subset(dat, variable=='Grease'))
@@ -174,7 +174,8 @@ block.airtemp.pred <- within(list(), {
 ### FOG data
 ########################################
 # sources another file which loads and cleans this data
-source('run.load_fog.R')
+#source('run.load_fog.R')
+## source in writeup.Rmd
 
 ### pack FOG analysis in list as above
 block.foglevel.list <- within(list(), {

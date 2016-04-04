@@ -24,6 +24,7 @@ allfog$lfog <- log(allfog$fog)
 
 
 ##### Trends in FOG during the year
+## probably should move models elsewhere
 
 ## models using log-transformed data
 # linear
@@ -100,6 +101,7 @@ baw.join <- join(baw, allfog.week.df, by=c('year', 'week'), type='inner')
 ###### contour plot
 source('mk.gridder.R') # defines B Junker's function
 
+## interpolate over 2d grid?
 ## function is for real data
 ## note function is very slow!
 gridded.data <- gridder(baw.join$MeanTempC, baw.join$meanlfog, baw.join$value)
