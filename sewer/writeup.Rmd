@@ -56,7 +56,7 @@ source('mk.helpers.R')
 ```
 
 ```{r read_data, size='footnotesize', include=FALSE}
-## this also sources run.model_sew_temp.R
+## this also sources run.model_sew_temp.R and run.load_fog.R
 source('run.read_data.R')
 ## find best timeperiod to integrate air temp over
 ## model best N days for rolling mean
@@ -76,6 +76,77 @@ source('run.lag_period.R')
 source('run.glms.R')
 ```
 
+# Introduction
+Sanitary sewer blockages (SSB) cause widespread negative impacts, including
+aesthetic degradation from odors, and property damage and environmental
+degradation from sanitary sewage overflow (SSO).  In the U.S., where SSOs are
+tracked by the Environmental Protection Agency \cite{epa2004local},
+approximately half of SSOs were caused by blockages, with up to 75\% of SSOs
+caused by blockages in the arid Southwest \cite{epa2004report}.
+Consequently, prompt remediation of SSB is a high priority for municipalities,
+and contributes to municipal sewer maintenance costs
+\cite{maintenance-cost}.
+
+Here we use an extensive dataset of SSB events in
+Albuquerque, New Mexico to demonstrate a significant association
+between blockage rate and air temperature.
+We find that air temperature is a very good predictor 
+of sewer temperature, and that
+temperature predominantly affects the 
+frequency of grease-caused blockages in this system.
+We discuss the physical and operational significance of 
+these findings.
+
+### Drivers of Blockage
+An extensive body of literature exists on sewer blockage 
+mechanism \citep{??}, physical structure \citep{??}, and 
+detection \citep{??}.  Surprisingly rare, however, are 
+large-scale 
+studies of the correlates and putative causes of elevated
+SSB rates. 
+
+Climate has been shown to influence SSB rates via affects on both vegetation and water
+flow. \cite{Marlow2011}, for example, showed a correlation between sewer
+blockage frequency and the Southern Oscillation Index (SOI) in eastern
+Australia. The SOI reflects rainfall patterns in the region, with droughts
+raising blockage risk by decreasing sewer flow volume and increasing
+sedimentation. Low rainfall also promotes tree root development, which damage
+pipes by intruding through joins and other weak points \cite{Desilva2011}.
+
+Previous work has attributed SSBs primarily to roots, debris, and fats, oils,
+and grease (FOG) \cite{epa2004report}.  In the U.S., 60-75\% of blockages
+have fat, oil and grease (FOG) deposits as a contributory factor
+\cite{Keener2008}, while vegetation intrusion is the chief cause of
+blockages in Australia \cite{Marlow2011}.
+
+As recognized contributors to SSB, FOG deposits have received considerable
+attention. FOG deposits form in a saponification reaction between calcium soaps
+and free fatty acids \cite{He2011}, chiefly from restaurants and
+industrial sources \cite{Keener2008}.  Free fatty acids are insoluble in
+water, and are transported in greasy effluent.  Many municipalities have
+implemented policies to minimize FOG inputs into sanitary sewers
+\cite{hassey2001grease, heckler2003best, parnell2005innovative,
+bennett2006atlanta, tupper2008fog}.  Residential outreach is often increased
+during the holiday season in an effort to minimize FOG inputs due to food
+preparation \cite{tupper2008fog}.
+
+### Influence of Temperature
+Temperature is one potential driver of SSB that has received little attention to
+date. The viscosity of both water and FOGs increases with decreasing
+temperature. For a given pipe network, increased viscosity results in increased
+frictional head loss \cite{romeo2002improved}. In addition, FOG effluent
+can solidify at lower temperatures, causing overt blockages.
+
+In this study we examine ?? years of SSB records from the City of Albuquerque
+municipal sewer system.  We find that air temperature is
+a useful proxy of sewage temperature, and that both air and sewage temperature
+predict SSB frequency. Specifically, temperature predicts SSB events for which
+FOGs are a contributory factor, suggesting that cold weather increases the impact of FOG deposits. SSBs with other causes do not respond to temperature. 
+
+These relationships shed light on mechanisms
+of sewer blockage, and can potentially help municipalities anticipate time
+periods of elevated sewer blockages using readily available climatic data.
+
 # Methods
 
 ### Data
@@ -84,13 +155,16 @@ The frequency of sanitary sewer blockages is the primary focus of this work.
 
 As part of an unrelated ABCWUA system odor control survey, sewage temperature was obtained via grab samples by 
 a chemical treatment vendor at 15 manholes on three treated north-south interceptors.  A map of these 
-three interceptor is shown in Figure S1. Temperature measurements were obtained, typically bi-weekly, using a 
+three interceptors is shown in Figure S1. Temperature measurements were obtained, typically bi-weekly, using a 
 Cooper Atkins DPP400W Waterproof Pen Style thermometer with an accuracy range of +/- 1 C° (from -10° to 100°C) 
 in a liquid sample collected from the manhole.  
 In total, `r nrow(sewtemp)` sanitary sewer temperature (ST) measurements from the period `r sewtemp.stats$min` 
 to `r sewtemp.stats$max` (inclusive) were used in this study.
 
 Mean daily air temperature (mAT/D) was obtained from the Albuquerque International airport's (KABQ) automated METAR data collection system (available from \url{http://www.wunderground.com/history/airport/KABQ}) spanning the entire period of study noted above.
+
+
+In addition, direct FOG measurements were available for `r length(unique(baw.join$year.week))` weeks. As with temperature measurements, these were averaged to calculate a mean weekly FOG level to use as a predictor of blockage frequency.
 
 Since most days had no SSB events, the total number of SSB 
 events per week (SSB/W) was computed and used in subsequent 
@@ -109,9 +183,20 @@ xyplot(block.plot.xts, type=c('h','g'), col='black', xlab='', ylab='SSB events p
 First, we seek to quantify the dependence of sewer temperature on air temperature using a set of linear models. Exploratory data analysis shows that manhole identity does not reliably covary with sewage temperature, while both interceptor identity and air temperature are significant predictors of sewage temperature.
 
 To account for the lag between air temperature and sewer temperature, we compute the moving average of air temperature 
-over a varying number of days N.  For each N, we fit a linear model (using a MANOVA model structure) that includes interceptor identity and N-day mean air temperature as predictors.  We then select N to maximize model $R^2$.
+over a varying number of preceding days N.  For each N, we fit a linear model (using a MANOVA model structure) that includes interceptor identity and N-day mean air temperature as predictors.  We then select N to maximize model $R^2$.
 
-Next, we seek to quantify the dependence of blockage frequency on temperature.  We model blockage frequency using the Negative Binomial Generalized Linear Model (NB-GLM)\cite{hilbe2014}.  We start by considering blockages of all causes, and model their dependence on either sewage temperature or air temperature.  Due to the sparcity of sewage temperature data, we then focus on air temperature, and model blockages by both cause and the N-day mean air temperature.  Finally, we conduct a detailed analysis of the dependence of grease-caused blockages on N-day mean air temperature.
+Next, we seek to quantify the dependence of blockage frequency on temperature.  We model blockage frequency using the Negative Binomial Generalized Linear Model (NB-GLM)\cite{hilbe2014}.  We start by considering blockages of all causes, and model their dependence on either sewage temperature or air temperature.  Due to the sparsity of sewage temperature data, we then focus on air temperature, and model blockages by both cause and the N-day mean air temperature. 
+
+Model validation was conducted by subdividing the period of record. We tested the model of grease blockage frequency's dependence on air temperature, as this had high predictive value while using a minimal amount of easily-obtained data. 
+We also test the hypothesis that the Thanksgiving period results in increased
+FOG by comparing the model residuals (number of excess blockages not explained
+by temperature alone) between weeks containing and immediately after 
+Thanksgiving with all other weeks during the study period.
+
+Finally, we conduct a detailed analysis of the dependence of grease-caused blockages on N-day mean air temperature. This analysis involved comparing
+the relative utility of temperature as a predictor of blockages with the
+use of direct measures of FOG levels, as well as testing the relationship
+between FOG measurements, seasonality and air temperature.
 
 Note that standard R^2 statistics are not available for GLMs.  However, the proportional reduction in deviance (D) provides an analogous measure of the model's explanatory power \cite{zheng2000summarizing}. Thus D falls between 0 and 1, and can be approximately interpreted as the proportion of variance explained by the model.
 
@@ -128,31 +213,10 @@ Indeed, the final model of sewage temperature versus air temperature and interce
 
 We further analysed the effect of local 
 geography on linear model results.
-In all high-ranked linear models, interceptor identity exhibits a small but statistically significant effect of on sewage temperature, while manhole identity was not a significant predictor.
+In all high-ranked linear models, interceptor identity exhibits a small but statistically significant effect on sewage temperature, while manhole identity was not a significant predictor.
 Nonetheless, the effect size of either manhole and interceptor identity is small, and we do not consider local geographic effects further.
 
-```{r sewweathplot, echo=FALSE, size='footnotesize', include=TRUE, fig.height=4.5, fig.width=4.5, fig.cap=sprintf("Sewage temperature (mST/W) increased with air temperature (mAT/W). The response of sewage temperature to air temperature differed slightly between sewer system interceptors, See Table \ref{tab:bestlin} for model details (R^2 = %0.2f)", .best.rsq)}
-
-# plot with ggplot
-## data from best model in run.model_sew_temp.R
-p <- ggplot(best.dat)
-p <- p + geom_point(aes(x=MeanTempC, y=SewTempC, 
-                        colour=Interceptor, shape=Interceptor)) 
-p <- p + scale_shape_manual(values=c(21, 23, 24))
-p <- p + geom_smooth(aes(x=MeanTempC, y=SewTempC, 
-                         colour=Interceptor, linetype=Interceptor), method='lm')
-p <- p + theme_classic()
-p <- p + theme(legend.position=c(0.85, 0.2))
-p <- p + xlab('mAT/W (°C)') + ylab('mST/W (°C)')
-print(p)
-```
-
-
 ### Sewage temperature (mST/W), air temperature (mAT/W), and sewer blockage frequency (SSB/W)
-
-```{r multiblockplot, eval=T, echo=FALSE, fig.pos='h', fig.width=4.5, fig.height=3.5, fig.cap=sprintf('Mean weekly sewage temperature (n=%d weeks, D=%s) and mean weekly air temperature (n=%d weeks, D=%s) are both statistically significant predictors of sanitary sewer blockage frequency in Albuquerque, NM. Here, blockages of all causes are shown.  Note that sewer temperature is only available for select weeks, while air temperature is available for the entire period of blockage record.', block.sewtemp.list$nweeks, block.sewtemp.list$dev, block.airtemp.list$nweeks, block.airtemp.list$dev), message=FALSE}
-plot(block.bothtemp.list$plot)
-```
 
 We begin with an examination of all blockages, regardless of reported cause.
 We modeled the response of sewer blockage frequency (SSB/W) to either air temperature (mAT/W) or sewage temperature (mST/W) using a NB-GLM.
@@ -176,26 +240,40 @@ This dataset includes `r block.counts$grease` total blockages where grease was t
 plot(block.sewtemp.list$plot)
 ```
 
-```{r block.airtemp, echo=FALSE, fig.pos='h', fig.width=4.5, fig.height=3.5, fig.cap=sprintf('Mean weekly air temperature predicts blockages caused by grease (%d total blocks, D=%s), and is a poor predictor of blockages due to other causes (%d total blocks, D=%s). %d weeks total. See Table ?? for model details.', block.counts$grease, block.airtemp.list$dev.grease, block.counts$not.grease,  block.airtemp.list$dev.nogrease, block.airtemp.list$nweeks), message=FALSE}
-plot(block.airtemp.list$plot)
+### The role of FOG
+
+Blockages were most frequent in weeks which had both high levels of FOG and low mean air temperatures (Figure \ref{fig:fogcont}). However, this model explained a similar amount of deviance (D = `r block.foglevel.list$dev.full`) to a model containing only temperature and blockage cause as predictors of blockages during the same weeks (D = `r block.foglevel.list$dev.nofog`). The addition of FOG to the model resulted in a change of only `r block.foglevel.list$aic.nofog - block.foglevel.list$aic.full` AIC units, whereas an extra parameter should result in a decrease of at least 2 units to be considered an improvement \cite{Arnold2010}. Furthermore, FOG level was not a significant term in this model, nor in models predicting only grease-caused or other blockages (all p > 0.05).
+
+There was no significant seasonal trend in FOG levels, as shown by the non-significance of a quadratic model of the dependence of recorded FOG level on the day of year or that record. Similarly, there was no significant relationship with temperature (all p > 0.05).
+
+```{r fogcont, echo=FALSE, fig.pos='h', fig.width=4.5, fig.height=3.5, fig.cap=sprintf('The highest number of blockages (shown by dark areas on the contour plot) occurs when levels of FOG are high, and air temperatures are low.'), message=FALSE}
+plot(block.foglevel.list$plot)
 ```
 
-Additional model validation was conducted by subdividing the
-period of record.  The response of weekly grease blockage 
+
+### Model validation
+
+The response of weekly grease blockage 
 frequency to air temperature was fit using observations prior
 to `r block.airtemp.pred$cutoff` (`r nrow(block.airtemp.pred$dat)` weeks).  The resulting model was 
 used to predict grease blockage frequency in the weeks after
-`r block.airtemp.pred$cutoff` (`r nrow(block.airtemp.pred$pred)` weeks).  The results, shown in Figure \ref{fig:validate}, indicate that model predictions generally capture the observed 
-pattern of grease blockage frequency.
-
+`r block.airtemp.pred$cutoff` (`r nrow(block.airtemp.pred$pred)` weeks).  The results, shown in Figure \ref{fig:validate}, indicate that model predictions generally capture the observed pattern of grease blockage frequency,
+though with a tendency to underestimate blockages during weeks
+with the highest frequencies.
 
 ```{r validate, echo=FALSE, fig.pos='h', fig.width=4.5, fig.height=3.5, fig.cap=sprintf('Model validation comparing predicted and observed weekly grease blockage frequency. To generate predictions, a model was fit using weeks prior to %s (%s weeks total).  Observed air temperatures in subsequent weeks (%s weeks total) were used to predict grease blockage frequency (X-axis). Also plotted are the observed grease blockage frequencies in those weeks (Y-axis). The dotted line is the identity line y = x, and the solid line shows the linear relationship between observed and predicted blockages (y = %sx %s).', block.airtemp.pred$cutoff, nrow(block.airtemp.pred$dat), nrow(block.airtemp.pred$pred), round(coef(block.airtemp.pred$pred.lm), 2)[2], round(coef(block.airtemp.pred$pred.lm), 2)[1] ), message=FALSE}
 plot(block.airtemp.pred$plot)
 ```
 
-Figure \ref{fig:tday} compares model residuals from the weeks containing and immediately after Thanksgiving with other weeks.  
+### Holiday FOG?
 
-```{r tday, echo=FALSE, fig.pos='h', fig.width=4.5, fig.height=3.5, fig.cap=sprintf('Once air temperature is accounted for, the weeks containing and following Thanksgiving show no evidence of elevated frequencies of grease-caused blockages.'), message=FALSE}
+Using residuals from the model of blockage frequency by air temperature and cause,
+we tested the hypothesis that the holiday period causes extra blockages 
+via the addition of extra fats and grease to the drainage system.
+Figure \ref{fig:tday} compares model residuals from the weeks containing and immediately after Thanksgiving with other weeks, isolating any difference in blockage frequency during this period once temperature is taken into account.
+No difference is observed between the holiday period and other times.
+
+```{r tday, echo=FALSE, fig.pos='h', fig.width=4.5, fig.height=3.5, fig.cap=sprintf('Once air temperature is accounted for, the weeks containing and following Thanksgiving show no evidence of elevated frequencies of grease-caused blockages. Points are horizontally jittered to avoid overlapping.'), message=FALSE}
 plot(block.airtemp.list$tday.plot)
 ```
 
@@ -221,7 +299,7 @@ only modest utility in predicting sewer blockages over
 weekly timescales. Nonetheless, an increased 
 understand of the drivers of SSOs in general, 
 and FOG-related blockages in particular, 
-could aid in system design and maintainence.   
+could aid in system design and maintainence. 
 Consideration could be given in sewer design
 to select locations subject to higher winter temperatures,
 either through greater depth or under asphalt pavement.
@@ -249,7 +327,9 @@ use, possibly via their effects on groundwater temperature.
 Models including precipitation patterns and/or local
 physical characteristics (e.g. water table height, land use,
 sewer configuration, soil type, geology) could test this
-hypothesis. 
+hypothesis. The existence of within-system variation in 
+this study suggest that between-system variation may also
+be significant.
 
 Because lower air and soil temperatures occur 
 coincidental to the
@@ -257,9 +337,20 @@ Thanksgiving and Christmas season in the Northern
 Hemisphere, it is possible that FOG related SSOs increase
 during the holiday season but not due to higher levels of
 holiday generated FOG. 
-Indeed, we find no excess blockage frequency in Thanksgiving weeks.  Further study of SSO rates versus
-holiday seasons in Southern Hemisphere cities could further
+Indeed, we find no excess blockage frequency in Thanksgiving weeks.
+Further study of SSO rates versus
+holiday seasons in Southern Hemisphere cities could
 test this hypothesis.
+
+We also note that these results are from the U.S., where most systems, 
+including those in this study, are separate sewers.
+Furthermore, the prevalence of garbage disposal units, mechanical grinders
+which add greasy food waste directly into the sewer system, 
+have a higher prevalence in the U.S. than elsewhere. 
+These factors contribute to the importance of replicating
+this study in other regions where combined sewers are commoner,
+and garbage disposal units rarer, such as Europe. There may also be
+differences between old and new sewer systems.
 
 Our results also suggest that areas experiencing
 increasing average temperatures due to climate change may
@@ -279,7 +370,7 @@ were collected during routine system monitoring in the
 course of standard operations.  We hope this work 
 demonstrates the
 potential usefulness of historic datasets 
-in addressing modern (and future) urban infrastructure challenges.
+in addressing modern and future urban infrastructure challenges.
 
 # Tables
 ??Need table numbers.
@@ -304,6 +395,30 @@ with(block.airtemp.list,
 # References
 
 # Supplemental Information
+
+```{r sewweathplot, echo=FALSE, size='footnotesize', include=TRUE, fig.height=4.5, fig.width=4.5, fig.cap=sprintf("Sewage temperature (mST/W) increased with air temperature (mAT/W). The response of sewage temperature to air temperature differed slightly between sewer system interceptors, See Table \ref{tab:bestlin} for model details (R^2 = %0.2f)", .best.rsq)}
+
+# plot with ggplot
+## data from best model in run.model_sew_temp.R
+p <- ggplot(best.dat)
+p <- p + geom_point(aes(x=MeanTempC, y=SewTempC, 
+                        colour=Interceptor, shape=Interceptor)) 
+p <- p + scale_shape_manual(values=c(21, 23, 24))
+p <- p + geom_smooth(aes(x=MeanTempC, y=SewTempC, 
+                         colour=Interceptor, linetype=Interceptor), method='lm')
+p <- p + theme_classic()
+p <- p + theme(legend.position=c(0.85, 0.2))
+p <- p + xlab('mAT/W (°C)') + ylab('mST/W (°C)')
+print(p)
+```
+
+```{r multiblockplot, eval=T, echo=FALSE, fig.pos='h', fig.width=4.5, fig.height=3.5, fig.cap=sprintf('Mean weekly sewage temperature (n=%d weeks, D=%s) and mean weekly air temperature (n=%d weeks, D=%s) are both statistically significant predictors of sanitary sewer blockage frequency in Albuquerque, NM. Here, blockages of all causes are shown.  Note that sewer temperature is only available for select weeks, while air temperature is available for the entire period of blockage record.', block.sewtemp.list$nweeks, block.sewtemp.list$dev, block.airtemp.list$nweeks, block.airtemp.list$dev), message=FALSE}
+plot(block.bothtemp.list$plot)
+```
+
+```{r block.airtemp, echo=FALSE, fig.pos='h', fig.width=4.5, fig.height=3.5, fig.cap=sprintf('Mean weekly air temperature predicts blockages caused by grease (%d total blocks, D=%s), and is a poor predictor of blockages due to other causes (%d total blocks, D=%s). %d weeks total. See Table ?? for model details.', block.counts$grease, block.airtemp.list$dev.grease, block.counts$not.grease,  block.airtemp.list$dev.nogrease, block.airtemp.list$nweeks), message=FALSE}
+plot(block.airtemp.list$plot)
+```
 
 ```{r airtemp.ndays.mod, echo=FALSE, fig.pos='h', fig.width=4.5, fig.height=4, fig.cap=sprintf('Goodness-of-fit profile of linear model predicting sewer temperature from mean air temperature.  For a range of N, air temperature was averaged over the N days preceding each sewer temperature sample.  N = %d yields the best model, with $R^2$ = %1.2f. Note that results are not highly sensitive to N, with 30 < N < 50 all yielding good models.', best.ndays, .best.rsq )}
 #source('run.weather.R')

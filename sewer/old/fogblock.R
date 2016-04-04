@@ -1,3 +1,6 @@
+## depricated?
+## mostly code in run.load_fog.R
+
 #### Calculating weekly mean FOG reading
 require(xts)
 
