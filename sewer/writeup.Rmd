@@ -74,6 +74,33 @@ source('run.load_fog.R')
 source('run.glms.R')
 ```
 
+# Abstract
+
+Sanitary sewer blockages (SSB) cause widespread negative impacts, including 
+property damage and environmental degradation from sanitary sewage overflow (SSO).
+Consequently, prompt remediation of SSB is a high priority for municipalities, 
+and contributes to municipal sewer maintenance costs. Previous work has shown 
+that the majority of SSB in the USA have fat, oil and grease (FOG) as a causative
+factor. Here we use an extensive dataset of SSB events in Albuquerque, New Mexico,
+to demonstrate a significant association between blockage rate and sewer
+temperature. We find that air temperature is a very good predictor of sewer
+temperature, and that it thus also has value as a predictor of SSB. Temperature
+predominantly affects the frequency of grease-caused blockages in this system.
+However, including the results of direct measurements of FOG in our model did not
+improve its validity. In addition, we find no evidence of elevated blockage rate
+during the Thanksgiving period once temperature is taken into account. We discuss
+the physical and operational significance of these findings.
+
+# Key points
+
+1. Low temperatures are associated with an increase in sanitary sewer blockages.
+
+2. This relationship appears to be driven by an increased contribution from
+fat, oil and grease (FOG) to blockages.
+
+3. Online weather data is a useful and readily-available predictor of 
+sewage temperature.
+
 # Introduction
 Sanitary sewer blockages (SSB) cause widespread negative impacts, including
 aesthetic degradation from odors, and property damage and environmental
@@ -244,7 +271,7 @@ Blockages were most frequent in weeks which had both high levels of FOG and low 
 
 There was no significant seasonal trend in FOG levels, as shown by the non-significance of a quadratic model of the dependence of recorded FOG level on the day of year or that record. Similarly, there was no significant relationship with temperature (all p > 0.05).
 
-```{r fogcont, echo=FALSE, fig.pos='h', fig.width=4.5, fig.height=3.5, fig.cap=sprintf('The highest number of blockages (shown by dark areas on the contour plot) occurs when levels of FOG are high, and air temperatures are low.'), message=FALSE}
+```{r fogcont, echo=FALSE, fig.pos='h', fig.width=4.5, fig.height=3.5, fig.cap=sprintf('The highest number of blockages (shown by dark areas on the contour plot) occurs when levels of FOG (ln(x) mg/L extractable material) are high, and air temperatures are low.'), message=FALSE}
 plot(block.foglevel.list$plot)
 ```
 
