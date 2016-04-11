@@ -419,6 +419,12 @@ with(block.airtemp.list,
 
 # Supplemental Information
 
+## Introduction
+
+In this section of the manuscript we present additional figures that illustrate
+relationships discussed in the text, but which we did not consider essential to
+present alongside the main text.
+
 ```{r sewweathplot, echo=FALSE, size='footnotesize', include=TRUE, fig.height=4.5, fig.width=4.5, fig.cap=sprintf("Sewage temperature (mST/W) increased with air temperature (mAT/W). The response of sewage temperature to air temperature differed slightly between sewer system interceptors, See Table \ref{tab:bestlin} for model details (R^2 = %0.2f)", .best.rsq)}
 
 # plot with ggplot
