@@ -57,14 +57,15 @@ source('mk.helpers.R')
 ```{r read_data, size='footnotesize', include=FALSE}
 ## this also sources run.model_sew_temp.R and run.load_fog.R
 source('run.read_data.R')
-## read in FOG data, and some processing
-source('run.load_fog.R')
 
 ## find best timeperiod to integrate air temp over
 ## model best N days for rolling mean
 source('run.model_sew_temp.R')
 ## Post-processing
 source('run.combine.data.R')
+
+## read in FOG data, and some processing
+source('run.load_fog.R')
 ```
 
 ```{r tempandblock, fig.cap='Linear model diagnostic plots.', size='footnotesize', message=FALSE, warning=FALSE, error=FALSE, echo=FALSE, include=FALSE}
