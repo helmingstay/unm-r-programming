@@ -16,7 +16,7 @@ block.bothtemp.list <- within(list(),{
     xlab('Mean Weekly Sewer and Air Temperature (C)') +
     ylab('Total Blocks Per Week') + 
     facet_wrap(~variable, scales='free_x') + 
-    geom_smooth(method = "glm", family="poisson", colour='blue', size=1.2) +
+    geom_smooth(method = "glm", method.args = list(family = "poisson"), colour='blue', size=1.2) +
     geom_point()
   
   mods <- dlply(dat, 'variable', function(.df){
@@ -78,7 +78,7 @@ block.airtemp.list <- within(list(), {
     xlab('Mean Weekly Air Temperature (C)') +
     ylab('Blocks Per Week') + 
     facet_grid(.~variable) + 
-    geom_smooth(method = "glm", family="poisson", colour='blue', size=1.2) +
+    geom_smooth(method = "glm", method.args = list(family = "poisson"), colour='blue', size=1.2) +
     geom_point() 
   ##
   ## thanksgiving residuals
@@ -126,7 +126,7 @@ block.sewtemp.list <- within(list(), {
     xlab('Mean Weekly Sewer Temperature (C)') +
     ylab('Blocks Per Week') + 
     facet_grid(.~variable) + 
-    geom_smooth(method = "glm", family="poisson", colour='blue', size=1.2) +
+    geom_smooth(method = "glm", method.args = list(family = "poisson"), colour='blue', size=1.2) +
     geom_point() 
 })
 #mk.mod.ci.plot(.l$pred, .x="SewTempC", .xlab="Mean weekly sewage temperature (°C)", .ylab="Number of incidents per week", .theme=theme_bw())
