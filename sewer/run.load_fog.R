@@ -21,35 +21,7 @@ allfog$fog[allfog$inequality] <- as.numeric(
 # log transform because of extreme values
 allfog$lfog <- log(allfog$fog)
 
-
-
-##### Trends in FOG during the year
-## probably should move models elsewhere
-
-## models using log-transformed data
-# linear
-lm.fog.doy <- lm(lfog ~ doy, data=allfog)  # bad fit; 
-# but sig decrease during the year
-## I guess in Abq's climate, Jan & Feb are the months with anomalously cold periods?
-## counts against holiday hypothesis?
-
-# try a quadratic - a parabola would make more sense re: seasonality
-lm.fog.doy.2o <- lm(lfog ~ poly(doy, 2), data=allfog) # bad fit; 2nd order nonsig
-# try a third order - just in case
-lm.fog.doy.3o <- lm(lfog ~ poly(doy, 3), data=allfog) # bad fit; 2nd & 3rd nonsig
-
-
-
-#### join with weather data
-#intersect(colnames(weather), colnames(allfog)) # both contain 'Date'
-fogtemp <- join(allfog, weather, type='inner')
-
-# linear model
-#lm.fog.temp <- lm(lfog ~ MeanTempC, data=fogtemp); summary(lm.fog.temp) 
-# not sig at all, R^2 ~0
-
 #### Calculating weekly mean FOG reading
-
 ## extract only log(fog) and date
 all.lfog <- subset(allfog, select=c('lfog', 'Date') )
 
@@ -64,7 +36,6 @@ allfog.day <- apply.daily(allfog.xts, mean)
 allfog.week <- apply.weekly(allfog.day, mean) # mean is default function; no NAs
 nrow(allfog.week) # 232 observations + 1 dummy
 
-
 ## convert back to dataframe for joining and analysis
 allfog.week.df <- as.data.frame(allfog.week)
 ## convert index to Date format
@@ -73,9 +44,7 @@ names(allfog.week.df)[1] <- 'meanlfog' # rename column
 
 #### additional columns for compatibility with sewblock, greaseblock &c
 ## sporadic FOG sampling means columns do not align with other dataframes
-allfog.week.df$year <- as.numeric( format(allfog.week.df$Date, '%Y') )
-allfog.week.df$week <- as.numeric( format(allfog.week.df$Date, '%j') ) %/% 7 
-
+allfog.week.df <- mk.yearweek(allfog.week.df) 
 
 # are all year-week combos unique?
 allfog.week.df$year.week <- sprintf('%s.%s', allfog.week.df$year, allfog.week.df$week)
@@ -83,26 +52,3 @@ length(unique (allfog.week.df$year.week)) / nrow(allfog.week.df) # not quite: 1 
 # which are the duplicates?
 allfog.week.df[duplicated(allfog.week.df$year.week),] # only 2 weeks, can be excluded for now
 allfog.week.df <- allfog.week.df[!duplicated(allfog.week.df$year.week),]# excluding duplicates
-
-
-
-#### Join with block.airtemp.week data frame (includes temp, blocks and FOG)
-baw <- block.airtemp.week
-baw$year <- as.numeric( format(baw$Date, '%Y') )
-baw$week <- as.numeric( format(baw$Date, '%j') ) %/% 7
-
-## check intersect
-#intersect(colnames(baw), colnames(allfog.week.df))
-
-## join by chosen columns
-baw.join <- join(baw, allfog.week.df, by=c('year', 'week'), type='inner')
-
-
-###### contour plot
-source('mk.gridder.R') # defines B Junker's function
-
-## interpolate over 2d grid?
-## function is for real data
-## note function is very slow!
-gridded.data <- gridder(baw.join$MeanTempC, baw.join$meanlfog, baw.join$value)
-names(gridded.data) <- c('temp', 'fog', 'block')

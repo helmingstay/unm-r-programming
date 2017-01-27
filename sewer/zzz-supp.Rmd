@@ -1,0 +1,63 @@
+---
+language:
+  label:
+    fig: "Figure S"
+---
+```{r supp-setup, include=FALSE, cache=FALSE}
+    ## includes opts_chunk
+    source('init.R')
+    source('mk.helpers.R')
+```
+# Supplemental Information 
+```{r sewweathplot, echo=FALSE, size='footnotesize', include=TRUE, fig.height=4.5, fig.cap=sprintf("Sewage temperature (mST/W) increased with air temperature (mAT/W). The response of sewage temperature to air temperature differed slightly between sewer system interceptors, See Table \\@ref(tab:bestlin) for model details (R^2^ = %0.2f)", .best.rsq)}
+
+# plot with ggplot
+## data from best model in run.model_sew_temp.R
+p <- ( 
+    ggplot(best.dat, aes(
+        x=MeanTempC, y=SewTempC, 
+        colour=Interceptor, shape=Interceptor
+    )) 
+    + geom_point()
+    + scale_shape_manual(values=c(21, 23, 24))
+    + geom_smooth(
+        aes(linetype=Interceptor), 
+        method='lm'
+    )
+    + theme_bw()
+    #+ theme_classic()
+    + theme(legend.position=c(0.85, 0.2))
+    + xlab('mAT/W (°C)') + ylab('mST/W (°C)')
+)
+print(p)
+```
+
+```{r multiblockplot, eval=T, echo=FALSE, fig.pos='h', fig.height=3.5, fig.cap=sprintf('Mean weekly sewage temperature (n=%d weeks, D=%s) and mean weekly air temperature (n=%d weeks, D=%s) are both statistically significant predictors of sanitary sewer blockage frequency in Albuquerque, NM. Here, blockages of all causes are shown.  Note that sewer temperature is only available for select weeks, while air temperature is available for the entire period of blockage record.', block.sewtemp.list$nweeks, block.sewtemp.list$dev, block.airtemp.list$nweeks, block.airtemp.list$dev), message=FALSE}
+plot(block.bothtemp.list$plot)
+```
+
+```{r block-airtemp, echo=FALSE, fig.pos='h', fig.height=3.5, fig.cap=sprintf('Mean weekly air temperature predicts blockages caused by grease (%d total blocks, D=%s), and is a poor predictor of blockages due to other causes (%d total blocks, D=%s). %d weeks total. See Table ?? for model details.', block.counts$grease, block.airtemp.list$dev.grease, block.counts$not.grease,  block.airtemp.list$dev.nogrease, block.airtemp.list$nweeks), message=FALSE}
+plot(block.airtemp.list$plot)
+```
+
+```{r airtemp-ndays-mod, echo=FALSE, fig.pos='h', fig.height=4, fig.cap=sprintf('Goodness-of-fit profile of linear model predicting sewer temperature from mean air temperature.  For a range of N, air temperature was averaged over the N days preceding each sewer temperature sample.  N = %d yields the best model (R^2^ = %1.2f). Note that results are not highly sensitive to N, with 30 < N < 50 all yielding good models.', best.ndays, .best.rsq )}
+#source('run.weather.R')
+xyplot(adj.r.sq ~ ndays, rsq.ndays, type=c('l','g'), 
+    xlab='Number of days air temperature mean',
+    ylab=expression(Linear ~ Model ~ R^2)
+)
+```
+
+```{r bestlin, echo=FALSE, size='footnotesize'}
+## as above, but with xtable
+kable(
+    as.data.frame(xtable(summary(.lin.best))),
+    ## column formatting, first element is rownames
+    #display = c('s', 'fg', 'g', 'f', 'g'),
+    digits=3,
+    #label='tab:bestlin',
+    caption=sprintf('Summary table of the model of the response of mean weekly sewage grab sample temperature (MW-SGST) to mean weekly mean daily air temperature (MW-MDAT) (R^2^ = %1.2f). Sewer interceptor identity has a significant effect on model intercept.', .best.rsq)
+)
+```
+
+## References

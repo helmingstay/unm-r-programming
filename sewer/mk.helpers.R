@@ -1,9 +1,23 @@
 ## Miscellaneous convenience functions
 
+## add columns to .df based on Date col
+mk.yearweek <- function(.df, .datecol='Date') {
+    .df$year <- year(.df[[.datecol]])
+    .df$week <- week(.df[[.datecol]])
+    .df
+}
+
 ## output helpers
 ## print xtables as html
-my.xtable <- function(x,...) print(xtable(x, ...), type='html')
-my.startable <- function(x,...) stargazer(x, type='html', ...)
+#my.xtable <- function(x,...) print(xtable(x, ...), type='html')
+my.xtable <- function(mod,specs,caption) {
+    mod <- lsmeans(mod, type='response', specs)
+    ret <- as.data.frame(cld(mod))
+    ret <- kable(ret, caption=caption, digits=.tab.dig)
+    ret
+}
+## Deprecated
+#my.startable <- function(x,...) stargazer(x, type='html', ...)
 ## prep model into lsmeans data.frame for my.xtable
 ## Get 95%CI as text
 my.lsm.df <- function(mod, .spec) {
@@ -30,8 +44,6 @@ mk.cbind.weather <- function(.weather, .dat){
     ret <- cbind.xts(.weather, .dat, fill=0)
     ret
 }
-
-
 
 ## convenience fun,
 ## weekly mean temp, sum of other variables
@@ -60,6 +72,8 @@ mk.df.melt <- function(.xts, .idvars =c('Date', 'MeanTempC')) {
     return(ret)
 }
 
+## proprtion deviance from glm
+## optionally returning formatted string
 mk.prop.dev <- function(x, .as.string=T) {
     ## takes a glm, returns prop reduction diviance 
     ## see zheng 2000

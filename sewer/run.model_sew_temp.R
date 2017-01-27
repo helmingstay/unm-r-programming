@@ -87,5 +87,6 @@ best.ndays <- rsq.ndays$ndays[best.index]
 .best.rsq <- rsq.ndays$adj.r.sq[best.index]
 .lin.best <- ndays.list[[best.index]]$mod.sewtemp
 best.dat <- ndays.list[[best.index]]$dat.sewtemp
+## Final data to use
 best.weather <- ndays.list[[best.index]]$weather.df
 best.weather.roll <- ndays.list[[best.index]]$weather.roll

@@ -187,13 +187,12 @@ block.foglevel.list <- within(list(), {
   aic.nofog <- AIC(mod.nofog)
   dev.full <- mk.prop.dev(mod.full)
   dev.nofog <- mk.prop.dev(mod.nofog)  
-  sub.grease <-  glm.nb(value ~ MeanTempC + meanlfog, 
-                        data=subset(dat, variable=='grease'))
-  sub.nogrease <-  glm.nb(value ~ MeanTempC + meanlfog, 
-                          data=subset(dat, variable!='grease'))
-  grey.palette <- colorRampPalette(c('white', 'black'), bias=1, space='Lab')
-  plot <- levelplot(block ~ temp * fog, data=gridded.data, 
-                    col.regions=grey.palette(100),
-                    xlab='Mean Weekly Air Temperature (C)',
-                    ylab='Mean Weekly FOG Level (units?)')
+  sub.grease <-  glm.nb(    
+    value ~ MeanTempC + meanlfog, 
+    data=subset(dat, variable=='grease')
+  )
+  sub.nogrease <-  glm.nb(
+    value ~ MeanTempC + meanlfog, 
+    data=subset(dat, variable!='grease')
+  )
 })

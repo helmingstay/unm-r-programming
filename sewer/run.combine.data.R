@@ -36,3 +36,11 @@ block.sewtemp.week <- join(sewer.block.week.melt, sewtemp.week.df,
     type='inner'
 )
 
+#### Join with block.airtemp.week data frame (includes temp, blocks and FOG)
+.baw <- mk.yearweek(block.airtemp.week)
+
+## check intersect
+#intersect(colnames(baw), colnames(allfog.week.df))
+
+## join by chosen columns
+baw.join <- join(.baw, allfog.week.df, by=c('year', 'week'), type='inner')

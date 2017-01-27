@@ -1,0 +1,7 @@
+#bookdown::word_document2
+bookdown::html_book:
+    #toc: no
+    toc_depth: 1
+    split_by: rmd
+    #split_bib: yes
+    number_sections: FALSE

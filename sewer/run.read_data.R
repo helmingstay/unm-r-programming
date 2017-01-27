@@ -35,8 +35,6 @@ mk.xts.fill <- function(dat, skel, ret.col){
   return(ret)
 }
 
-
-
 ########################################
 ### Air temperature / weather data
 ########################################
