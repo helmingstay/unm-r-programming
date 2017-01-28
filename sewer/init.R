@@ -18,6 +18,8 @@ library(lubridate)
 library(captioner)
 library(knitr)
 ##
+.lat.theme <- list(strip.background=list(col="lightgrey"))
+##
 opts_chunk$set(dev=c('png', 'tiff'),
     message=FALSE,
     #fig.width=6,
