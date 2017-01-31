@@ -57,26 +57,31 @@ source('run.glms.R')
 ## Introduction
 Sanitary sewer blockages (SSB) cause widespread negative impacts, including
 aesthetic degradation from odors, and property damage and environmental
-degradation from sanitary sewage overflow (SSO).  In the U.S., where SSOs are
-tracked by the Environmental Protection Agency [@epa2004local], approximately
+degradation from sanitary sewage overflow (SSO).  In the U.S., SSOs are
+tracked by the Environmental Protection Agency [@epa2004local]. Here, approximately
 half of SSOs were caused by blockages, with up to 75\% of SSOs caused by
-blockages in the arid Southwest [@epa2004report].  Consequently, prompt
-remediation of SSB is a high priority for municipalities, and contributes to
-municipal sewer maintenance costs [@epa2004report].
+blockages in the arid Southwest [@epa2004report].  Consequently, 
+the prompt remediation of SSB is a high priority for municipalities, 
+and plays a major role in sanitary sewer maintenance 
+costs [@epa2004report, fenner2000approaches].
 
 Here we use an extensive dataset of SSB events in Albuquerque, New Mexico to
-demonstrate a significant association between blockage rate and air
-temperature.  We find that air temperature is a very good predictor of sewer
-temperatures at suitable time lags, and that low environmental temperatures are 
-followed by modest increases in blockage frequency. We discuss the physical and
+demonstrate a significant association between blockage frequency and air
+temperature.  We find that, at suitable time lags, air temperature is a 
+very good predictor of sewer temperatures. We demonstrate that low
+environmental temperatures are 
+followed by modest increases in SSB frequency. We discuss the physical and
 operational significance of these findings, and their applications to other 
 localities.
 
 ### Drivers of Blockage
-An extensive body of literature exists on sewer blockage mechanism [@block-mechanism],
-physical structure [@block-structure] and detection [@detect].  
+
+An extensive body of literature exists on SSB mechanism, 
+physical structure, and 
+detection [@fenner2000approaches, @Keener2008, @williams2012fat, @dominic2013understanding @he2013mechanisms].
 In addition, several large-scale studies have estimated drivers of SSB 
-rates at the system level \@(large-scale). 
+rates at the system level [@Marlow2011, @mattsson2014fat].
+
 Previous work has attributed SSBs primarily to roots, debris, and fats, oils,
 and grease (FOG) [@epa2004report].  In the U.S., 60-75\% of blockages have 
 FOG deposits as a contributory factor [@Keener2008], while
@@ -85,6 +90,7 @@ vegetation intrusion is the chief cause of blockages in Australia
 
 [](Surprisingly rare, however, are large-scale studies of the correlates and putative causes of
 elevated SSB rates. )
+
 
 In general, higher blockage frequencies are reported in systems with lower
 average water use, likely due to increased solid concentration
@@ -101,12 +107,41 @@ common in systems installed after circa 1970 [@randrup2001tree].
 As recognized contributors to SSB, FOG deposits have received considerable
 attention. FOG deposits form in a saponification reaction between calcium soaps
 and free fatty acids [@He2011], chiefly from restaurants and industrial sources
-[@Keener2008].  Free fatty acids are insoluble in water, and are transported in
+[ @Keener2008].  Free fatty acids are insoluble in water, and are transported in
 greasy effluent.  Many municipalities have implemented policies to minimize FOG
-inputs into sanitary sewers [@hassey2001grease, @heckler2003best,
-@parnell2005innovative, @bennett2006atlanta, @tupper2008fog].  Residential
+inputs into sanitary sewers [@chu1999pollution, @hassey2001grease, @heckler2003best,
+@parnell2005innovative, @bennett2006atlanta, @tupper2008fog, @ducoste2008assessment].  
+Residential
 outreach is often increased during the holiday season in an effort to minimize
 FOG inputs due to food preparation [@tupper2008fog].
+
+### Sewer Struction and Function
+The physical structure of sewers varies greatly over both time
+and space. Combined sewer systems (CSS) carry both storm water and
+sanitary waste in a single sewer network, whereas separate sewer 
+systems (SSS) use separate networks for each. Historically, CSSs 
+were predominant before the late 19^th^ century, with examples of
+SSS growing more common in the late 19^th^ and early 20^th^ 
+century [@burian2000urban]. In the U.S., rapid population growth,
+increased urbanization, and and increased attention to water 
+quality throughout the 20^th^ century led to increased use of 
+SSS, especially in new developments. SSSs, which we focus on here,
+are notable for higher solids loads and more predictable
+flow rates. In CSOs, high-flow weather events can help flush 
+solids, but can also cause weather-related overflow. In addition,
+the types of solids commonly found in SSS versus CSS can differ,
+with CSS carrying greater portions of inorganic sand, clay, and 
+litter [@arthur2008understanding].
+
+Cultural practices such as diet and FOG management can also influence
+SSB frequency through FOG load.
+[](FOG discharge rates tend to increase with rising income. ??)
+Food service establishments such as restaurants are major 
+point-source generators of FOGs in wastewater [@chen2000separation].
+Consequently, FOGs discharge from food service establishments
+is closely regulated in many locales, including the U.S.,
+though FOG interceptor compliance and efficacy can
+can vary [@ducoste2008assessment, @williams2012fat].
 
 ### Influence of Temperature
 Temperature is one potential driver of SSB that has received relatively little 
@@ -389,13 +424,14 @@ weeks above those expected given prevailing temperatures.
 Further study of SSO rates versus holiday seasons in
 Southern Hemisphere cities could test this hypothesis.
 
-We also note that our system is a separate rather than a combined sanitary 
-sewer system. Separate systems are commonly found in the U.S., whereas combined
-sewers experience storm-driven flushing and are more common in Europe?? 
-Furthermore, the U.S. has a higher prevalence of garbage disposal units, i.e., 
-mechanical grinders that add food waste directly into the sewer system, 
-than elsewhere (cite??). The lack of storm flows and the addition of ground food waste
-likely contribute to the observed findings.  As such, an important test of our
+The municipal system described here is a separate (SSS) rather than a combined 
+sanitary sewer system (CSS). As noted, SSS are common in the U.S., whereas CSS
+are more common in regions with higher average infrastructure age (e.g., Europe)
+[@burian2000urban].
+Furthermore, the U.S. has a relatively high prevalence of garbage disposal units, i.e., 
+mechanical grinders that add food waste directly into the sewer system [@iacovidou2012household]. 
+The lack of storm flows and the addition of ground food waste
+may contribute to the observed findings.  As such, an important test of our
 findings is to asses the impact of temperature on blockage frequency in regions
 such as Europe where combined sewers are more common, and garbage disposal
 units rarer. 
