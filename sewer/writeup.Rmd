@@ -116,10 +116,11 @@ outreach is often increased during the holiday season in an effort to minimize
 FOG inputs due to food preparation [@tupper2008fog].
 
 ### Sewer Struction and Function
-The physical structure of sewers varies greatly over both time
-and space. Combined sewer systems (CSS) carry both storm water and
-sanitary waste in a single sewer network, whereas separate sewer 
-systems (SSS) use separate networks for each. Historically, CSSs 
+Two main forms of sewer systems have been commonly employed 
+throughout history: combined sewer systems (CSS) that 
+carry both storm water and
+sanitary waste in a single sewer network, and separate sewer 
+systems (SSS) that use separate networks for each.  CSSs 
 were predominant before the late 19^th^ century, with examples of
 SSS growing more common in the late 19^th^ and early 20^th^ 
 century [@burian2000urban]. In the U.S., rapid population growth,
@@ -165,7 +166,28 @@ periods of elevated sewer blockages using readily available climatic data.
 ## Methods
 
 ### Data
-Albuquerque Bernalillo County Water Utility Authority (ABCWUA) responds to SSB
+Albuquerque Bernalillo County Water Utility Authority (ABCWUA) 
+covers a 303 square mile sewer service area that is roughly bisected by the Rio Grande.
+This service area includes a population of approximately 606,000 residents located 
+primarily within the City of Albuquerque. 
+The early system developed in the valley floor and is quite flat, with typical
+slopes of 0.3 to 0.5%. Later growth on the east and west mesas has steeper
+typical slopes ranging from 0.4 to 3%.  [](The valley floor is nearly flat with
+an average river slope of 0.06%) The service area is limited by a 10% slope
+demarcation at the foot of the Sandia Mountains.
+
+At present, the system contains more than 182,000 sanitary sewer service
+connections. These are serviced by approximately 2,200 miles of
+gravity sewer mains and interceptors, along with 205 miles of force and
+vacuum lines and 45 lift and vacuum stations. 
+Approximately 20% of gravity pipes are greater than 50 years old, while 42% are 
+less than 25 years old. The smallest typical gravity line is 8-inch pipe, which 
+constitutes 82.6% of the gravity mains; the largest pipe in the system is 84 inches.
+Polyvinyl chloride pipe (PVC) constitutes 40% of the system, vitrified
+clay pipe (VCP) is 32%, and concrete is 17%, with various other materials
+constituting the remainder. 
+
+ABCWUA responds to SSB
 events after discovery by maintenance workers or reports of blockages from the
 public. This study used an anonymised dataset of SSB dates, along with
 engineers' estimates of blockage cause. In total, `r sewer.stats$nobs` SSB
