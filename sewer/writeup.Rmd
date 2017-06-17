@@ -167,23 +167,23 @@ periods of elevated sewer blockages using readily available climatic data.
 
 ### Data
 Albuquerque Bernalillo County Water Utility Authority (ABCWUA) 
-covers a 303 square mile sewer service area that is roughly bisected by the Rio Grande.
+covers a 785 km^2^ (303 miles^2^) sewer service area that is roughly bisected by the Rio Grande.
 [](The river valley floor itself is nearly flat, with an average river slope of 0.06%). 
 The ABCWUA service area includes a population of approximately 606,000 residents located 
 primarily within the City of Albuquerque. 
 The early system developed in the valley floor and is quite flat, with typical
 slopes of 0.3 to 0.5%. Later growth on the east and west mesas has steeper
 typical slopes ranging from 0.4 to 3%, with a total elevation change of approximately
-1,500 feet.  The service area is limited by a 10% slope
+460 meters (1,500 feet).  The service area is limited by a 10% slope
 demarcation at the foot of the Sandia Mountains.
 
 At present, the system contains more than 182,000 sanitary sewer service
-connections. These are serviced by approximately 2,200 miles of
-gravity sewer mains and interceptors, along with 205 miles of force and
+connections. These are serviced by approximately 3,500 km (2,200 miles) of
+gravity sewer mains and interceptors, along with 330 km (205 miles) of force and
 vacuum lines and 45 lift and vacuum stations. 
 Approximately 20% of gravity pipes are greater than 50 years old, while 42% are 
-less than 25 years old. The smallest typical gravity line is 8-inch pipe, which 
-constitutes 82.6% of the gravity mains; the largest pipe in the system is 84 inches.
+less than 25 years old. The smallest typical gravity line is 0.203 meter (8 inch) pipe, which 
+constitutes 82.6% of the gravity mains; the largest pipe in the system is 2.134 meters (84 inches).
 Polyvinyl chloride pipe (PVC) constitutes 40% of the system, vitrified
 clay pipe (VCP) is 32%, and concrete is 17%, with various other materials
 constituting the remainder. 
