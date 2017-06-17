@@ -168,12 +168,13 @@ periods of elevated sewer blockages using readily available climatic data.
 ### Data
 Albuquerque Bernalillo County Water Utility Authority (ABCWUA) 
 covers a 303 square mile sewer service area that is roughly bisected by the Rio Grande.
-This service area includes a population of approximately 606,000 residents located 
+[](The river valley floor itself is nearly flat, with an average river slope of 0.06%). 
+The ABCWUA service area includes a population of approximately 606,000 residents located 
 primarily within the City of Albuquerque. 
 The early system developed in the valley floor and is quite flat, with typical
 slopes of 0.3 to 0.5%. Later growth on the east and west mesas has steeper
-typical slopes ranging from 0.4 to 3%.  [](The valley floor is nearly flat with
-an average river slope of 0.06%) The service area is limited by a 10% slope
+typical slopes ranging from 0.4 to 3%, with a total elevation change of approximately
+1,500 feet.  The service area is limited by a 10% slope
 demarcation at the foot of the Sandia Mountains.
 
 At present, the system contains more than 182,000 sanitary sewer service
